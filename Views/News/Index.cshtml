@@ -1,0 +1,88 @@
+@model IEnumerable<myapp.Models.News>
+
+@{
+    ViewData["Title"] = "จัดการข่าวสาร";
+}
+
+<div class="container mt-5">
+    <h1>@ViewData["Title"]</h1>
+
+    <p>
+        <a asp-action="Create" class="btn btn-primary">สร้างข่าวใหม่</a>
+    </p>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="text-center p-4">
+                    <p class="lead">ยังไม่มีข่าวสารในขณะนี้</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>
+                                    หัวข้อข่าว
+                                </th>
+                                <th>
+                                    เนื้อหา
+                                </th>
+                                <th class="text-center">
+                                    สถานะ
+                                </th>
+                                <th class="text-end">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                    @foreach (var item in Model) {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Title)
+                                </td>
+                                <td>
+                                    @{
+                                        var plainText = System.Text.RegularExpressions.Regex.Replace(item.Content, "<.*?>", string.Empty);
+                                        var truncatedContent = plainText.Length > 100 ? plainText.Substring(0, 100) + "..." : plainText;
+                                    }
+                                    @truncatedContent
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge @(item.Status == "Published" ? "bg-success" : "bg-secondary")">
+                                        @Html.DisplayFor(modelItem => item.Status)
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="btn-group" role="group">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">แก้ไข</a>
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-info">รายละเอียด</a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">ลบ</a>
+                                    </div>
+                                </td>
+                            </tr>
+                    }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .table th {
+            font-weight: 600;
+        }
+        .btn-group .btn {
+            border-radius: .25rem;
+            margin-left: 2px;
+        }
+        .btn-group .btn:first-child {
+            margin-left: 0;
+        }
+    </style>
+}

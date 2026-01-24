@@ -1,0 +1,21 @@
+@using System.Security.Claims
+
+<ul class="navbar-nav">
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <li class="nav-item">
+        <span class="nav-link text-dark">สวัสดี @User.Identity.Name!</span>
+    </li>
+    <li class="nav-item">
+        <form class="form-inline" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+            <button type="submit" class="nav-link btn btn-link text-dark">ออกจากระบบ</button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">เข้าสู่ระบบ</a>
+    </li>
+}
+</ul>

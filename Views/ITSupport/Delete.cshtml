@@ -1,0 +1,48 @@
+@model myapp.Models.SupportRequest
+
+@{
+    ViewData["Title"] = "ยืนยันการลบ";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">คุณแน่ใจหรือไม่?</h4>
+    <p>คุณกำลังจะลบรายการแจ้งซ่อมนี้อย่างถาวร การกระทำนี้ไม่สามารถย้อนกลับได้</p>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>รายละเอียดรายการแจ้งซ่อม #@Model.Id</h5>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RequesterName)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.RequesterName)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Department)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Department)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.RequestType)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.RequestType)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Urgency)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Urgency)</dd>
+
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.ProblemDescription)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.ProblemDescription)</dd>
+            
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Status)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Status)</dd>
+            
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedAt)</dt>
+            <dd class="col-sm-9">@Model.CreatedAt.ToLocalTime().ToString("g")</dd>
+        </dl>
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn btn-danger">ยืนยันการลบ</button>
+            <a asp-action="Index" class="btn btn-secondary">ยกเลิก</a>
+        </form>
+    </div>
+</div>

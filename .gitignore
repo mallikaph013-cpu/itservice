@@ -1,0 +1,33 @@
+
+# Nuget packages
+*.nupkg
+
+# The Visual Studio symbol files
+*.pdb
+
+# Files built by Visual Studio
+[Oo]bj/
+[Bb]in/
+
+# User-specific files
+*.user
+*.suo
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+
+# Dotnet files
+project.lock.json
+project.assets.json
+
+# Databases
+*.db
+*.db-shm
+*.db-wal
+
+# Environment files
+.env
+
+# Rider files
+.idea/

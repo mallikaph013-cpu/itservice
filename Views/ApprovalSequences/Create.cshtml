@@ -1,0 +1,91 @@
+@model myapp.Models.ApprovalSequence
+
+@{
+    ViewData["Title"] = "Create Approval Sequence";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<form asp-action="Create">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    Sequence Details
+                </div>
+                <div class="card-body">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Department" class="form-label"></label>
+                            <select asp-for="Department" class="form-select" asp-items="ViewBag.Departments">
+                                <option value="">-- Select Department --</option>
+                            </select>
+                            <span asp-validation-for="Department" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Status" class="form-label"></label>
+                            <select asp-for="Status" class="form-select">
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                            </select>
+                            <span asp-validation-for="Status" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <h5>Approvers</h5>
+                    <div id="approvers-container">
+                        <!-- Dynamic approver rows will be injected here by JavaScript -->
+                    </div>
+                    <button type="button" id="add-approver" class="btn btn-secondary mt-2">Add Approver</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </div>
+</form>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const approverContainer = document.getElementById('approvers-container');
+            const users = @Html.Raw(Json.Serialize(ViewBag.Users as IEnumerable<SelectListItem> ?? new List<SelectListItem>()));
+
+            document.getElementById('add-approver').addEventListener('click', function () {
+                const newRow = document.createElement('div');
+                newRow.className = 'row approver-row mb-2';
+
+                const userSelect = document.createElement('select');
+                userSelect.name = 'approverIds';
+                userSelect.className = 'form-select';
+                userSelect.innerHTML = '<option value="">-- Select User --</option>' + 
+                                     users.map(user => `<option value="${user.value}">${user.text}</option>`).join('');
+
+                newRow.innerHTML = `
+                    <div class="col-md-6"></div>
+                    <div class="col-md-4">
+                        <input type="number" name="approverOrders" class="form-control" placeholder="Order" min="1">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger remove-approver">Remove</button>
+                    </div>
+                `;
+                newRow.querySelector('.col-md-6').appendChild(userSelect);
+                approverContainer.appendChild(newRow);
+            });
+
+            approverContainer.addEventListener('click', function (e) {
+                if (e.target && e.target.classList.contains('remove-approver')) {
+                    e.target.closest('.approver-row').remove();
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,148 @@
+@model myapp.ViewModels.UserMenuViewModel
+@{
+    ViewData["Title"] = "กำหนดสิทธิ์การใช้งานเมนู";
+    var allMenus = new List<Menu>();
+
+    void FlattenMenus(IEnumerable<Menu> menus)
+    {
+        foreach (var menu in menus)
+        {
+            allMenus.Add(menu);
+            if (menu.SubMenus != null && menu.SubMenus.Any())
+            {
+                FlattenMenus(menu.SubMenus);
+            }
+        }
+    }
+
+    FlattenMenus(Model.Menus);
+}
+
+<style>
+    .user-permissions-table {
+        display: none;
+        transition: opacity 0.5s ease-in-out;
+        opacity: 0;
+    }
+
+    .user-permissions-table.active {
+        display: block;
+        opacity: 1;
+    }
+</style>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h2 class="h4 mb-0 text-primary">@ViewData["Title"]</h2>
+                </div>
+                <div class="card-body">
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success d-flex align-items-center" role="alert">
+                            <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:"><use xlink:href="#check-circle-fill"/></svg>
+                            <div>
+                                @TempData["SuccessMessage"]
+                            </div>
+                        </div>
+                    }
+
+                    <div class="mb-4">
+                        <label for="user-select" class="form-label">เลือกผู้ใช้งาน:</label>
+                        <select id="user-select" class="form-select form-select-lg">
+                             @foreach (var user in Model.Users)
+                            {
+                                <option value="@user.Id">@user.FirstName @user.LastName (@user.Role)</option>
+                            }
+                        </select>
+                    </div>
+
+                    <form asp-action="Update" method="post">
+                        @Html.AntiForgeryToken()
+
+                        @foreach (var user in Model.Users)
+                        {
+                            <div id="user-permissions-@user.Id" class="user-permissions-table">
+                                <h3 class="h5 mb-3 text-secondary">สิทธิ์ของ: @user.FirstName @user.LastName</h3>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-hover table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th scope="col" style="width: 40%;">เมนู</th>
+                                                <th scope="col" class="text-center">อ่าน</th>
+                                                <th scope="col" class="text-center">สร้าง</th>
+                                                <th scope="col" class="text-center">แก้ไข</th>
+                                                <th scope="col" class="text-center">ลบ</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var menu in allMenus)
+                                            {
+                                                var permission = Model.Permissions.ContainsKey(user.Id) && Model.Permissions[user.Id].ContainsKey(menu.Id) ? Model.Permissions[user.Id][menu.Id] : new UserMenuPermission();
+                                                <tr>
+                                                    <td class="@(menu.ParentMenuId.HasValue ? "ps-4" : "fw-bold")">
+                                                        @menu.Name
+                                                    </td>
+                                                    @foreach (var p in new[] { "Read", "Create", "Edit", "Delete" })
+                                                    {
+                                                        var canP = (permission.GetType().GetProperty("Can" + p)?.GetValue(permission, null) as bool?) ?? false;
+                                                        <td class="text-center align-middle">
+                                                            <div class="form-check form-switch d-inline-block">
+                                                                <input class="form-check-input" type="checkbox" id="perm_@(user.Id)_@(menu.Id)_@p" name="SubmittedPermissions[@(user.Id)][@(menu.Id)].Can@p" value="true" @(canP ? "checked" : "")>
+                                                                <label class="form-check-label" for="perm_@(user.Id)_@(menu.Id)_@p"></label>
+                                                            </div>
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="card-footer bg-light text-end">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-save me-2" viewBox="0 0 16 16">
+                                    <path d="M2 1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9.5a1 1 0 0 0-1 1v4.5h2a.5.5 0 0 1 .354.854l-2.5 2.5a.5.5 0 0 1-.708 0l-2.5-2.5A.5.5 0 0 1 5.5 6.5h2V2a2 2 0 0 1 2-2H14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h2.5a.5.5 0 0 1 0 1H2z"/>
+                                </svg>
+                                บันทึกการเปลี่ยนแปลง
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+  </symbol>
+</svg>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            function showPermissionsForSelectedUser() {
+                var selectedUserId = $('#user-select').val();
+                $('.user-permissions-table').removeClass('active');
+                setTimeout(function() {
+                    $('#user-permissions-' + selectedUserId).addClass('active');
+                }, 50); // Small delay to allow fade out
+            }
+
+            $('#user-select').change(function () {
+                showPermissionsForSelectedUser();
+            });
+
+            // Show the first user's permissions by default
+            if ($('#user-select').val()) {
+                showPermissionsForSelectedUser();
+            }
+        });
+    </script>
+}

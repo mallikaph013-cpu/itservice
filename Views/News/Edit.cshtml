@@ -1,0 +1,89 @@
+@model myapp.Models.News
+
+@{
+    ViewData["Title"] = "แก้ไขข่าว";
+}
+
+<div class="container mt-5">
+    <h1>@ViewData["Title"]</h1>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                <input type="hidden" asp-for="Id" />
+                <input type="hidden" asp-for="PublishedDate" />
+                <input type="hidden" asp-for="ImagePath" />
+
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label"></label>
+                    <input asp-for="Title" class="form-control" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Content" class="form-label"></label>
+                    <textarea asp-for="Content" id="content-editor" class="form-control" rows="10"></textarea>
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Status" class="form-label"></label>
+                        <select asp-for="Status" class="form-select">
+                            <option value="Published">เผยแพร่</option>
+                            <option value="Draft">แบบร่าง</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+                    <div class="col-md-6">
+                        <label asp-for="ImageFile" class="form-label">รูปภาพประกอบ (เลือกใหม่เพื่อแทนที่)</label>
+                        <input asp-for="ImageFile" type="file" class="form-control" accept="image/*">
+                        <span asp-validation-for="ImageFile" class="text-danger"></span>
+                        @if (!string.IsNullOrEmpty(Model.ImagePath))
+                        {
+                            <div class="mt-2">
+                                <label>รูปภาพปัจจุบัน:</label>
+                                <img src="@Model.ImagePath" class="img-thumbnail" style="max-width: 200px;" alt="Current Image"/>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary me-2">บันทึก</button>
+                    <a asp-action="Index" class="btn btn-secondary">ยกเลิก</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('#content-editor'), {
+                toolbar: { 
+                    items: [ 
+                        'heading', '|', 
+                        'bold', 'italic', 'link', 'bulletedList', 'numberedList', '|', 
+                        'outdent', 'indent', '|',
+                        'imageUpload', 'blockQuote', 'insertTable', 'mediaEmbed', '|',
+                        'undo', 'redo' 
+                    ] 
+                },
+                language: 'th',
+                 image: {
+                    toolbar: [ 'imageTextAlternative', 'imageStyle:full', 'imageStyle:side' ]
+                },
+                 ckfinder: {
+                    uploadUrl: '/News/UploadImage'
+                }
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

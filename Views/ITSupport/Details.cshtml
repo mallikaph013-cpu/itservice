@@ -1,0 +1,163 @@
+@model myapp.Models.SupportRequest
+
+@{
+    ViewData["Title"] = "ติดตามสถานะ - " + Model.Id;
+}
+
+<style>
+    .progress-bar-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+    .progress-step {
+        text-align: center;
+        flex-grow: 1;
+    }
+    .progress-step .circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #e0e0e0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        border: 3px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+    .progress-step .label {
+        margin-top: 0.5rem;
+        font-weight: 500;
+    }
+
+    /* Active state */
+    .progress-step.active .circle {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    .progress-step.active .label {
+        color: #0d6efd;
+    }
+
+    /* Completed state */
+    .progress-step.completed .circle {
+        background-color: #198754;
+        border-color: #198754;
+    }
+
+</style>
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <h5 class="card-title">สถานะปัจจุบัน</h5>
+        @{ 
+            var steps = new[] { "Pending", "Approved", "InProgress", "Completed" };
+            var currentStepIndex = Array.IndexOf(steps, Model.Status.ToString());
+        }
+        <div class="progress-bar-container">
+            @for (int i = 0; i < steps.Length; i++)
+            {
+                var step = steps[i];
+                var stepClass = "progress-step";
+                if (i < currentStepIndex) { stepClass += " completed"; }
+                if (i == currentStepIndex) { stepClass += " active"; }
+
+                <div class="@stepClass">
+                    <div class="circle">@(i + 1)</div>
+                    <div class="label">@step</div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header">
+                รายละเอียดใบแจ้งซ่อม
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class = "col-sm-4">@Html.DisplayNameFor(model => model.RequesterName)</dt>
+                    <dd class = "col-sm-8">@Html.DisplayFor(model => model.RequesterName)</dd>
+
+                    <dt class = "col-sm-4">@Html.DisplayNameFor(model => model.Department)</dt>
+                    <dd class = "col-sm-8">@Html.DisplayFor(model => model.Department)</dd>
+
+                    <dt class = "col-sm-4">@Html.DisplayNameFor(model => model.RequestType)</dt>
+                    <dd class = "col-sm-8">@Html.DisplayFor(model => model.RequestType)</dd>
+
+                    <dt class = "col-sm-4">@Html.DisplayNameFor(model => model.ProblemDescription)</dt>
+                    <dd class = "col-sm-8"><pre>@Model.ProblemDescription</pre></dd>
+
+                    <dt class = "col-sm-4">@Html.DisplayNameFor(model => model.AttachmentPath)</dt>
+                    <dd class = "col-sm-8">
+                        @if (!string.IsNullOrEmpty(Model.AttachmentPath))
+                        {
+                            <a href="@Model.AttachmentPath" target="_blank">ดูไฟล์แนบ</a>
+                        }
+                        else
+                        {
+                            <span>ไม่มีไฟล์แนบ</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">
+                ประวัติการอนุมัติ
+            </div>
+            <div class="card-body">
+                @if (Model.ApprovalHistories.Any())
+                {
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>ผู้ดำเนินการ</th>
+                                <th>สถานะ</th>
+                                <th>วันที่</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var history in Model.ApprovalHistories)
+                            {
+                                <tr>
+                                    <td>@history.ApproverName</td>
+                                    <td>
+                                        @if(history.Approved) { <span class="badge bg-success">Approved</span> }
+                                        else { <span class="badge bg-danger">Rejected</span> }
+                                    </td>
+                                    <td>@history.ApprovalDate.ToLocalTime().ToString("g")</td>
+                                </tr>
+                                @if (!string.IsNullOrEmpty(history.Comments))
+                                {
+                                    <tr>
+                                        <td colspan="3" class="text-muted ps-4"><em>- @history.Comments</em></td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted">ยังไม่มีประวัติการอนุมัติ</p>
+                }
+                <hr />
+                <p><strong>รอการอนุมัติจาก:</strong> @(Model.CurrentApproverId.HasValue ? Model.CurrentApproverId.Value.ToString() : "-")</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-4">
+    <a asp-action="Index" class="btn btn-secondary">กลับไปที่รายการ</a>
+</div>

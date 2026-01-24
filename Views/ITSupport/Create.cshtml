@@ -1,0 +1,357 @@
+@model myapp.Models.SupportRequest
+
+@{{
+    ViewData["Title"] = "แจ้งซ่อม";
+}}
+
+<h1>IT Service Request</h1>
+
+<div class="card shadow-lg">
+    <div class="card-body">
+        <h5 class="card-title">สร้างรายการแจ้งซ่อมใหม่</h5>
+        <form method="post" asp-action="Create" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Requester Info -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label asp-for="EmployeeId" class="form-label"></label>
+                    <input asp-for="EmployeeId" class="form-control" />
+                    <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="RequesterName" class="form-label"></label>
+                    <input asp-for="RequesterName" class="form-control" />
+                    <span asp-validation-for="RequesterName" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Department" class="form-label"></label>
+                    <input asp-for="Department" class="form-control" />
+                    <span asp-validation-for="Department" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Request Type -->
+            <div class="mb-3">
+                <label asp-for="RequestType" class="form-label"></label>
+                <select id="RequestType" asp-for="RequestType" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.RequestType>()">
+                    <option value="" selected>เลือกประเภทการแจ้งซ่อม</option>
+                </select>
+                <span asp-validation-for="RequestType" class="text-danger"></span>
+            </div>
+
+            <!-- Program Selection (Hidden by default) -->
+            <div id="program-selection" class="mb-3" style="display:none;">
+                <label asp-for="Program" class="form-label"></label>
+                <select id="Program" asp-for="Program" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.ProgramName>()">
+                    <option value="" selected>เลือกโปรแกรม</option>
+                </select>
+                <span asp-validation-for="Program" class="text-danger"></span>
+            </div>
+
+             <!-- SAP Problem Selection (Hidden by default) -->
+            <div id="sap-problem-selection" class="mb-3" style="display:none;">
+                <label asp-for="SAPProblem" class="form-label"></label>
+                <select id="SAPProblem" asp-for="SAPProblem" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.SAPProblemType>()">
+                     <option value="" selected>เลือกประเภทปัญหา SAP</option>
+                </select>
+                <span asp-validation-for="SAPProblem" class="text-danger"></span>
+            </div>
+
+             <!-- SAP Registration Form (Hidden by default) -->
+            <div id="sap-registration-form" class="card card-body mt-3" style="display:none;">
+                 <h6 class="card-title mb-3">รายละเอียดการขึ้นทะเบียน SAP</h6>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label class="form-label">ประเภทการขึ้นทะเบียน</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" asp-for="IsFG">
+                            <label class="form-check-label" asp-for="IsFG">FG</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" asp-for="IsSM">
+                            <label class="form-check-label" asp-for="IsSM">SM</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" asp-for="IsRM">
+                            <label class="form-check-label" asp-for="IsRM">RM</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" asp-for="IsTooling">
+                            <label class="form-check-label" asp-for="IsTooling">Tooling</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label asp-for="ICSCode" class="form-label"></label>
+                        <input asp-for="ICSCode" class="form-control" />
+                    </div>
+                    <div class="col-md-8">
+                        <label asp-for="EnglishMatDescription" class="form-label"></label>
+                        <input asp-for="EnglishMatDescription" class="form-control" />
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4"><label asp-for="MaterialGroup" class="form-label"></label><input asp-for="MaterialGroup" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="Division" class="form-label"></label><input asp-for="Division" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="ProfitCenter" class="form-label"></label><input asp-for="ProfitCenter" class="form-control" /></div>
+                </div>
+                 <div class="row mb-3">
+                    <div class="col-md-4"><label asp-for="DistributionChannel" class="form-label"></label><input asp-for="DistributionChannel" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="BOICode" class="form-label"></label><input asp-for="BOICode" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="MRPController" class="form-label"></label><input asp-for="MRPController" class="form-control" /></div>
+                </div>
+                 <div class="row mb-3">
+                    <div class="col-md-4"><label asp-for="StorageLoc" class="form-label"></label><input asp-for="StorageLoc" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="StorageLocBP" class="form-label"></label><input asp-for="StorageLocBP" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="StorageLocB1" class="form-label"></label><input asp-for="StorageLocB1" class="form-control" /></div>
+                </div>
+                 <div class="row mb-3">
+                    <div class="col-md-4"><label asp-for="ProductionSupervisor" class="form-label"></label><input asp-for="ProductionSupervisor" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="CostingLotSize" class="form-label"></label><input asp-for="CostingLotSize" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="ValClass" class="form-label"></label><input asp-for="ValClass" class="form-control" /></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4"><label asp-for="Plant" class="form-label"></label><input asp-for="Plant" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="BaseUnit" class="form-label"></label><input asp-for="BaseUnit" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="MakerMfrPartNumber" class="form-label"></label><input asp-for="MakerMfrPartNumber" class="form-control" /></div>
+                </div>
+                 <div class="row mb-3">
+                    <div class="col-md-4"><label asp-for="Price" class="form-label"></label><input asp-for="Price" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="PerPrice" class="form-label"></label><input asp-for="PerPrice" class="form-control" /></div>
+                     <div class="col-md-4"><label asp-for="ModelName" class="form-label"></label><input asp-for="ModelName" class="form-control" /></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-8"><label asp-for="BOIDescription" class="form-label"></label><input asp-for="BOIDescription" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="PurchasingGroup" class="form-label"></label><input asp-for="PurchasingGroup" class="form-control" /></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4"><label asp-for="CommCodeTariffCode" class="form-label"></label><input asp-for="CommCodeTariffCode" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="TariffCodePercentage" class="form-label"></label><input asp-for="TariffCodePercentage" class="form-control" /></div>
+                    <div class="col-md-4"><label asp-for="PriceControl" class="form-label"></label><input asp-for="PriceControl" class="form-control" /></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12"><label asp-for="SupplierCode" class="form-label"></label><input asp-for="SupplierCode" class="form-control" /></div>
+                </div>
+            </div>
+
+            <!-- BOM Creation Form (Hidden by default) -->
+            <div id="bom-creation-form" class="card card-body mt-3" style="display:none;">
+                <h6 class="card-title mb-3">สร้าง Bill of Materials (BOM)</h6>
+                
+                <!-- Form for adding new BOM items -->
+                <div class="row g-3 align-items-end mb-3 p-3 bg-light border rounded">
+                    <div class="col-md-1"><label for="bom-item" class="form-label">Item</label><input type="number" id="bom-item" class="form-control"></div>
+                    <div class="col-md-1"><label for="bom-item-category" class="form-label">Item Cat</label><input type="text" id="bom-item-category" class="form-control" value="L"></div>
+                    <div class="col-md-2"><label for="bom-component" class="form-label">Component</label><input type="text" id="bom-component" class="form-control"></div>
+                    <div class="col-md-2"><label for="bom-desc" class="form-label">Description</label><input type="text" id="bom-desc" class="form-control"></div>
+                    <div class="col-md-1"><label for="bom-qty" class="form-label">Qty</label><input type="number" id="bom-qty" class="form-control"></div>
+                    <div class="col-md-1"><label for="bom-unit" class="form-label">Unit</label><input type="text" id="bom-unit" class="form-control"></div>
+                    <div class="col-md-1"><label for="bom-bomunit" class="form-label">BOM Unit</label><input type="text" id="bom-bomunit" class="form-control"></div>
+                    <div class="col-md-1"><label for="bom-sloc" class="form-label">Sloc</label><input type="text" id="bom-sloc" class="form-control"></div>
+                    <div class="col-md-1"><button type="button" id="add-bom-item-btn" class="btn btn-success w-100">Add</button></div>
+                </div>
+
+                <!-- Table to display BOM items -->
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>No.</th>
+                            <th>Item</th>
+                            <th>Item Cat</th>
+                            <th>Component Number</th>
+                            <th>Description</th>
+                            <th>Item Quantity</th>
+                            <th>Unit</th>
+                            <th>BOM Unit</th>
+                            <th>Sloc</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bom-items-tbody">
+                        <!-- Rows will be added here by JavaScript -->
+                    </tbody>
+                </table>
+                <div id="hidden-bom-inputs"></div>
+            </div>
+
+            <!-- Problem Description, Attachment, Urgency -->
+            <div class="mb-3">
+                <label asp-for="ProblemDescription" class="form-label"></label>
+                <textarea asp-for="ProblemDescription" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="ProblemDescription" class="text-danger"></span>
+            </div>
+            <div class="row mb-3">
+                 <div class="col-md-6">
+                    <label asp-for="Attachment" class="form-label"></label>
+                    <input asp-for="Attachment" class="form-control" />
+                    <span asp-validation-for="Attachment" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Urgency" class="form-label"></label>
+                    <select asp-for="Urgency" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.UrgencyLevel>()">
+                        <option value="" selected>เลือกระดับความเร่งด่วน</option>
+                    </select>
+                    <span asp-validation-for="Urgency" class="text-danger"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 1rem;
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const requestTypeSelect = document.getElementById('RequestType');
+            const programSelect = document.getElementById('Program');
+            const sapProblemSelect = document.getElementById('SAPProblem');
+
+            const programSelectionDiv = document.getElementById('program-selection');
+            const sapProblemSelectionDiv = document.getElementById('sap-problem-selection');
+            const sapRegistrationFormDiv = document.getElementById('sap-registration-form');
+            const bomCreationFormDiv = document.getElementById('bom-creation-form');
+
+            function toggleSections() {
+                const selectedRequestType = requestTypeSelect.options[requestTypeSelect.selectedIndex].text.trim();
+                const selectedProgram = programSelect.options[programSelect.selectedIndex].text.trim();
+                const selectedSAPProblem = sapProblemSelect.options[sapProblemSelect.selectedIndex].text.trim();
+
+                // Hide all conditional sections by default
+                programSelectionDiv.style.display = 'none';
+                sapProblemSelectionDiv.style.display = 'none';
+                sapRegistrationFormDiv.style.display = 'none';
+                bomCreationFormDiv.style.display = 'none';
+
+                // --- Cascading Logic ---
+                if (selectedRequestType === 'Software') {
+                    programSelectionDiv.style.display = 'block';
+
+                    if (selectedProgram === 'SAP') {
+                        sapProblemSelectionDiv.style.display = 'block';
+
+                        if (selectedSAPProblem === 'ขึ้นทะเบียน FG,SM,RM') {
+                            sapRegistrationFormDiv.style.display = 'block';
+                        } else if (selectedSAPProblem === 'สร้าง BOM') {
+                            bomCreationFormDiv.style.display = 'block';
+                        }
+                    }
+                }
+            }
+
+            requestTypeSelect.addEventListener('change', toggleSections);
+            programSelect.addEventListener('change', toggleSections);
+            sapProblemSelect.addEventListener('change', toggleSections);
+
+            // --- BOM Table Logic ---
+            const addBomItemBtn = document.getElementById('add-bom-item-btn');
+            const bomItemsTbody = document.getElementById('bom-items-tbody');
+            const hiddenBomInputs = document.getElementById('hidden-bom-inputs');
+            let bomItemIndex = 0;
+
+            addBomItemBtn.addEventListener('click', function() {
+                // Get values from input fields
+                const item = document.getElementById('bom-item').value;
+                const itemCategory = document.getElementById('bom-item-category').value;
+                const component = document.getElementById('bom-component').value;
+                const desc = document.getElementById('bom-desc').value;
+                const qty = document.getElementById('bom-qty').value;
+                const unit = document.getElementById('bom-unit').value;
+                const bomUnit = document.getElementById('bom-bomunit').value;
+                const sloc = document.getElementById('bom-sloc').value;
+
+                // Create table row
+                const newRow = bomItemsTbody.insertRow();
+                newRow.innerHTML = `
+                    <td>${bomItemIndex + 1}</td>
+                    <td>${item}</td>
+                    <td>${itemCategory}</td>
+                    <td>${component}</td>
+                    <td>${desc}</td>
+                    <td>${qty}</td>
+                    <td>${unit}</td>
+                    <td>${bomUnit}</td>
+                    <td>${sloc}</td>
+                    <td><button type="button" class="btn btn-danger btn-sm remove-bom-item">Remove</button></td>
+                `;
+
+                // Create hidden inputs for model binding
+                hiddenBomInputs.insertAdjacentHTML('beforeend', `
+                    <input type="hidden" name="BomComponents[${bomItemIndex}].Item" value="${item}" />
+                    <input type="hidden" name="BomComponents[${bomItemIndex}].ItemCategory" value="${itemCategory}" />
+                    <input type="hidden" name="BomComponents[${bomItemIndex}].ComponentNumber" value="${component}" />
+                    <input type="hidden" name="BomComponents[${bomItemIndex}].Description" value="${desc}" />
+                    <input type="hidden" name="BomComponents[${bomItemIndex}].ItemQuantity" value="${qty}" />
+                    <input type="hidden" name="BomComponents[${bomItemIndex}].Unit" value="${unit}" />
+                    <input type="hidden" name="BomComponents[${bomItemIndex}].BomUnit" value="${bomUnit}" />
+                    <input type="hidden" name="BomComponents[${bomItemIndex}].Sloc" value="${sloc}" />
+                `);
+
+                bomItemIndex++;
+
+                // Clear input fields
+                document.getElementById('bom-item').value = '';
+                document.getElementById('bom-item-category').value = 'L'; // Reset to default
+                document.getElementById('bom-component').value = '';
+                document.getElementById('bom-desc').value = '';
+                document.getElementById('bom-qty').value = '';
+                document.getElementById('bom-unit').value = '';
+                document.getElementById('bom-bomunit').value = '';
+                document.getElementById('bom-sloc').value = '';
+            });
+
+            // Event listener for remove buttons
+            bomItemsTbody.addEventListener('click', function(e) {
+                if (e.target && e.target.classList.contains('remove-bom-item')) {
+                    const row = e.target.closest('tr');
+                    const rowIndex = Array.from(bomItemsTbody.rows).indexOf(row);
+                    
+                    // Remove visual row
+                    row.remove();
+
+                    // Remove hidden inputs associated with the removed row
+                    const hiddenInputs = hiddenBomInputs.querySelectorAll(`input[name^='BomComponents[${rowIndex}]']`);
+                    hiddenInputs.forEach(input => input.remove());
+                    
+                    // Decrement the index for the next item
+                    bomItemIndex--;
+
+                    // Re-index all subsequent hidden inputs to ensure the list is contiguous
+                    const allRemainingInputs = hiddenBomInputs.querySelectorAll('input[name^="BomComponents"]');
+                    const fields = ['Item', 'ItemCategory', 'ComponentNumber', 'Description', 'ItemQuantity', 'Unit', 'BomUnit', 'Sloc'];
+                    let currentNewIndex = 0;
+                    for (let i = 0; i < allRemainingInputs.length; i += fields.length) {
+                         for (let j = 0; j < fields.length; j++) {
+                            const input = allRemainingInputs[i + j];
+                             if(input) {
+                                const oldName = input.getAttribute('name');
+                                const newName = oldName.replace(/\[\d+\]/, `[${currentNewIndex}]`);
+                                input.setAttribute('name', newName);
+                             }
+                        }
+                        currentNewIndex++;
+                    }
+
+                    // Re-number the 'No.' column in the visible table
+                    const tableRows = bomItemsTbody.querySelectorAll('tr');
+                    tableRows.forEach((tr, index) => {
+                        tr.cells[0].textContent = index + 1;
+                    });
+                }
+            });
+
+            // Initial check to set form state
+            toggleSections();
+        });
+    </script>
+}

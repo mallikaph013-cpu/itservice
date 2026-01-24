@@ -1,0 +1,27 @@
+@model myapp.Models.News
+
+@{ ViewData["Title"] = "รายละเอียดข่าว"; }
+
+<h1>@Model.Title</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PublishedDate)
+        </dt>
+        <dd class="col-sm-10">
+            @Model.PublishedDate.ToString("g")
+        </dd>
+    </dl>
+    <div class="mt-4">
+        @Html.Raw(Model.Content.Replace("\n", "<br />"))
+    </div>
+</div>
+<div class="mt-4">
+    @if (User.IsInRole("Admin"))
+    {
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">แก้ไข</a>
+    }
+    <a asp-action="Index">กลับไปที่รายการ</a>
+</div>

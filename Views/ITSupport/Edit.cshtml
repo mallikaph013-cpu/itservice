@@ -1,0 +1,129 @@
+@model myapp.Models.SupportRequest
+
+@{
+    ViewData["Title"] = "แก้ไขรายการแจ้งซ่อม";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="card shadow-lg">
+    <div class="card-body">
+        <h5 class="card-title">แก้ไขรายการแจ้งซ่อม #@Model.Id</h5>
+        <form method="post" asp-action="Edit" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedAt" />
+            <input type="hidden" asp-for="CreatedBy" />
+            <input type="hidden" asp-for="Status" />
+            <input type="hidden" asp-for="CurrentApproverId" />
+
+            <!-- Requester Info -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label asp-for="EmployeeId" class="form-label"></label>
+                    <input asp-for="EmployeeId" class="form-control" />
+                    <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="RequesterName" class="form-label"></label>
+                    <input asp-for="RequesterName" class="form-control" />
+                    <span asp-validation-for="RequesterName" class="text-danger"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Department" class="form-label"></label>
+                    <input asp-for="Department" class="form-control" />
+                    <span asp-validation-for="Department" class="text-danger"></span>
+                </div>
+            </div>
+
+            <!-- Request Type -->
+            <div class="mb-3">
+                <label asp-for="RequestType" class="form-label"></label>
+                <select id="RequestType" asp-for="RequestType" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.RequestType>()">
+                    <option value="">เลือกประเภทการแจ้งซ่อม</option>
+                </select>
+                <span asp-validation-for="RequestType" class="text-danger"></span>
+            </div>
+
+            <!-- Program Selection (Hidden by default) -->
+            <div id="program-selection" class="mb-3" style="display:none;">
+                <label asp-for="Program" class="form-label"></label>
+                <select id="Program" asp-for="Program" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.ProgramName>()">
+                    <option value="">เลือกโปรแกรม</option>
+                </select>
+                <span asp-validation-for="Program" class="text-danger"></span>
+            </div>
+
+             <!-- SAP Problem Selection (Hidden by default) -->
+            <div id="sap-problem-selection" class="mb-3" style="display:none;">
+                <label asp-for="SAPProblem" class="form-label"></label>
+                <select id="SAPProblem" asp-for="SAPProblem" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.SAPProblemType>()">
+                     <option value="">เลือกประเภทปัญหา SAP</option>
+                </select>
+                <span asp-validation-for="SAPProblem" class="text-danger"></span>
+            </div>
+
+            <!-- Other forms related to SAP/BOM will go here... -->
+
+            <!-- Problem Description, Attachment, Urgency -->
+            <div class="mb-3">
+                <label asp-for="ProblemDescription" class="form-label"></label>
+                <textarea asp-for="ProblemDescription" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="ProblemDescription" class="text-danger"></span>
+            </div>
+            <div class="row mb-3">
+                 <div class="col-md-6">
+                    <label asp-for="Attachment" class="form-label"></label>
+                    <input asp-for="Attachment" class="form-control" />
+                    <span asp-validation-for="Attachment" class="text-danger"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Urgency" class="form-label"></label>
+                    <select asp-for="Urgency" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.UrgencyLevel>()">
+                        <option value="">เลือกระดับความเร่งด่วน</option>
+                    </select>
+                    <span asp-validation-for="Urgency" class="text-danger"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">บันทึก</button>
+            <a asp-action="Index" class="btn btn-secondary">ยกเลิก</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // JS logic from Create.cshtml to show/hide sections
+            const requestTypeSelect = document.getElementById('RequestType');
+            const programSelect = document.getElementById('Program');
+            const sapProblemSelect = document.getElementById('SAPProblem');
+            const programSelectionDiv = document.getElementById('program-selection');
+            const sapProblemSelectionDiv = document.getElementById('sap-problem-selection');
+            
+            function toggleSections() {
+                const selectedRequestType = requestTypeSelect.options[requestTypeSelect.selectedIndex].text.trim();
+                const selectedProgram = programSelect.options[programSelect.selectedIndex].text.trim();
+
+                programSelectionDiv.style.display = 'none';
+                sapProblemSelectionDiv.style.display = 'none';
+
+                if (selectedRequestType === 'Software') {
+                    programSelectionDiv.style.display = 'block';
+                    if (selectedProgram === 'SAP') {
+                        sapProblemSelectionDiv.style.display = 'block';
+                    }
+                }
+            }
+
+            requestTypeSelect.addEventListener('change', toggleSections);
+            programSelect.addEventListener('change', toggleSections);
+            sapProblemSelect.addEventListener('change', toggleSections);
+
+            // Initial check to set the correct form state based on model data
+            toggleSections();
+        });
+    </script>
+}

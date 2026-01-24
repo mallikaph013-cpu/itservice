@@ -1,0 +1,39 @@
+@model myapp.Models.LoginViewModel
+@{
+    ViewData["Title"] = "เข้าสู่ระบบ";
+    Layout = "_LoginLayout";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0 rounded-lg mt-5">
+            <div class="card-header"><h3 class="text-center font-weight-light my-4">@ViewData["Title"]</h3></div>
+            <div class="card-body">
+                <form asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="form-floating mb-3">
+                        <input asp-for="UserName" class="form-control" placeholder="ชื่อผู้ใช้" />
+                        <label asp-for="UserName"></label>
+                        <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input asp-for="Password" class="form-control" placeholder="รหัสผ่าน" />
+                        <label asp-for="Password"></label>
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-check mb-3">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label class="form-check-label" asp-for="RememberMe"></label>
+                    </div>
+                    
+                    <div class="d-grid mt-4 mb-0">
+                         <button type="submit" class="btn btn-primary btn-block">เข้าสู่ระบบ</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

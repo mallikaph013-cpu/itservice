@@ -2,15 +2,24 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using myapp.Data;
 using myapp.Services;
-using myapp.Models; // Add this using
+using myapp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Force the app to run on port 8889 to avoid all conflicts
+builder.WebHost.UseUrls("http://localhost:8889");
+
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+var mvcBuilder = builder.Services.AddControllersWithViews();
+
+if (builder.Environment.IsDevelopment())
+{
+    mvcBuilder.AddRazorRuntimeCompilation();
+}
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ActivityLogService>();
-builder.Services.AddScoped<NavigationService>(); // Register the NavigationService
+builder.Services.AddScoped<NavigationService>();
 
 // Add DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -22,11 +31,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
-        options.ExpireTimeSpan = TimeSpan.FromMinutes(30); // Set cookie expiration
-        options.SlidingExpiration = true; // Renew the cookie if user is active
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        options.SlidingExpiration = true;
     });
 
-builder.Services.AddAuthorization(); // Add Authorization services
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
@@ -37,7 +46,7 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        context.Database.Migrate(); // ensure the database is created and migrations are applied
+        context.Database.Migrate();
         await SeedData.Initialize(context);
     }
     catch (Exception ex)
@@ -54,14 +63,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-// app.UseHttpsRedirection(); // Commented out to prevent redirection issues in the development environment.
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Set the default route to the Login page.
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Login}/{id?}");
