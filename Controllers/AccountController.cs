@@ -8,7 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization; // Added for [AllowAnonymous]
+using Microsoft.AspNetCore.Authorization;
+using BCrypt.Net;
 
 namespace myapp.Controllers
 {
@@ -24,21 +25,19 @@ namespace myapp.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous] // Allow access to login page without being logged in
+        [AllowAnonymous]
         public IActionResult Login(string? returnUrl = null)
         {
-            // If user is already authenticated, redirect to home page
             if (User.Identity != null && User.Identity.IsAuthenticated)
             {
                 return RedirectToAction("Index", "Home");
             }
             ViewData["ReturnUrl"] = returnUrl;
-            // This action will render the Login.cshtml view
             return View();
         }
 
         [HttpPost]
-        [AllowAnonymous] // Allow form submission without being logged in
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl = null)
         {
@@ -47,48 +46,83 @@ namespace myapp.Controllers
             {
                 var user = _context.Users.FirstOrDefault(u => u.EmployeeId == model.UserName);
 
-                if (user != null && BCrypt.Net.BCrypt.Verify(model.Password, user.Password))
+                if (user != null)
                 {
-                    var claims = new List<Claim>
+                    bool isPasswordValid = false;
+                    
+                    // A BCrypt hash will start with a prefix like $2a$, $2b$, or $2y$.
+                    // We can check this to reliably determine if the password is hashed.
+                    bool isHashed = user.Password.StartsWith("$2");
+
+                    if (isHashed)
                     {
-                        new Claim(ClaimTypes.Name, user.FullName),
-                        new Claim(ClaimTypes.NameIdentifier, user.EmployeeId),
-                        new Claim(ClaimTypes.Role, user.Role),
-                    };
-
-                    var claimsIdentity = new ClaimsIdentity(
-                        claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                    var authProperties = new AuthenticationProperties
-                    {
-                        IsPersistent = model.RememberMe,
-                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
-                    };
-
-                    await HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(claimsIdentity),
-                        authProperties);
-
-                    await _activityLogService.LogActivityAsync("User Login", $"User '{user.EmployeeId}' logged in successfully.");
-
-                    if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                    {
-                        return Redirect(returnUrl);
+                        // The password in the DB is already hashed. Verify it directly.
+                        try
+                        {
+                            isPasswordValid = BCrypt.Net.BCrypt.Verify(model.Password, user.Password);
+                        }
+                        catch
+                        {
+                            // If any error occurs during verification of a supposed hash, treat as invalid.
+                            isPasswordValid = false;
+                        }
                     }
                     else
                     {
-                        return RedirectToAction("Index", "Home");
+                        // This is a plain-text password. Compare it directly.
+                        if (user.Password == model.Password)
+                        {
+                            // The password is correct. Mark it as valid for this request.
+                            isPasswordValid = true;
+                            
+                            // Now, hash the password and update it in the database for future logins.
+                            user.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
+                            _context.Users.Update(user);
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+
+                    if (isPasswordValid)
+                    {
+                        var claims = new List<Claim>
+                        {
+                            new Claim(ClaimTypes.Name, user.EmployeeId),
+                            new Claim(ClaimTypes.NameIdentifier, user.EmployeeId),
+                            new Claim(ClaimTypes.Role, user.Role),
+                        };
+
+                        var claimsIdentity = new ClaimsIdentity(
+                            claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                        var authProperties = new AuthenticationProperties
+                        {
+                            IsPersistent = model.RememberMe,
+                            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30)
+                        };
+
+                        await HttpContext.SignInAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme,
+                            new ClaimsPrincipal(claimsIdentity),
+                            authProperties);
+
+                        await _activityLogService.LogActivityAsync("User Login", $"User '{user.EmployeeId}' logged in successfully.");
+
+                        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                        {
+                            return Redirect(returnUrl);
+                        }
+                        else
+                        {
+                            return RedirectToAction("Index", "Home");
+                        }
                     }
                 }
-                else
-                {
-                    await _activityLogService.LogActivityAsync("Login Failure", $"Failed login attempt for EmployeeId '{model.UserName}'.");
-                    ModelState.AddModelError(string.Empty, "รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง");
-                }
+
+                // If user is null or password is not valid
+                await _activityLogService.LogActivityAsync("Login Failure", $"Failed login attempt for EmployeeId '{model.UserName}'.");
+                ModelState.AddModelError(string.Empty, "รหัสพนักงานหรือรหัสผ่านไม่ถูกต้อง");
             }
 
-            // If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -103,7 +137,7 @@ namespace myapp.Controllers
             }
 
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Login", "Account"); // Redirect to login page after logout
+            return RedirectToAction("Login", "Account");
         }
     }
 }

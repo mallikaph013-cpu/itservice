@@ -1,8 +1,10 @@
-@model IEnumerable<myapp.Models.SupportRequest>
+@model myapp.ViewModels.WorkQueueViewModel
 @using myapp.Models
 
 @{
     ViewData["Title"] = "รายการแจ้งซ่อมที่ต้องดำเนินการ";
+    var supportRequests = Model?.SupportRequests ?? Enumerable.Empty<SupportRequest>();
+    var assignableUsers = Model?.AssignableUsers ?? Enumerable.Empty<User>();
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -15,45 +17,78 @@
     </div>
 }
 
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead class="table-light">
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.RequesterName)</th>
-                <th>@Html.DisplayNameFor(model => model.Department)</th>
-                <th>@Html.DisplayNameFor(model => model.RequestType)</th>
-                <th>@Html.DisplayNameFor(model => model.Urgency)</th>
-                <th>@Html.DisplayNameFor(model => model.Status)</th>
-                <th>@Html.DisplayNameFor(model => model.CurrentApproverId)</th>
-                <th>@Html.DisplayNameFor(model => model.CreatedAt)</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-    @foreach (var item in Model) {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.RequesterName)</td>
-                <td>@Html.DisplayFor(modelItem => item.Department)</td>
-                <td>@Html.DisplayFor(modelItem => item.RequestType)</td>
-                <td>@Html.DisplayFor(modelItem => item.Urgency)</td>
-                <td>@Html.DisplayFor(modelItem => item.Status)</td>
-                <td>@Html.DisplayFor(modelItem => item.CurrentApproverId)</td>
-                <td>@item.CreatedAt.ToLocalTime().ToString("g")</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
-                </td>
-                <td>
-                    <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post">
-                        <div class="input-group">
-                            <select name="status" class="form-select" asp-for="@item.Status" asp-items="Html.GetEnumSelectList<SupportRequestStatus>()">
-                            </select>
-                            <button type="submit" class="btn btn-sm btn-primary">อัปเดต</button>
-                        </div>
-                    </form>
-                </td>
-            </tr>
-    }
-        </tbody>
-    </table>
-</div>
+@if (supportRequests.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>@Html.DisplayNameFor(model => supportRequests.First().RequesterName)</th>
+                    <th>@Html.DisplayNameFor(model => supportRequests.First().Department)</th>
+                    <th>@Html.DisplayNameFor(model => supportRequests.First().RequestType)</th>
+                    <th>@Html.DisplayNameFor(model => supportRequests.First().Urgency)</th>
+                    <th>@Html.DisplayNameFor(model => supportRequests.First().Status)</th>
+                    <th>@Html.DisplayNameFor(model => supportRequests.First().CurrentApproverId)</th>
+                    <th>@Html.DisplayNameFor(model => supportRequests.First().CreatedAt)</th>
+                    <th>ผู้รับผิดชอบ</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in supportRequests)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(modelItem => item.RequesterName)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Department)</td>
+                        <td>@Html.DisplayFor(modelItem => item.RequestType)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Urgency)</td>
+                        <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                        <td>@item.CurrentApprover?.User?.FullName</td>
+                        <td>@item.CreatedAt.ToLocalTime().ToString("g")</td>
+                        <td>
+                            @if (item.ResponsibleUserId == null)
+                            {
+                                <form asp-action="AssignResponsibleUser" method="post">
+                                    <input type="hidden" name="supportRequestId" value="@item.Id" />
+                                    <div class="input-group">
+                                        <select name="userId" class="form-select">
+                                            <option value="">เลือกผู้รับผิดชอบ</option>
+                                            @foreach (var user in assignableUsers)
+                                            {
+                                                <option value="@user.Id">@user.FullName</option>
+                                            }
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-primary">มอบหมาย</button>
+                                    </div>
+                                </form>
+                            }
+                            else
+                            {
+                                @item.ResponsibleUser?.FullName
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">Details</a>
+                        </td>
+                        <td>
+                            <form asp-action="UpdateStatus" asp-route-id="@item.Id" method="post">
+                                <div class="input-group">
+                                    <select name="status" class="form-select" asp-for="@item.Status" asp-items="Html.GetEnumSelectList<SupportRequestStatus>()">
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary">อัปเดต</button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center">
+        <p>ไม่มีรายการแจ้งซ่อมที่ต้องดำเนินการในขณะนี้</p>
+    </div>
+}

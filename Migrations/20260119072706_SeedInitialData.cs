@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -7,12 +7,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace myapp.Migrations
 {
-    /// <inheritdoc />
     public partial class SeedInitialData : Migration
     {
-        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // Seed Departments
             migrationBuilder.InsertData(
                 table: "Departments",
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "Name", "Status", "UpdatedAt", "UpdatedBy" },
@@ -22,6 +21,19 @@ namespace myapp.Migrations
                     { 2, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "system", "HR", "Active", new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "system" }
                 });
 
+            // Seed Users with plain text passwords for initial setup
+            // The login logic will hash them on first login.
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "Department", "EmployeeId", "FirstName", "LastName", "Password", "Role" },
+                values: new object[,]
+                {
+                    { 1, "IT", "admin", "แอดมิน", "ระบบ", "1234", "Admin" },
+                    { 2, "HR", "user", "ผู้ใช้", "ทั่วไป", "1234", "User" },
+                    { 3, "IT", "it_user", "ผู้ใช้", "ไอที", "1234", "IT" }
+                });
+
+            // Seed Menus
             migrationBuilder.InsertData(
                 table: "Menus",
                 columns: new[] { "Id", "ActionName", "ControllerName", "IsDropdown", "Name", "ParentMenuId" },
@@ -34,11 +46,7 @@ namespace myapp.Migrations
                     { 8, "Index", "ActivityLog", false, "ประวัติการใช้งาน", null }
                 });
 
-            migrationBuilder.InsertData(
-                table: "Users",
-                columns: new[] { "Id", "Department", "EmployeeId", "FirstName", "LastName", "Password", "Role" },
-                values: new object[] { 1, "IT", "admin", "แอดมิน", "ระบบ", "$2a$11$k.MA.p9hM5w2vV.J/B4xFeV7U5sZp6PzEd3AAl2vE6n3g2gT2mY0O", "Admin" });
-
+            // Seed Sub-Menus
             migrationBuilder.InsertData(
                 table: "Menus",
                 columns: new[] { "Id", "ActionName", "ControllerName", "IsDropdown", "Name", "ParentMenuId" },
@@ -51,68 +59,33 @@ namespace myapp.Migrations
                 });
         }
 
-        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            // Remove all seeded data in reverse order of creation
             migrationBuilder.DeleteData(
-                table: "Departments",
+                table: "Menus",
                 keyColumn: "Id",
-                keyValue: 1);
-
-            migrationBuilder.DeleteData(
-                table: "Departments",
-                keyColumn: "Id",
-                keyValue: 2);
+                keyValues: new object[] { 5, 6, 7, 9 });
 
             migrationBuilder.DeleteData(
                 table: "Menus",
                 keyColumn: "Id",
-                keyValue: 1);
-
-            migrationBuilder.DeleteData(
-                table: "Menus",
-                keyColumn: "Id",
-                keyValue: 2);
-
-            migrationBuilder.DeleteData(
-                table: "Menus",
-                keyColumn: "Id",
-                keyValue: 3);
-
-            migrationBuilder.DeleteData(
-                table: "Menus",
-                keyColumn: "Id",
-                keyValue: 5);
-
-            migrationBuilder.DeleteData(
-                table: "Menus",
-                keyColumn: "Id",
-                keyValue: 6);
-
-            migrationBuilder.DeleteData(
-                table: "Menus",
-                keyColumn: "Id",
-                keyValue: 7);
-
-            migrationBuilder.DeleteData(
-                table: "Menus",
-                keyColumn: "Id",
-                keyValue: 8);
-
-            migrationBuilder.DeleteData(
-                table: "Menus",
-                keyColumn: "Id",
-                keyValue: 9);
+                keyValues: new object[] { 1, 2, 3, 8 });
 
             migrationBuilder.DeleteData(
                 table: "Users",
                 keyColumn: "Id",
-                keyValue: 1);
+                keyValues: new object[] { 1, 2, 3 });
+
+            migrationBuilder.DeleteData(
+                table: "Departments",
+                keyColumn: "Id",
+                keyValues: new object[] { 1, 2 });
 
             migrationBuilder.DeleteData(
                 table: "Menus",
                 keyColumn: "Id",
-                keyValue: 4);
+                keyValue: 4); // Parent menu deleted last
         }
     }
 }

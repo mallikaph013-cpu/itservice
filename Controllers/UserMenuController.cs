@@ -20,7 +20,6 @@ namespace myapp.Controllers
             _context = context;
         }
 
-        // GET: UserMenu
         public async Task<IActionResult> Index()
         {
             var users = await _context.Users.ToListAsync();
@@ -31,7 +30,8 @@ namespace myapp.Controllers
             {
                 Users = users,
                 Menus = menus,
-                Permissions = new Dictionary<int, Dictionary<int, UserMenuPermission>>()
+                Permissions = new Dictionary<int, Dictionary<int, UserMenuPermission>>(),
+                SubmittedPermissions = new Dictionary<int, Dictionary<int, SubmittedPermission>>()
             };
 
             foreach (var user in users)
@@ -44,43 +44,47 @@ namespace myapp.Controllers
             return View(viewModel);
         }
 
-        // POST: UserMenu/Update
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Update(UserMenuViewModel model)
         {
-            // First, remove all existing permissions to avoid conflicts
-            _context.UserMenuPermissions.RemoveRange(_context.UserMenuPermissions);
-            await _context.SaveChangesAsync();
+            var userIdsInForm = model.SubmittedPermissions?.Keys ?? Enumerable.Empty<int>();
+            if (userIdsInForm.Any())
+            {
+                 var existingPermissions = await _context.UserMenuPermissions
+                                                  .Where(p => userIdsInForm.Contains(p.UserId))
+                                                  .ToListAsync();
+                _context.UserMenuPermissions.RemoveRange(existingPermissions);
+            }
+           
 
-            // Now, add the new permissions from the form submission
             if (model.SubmittedPermissions != null)
             {
-                var newPermissions = new List<UserMenuPermission>();
                 foreach (var userEntry in model.SubmittedPermissions)
                 {
                     var userId = userEntry.Key;
-                    foreach (var menuEntry in userEntry.Value)
+                    if (userEntry.Value != null) 
                     {
-                        var menuId = menuEntry.Key;
-                        var permission = menuEntry.Value;
-
-                        // Add a permission only if at least one checkbox is checked
-                        if (permission.CanRead || permission.CanCreate || permission.CanEdit || permission.CanDelete)
+                        foreach (var menuEntry in userEntry.Value)
                         {
-                            newPermissions.Add(new UserMenuPermission
+                            var menuId = menuEntry.Key;
+                            var permission = menuEntry.Value;
+
+                            if (permission != null && (permission.CanRead || permission.CanCreate || permission.CanEdit || permission.CanDelete))
                             {
-                                UserId = userId,
-                                MenuId = menuId,
-                                CanRead = permission.CanRead,
-                                CanCreate = permission.CanCreate,
-                                CanEdit = permission.CanEdit,
-                                CanDelete = permission.CanDelete
-                            });
+                                _context.UserMenuPermissions.Add(new UserMenuPermission
+                                {
+                                    UserId = userId,
+                                    MenuId = menuId,
+                                    CanRead = permission.CanRead,
+                                    CanCreate = permission.CanCreate,
+                                    CanEdit = permission.CanEdit,
+                                    CanDelete = permission.CanDelete
+                                });
+                            }
                         }
                     }
                 }
-                await _context.UserMenuPermissions.AddRangeAsync(newPermissions);
             }
 
             await _context.SaveChangesAsync();

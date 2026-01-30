@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace myapp.Models
 {
-    public class UserMenuPermission
+    public class UserMenuPermission : BaseEntity
     {
         public int Id { get; set; }
 

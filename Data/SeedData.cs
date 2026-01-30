@@ -9,21 +9,22 @@ namespace myapp.Data
     {
         public static async Task Initialize(ApplicationDbContext context)
         {
-            // Look for any menus.
-            if (context.Menus.Any(m => m.Name == "รับงาน"))
+            // Look for any users.
+            if (context.Users.Any())
             {
                 return;   // DB has been seeded
             }
 
-            var newMenu = new Menu
+            var users = new User[]
             {
-                Name = "รับงาน",
-                ControllerName = "WorkItem",
-                ActionName = "Index",
-                IsDropdown = false
+                new User { EmployeeId = "admin", Password = BCrypt.Net.BCrypt.HashPassword("1234"), FirstName = "Admin", LastName = "User", Role = "Admin", Department = "IT" },
+                new User { EmployeeId = "006038", Password = BCrypt.Net.BCrypt.HashPassword("1234"), FirstName = "Test", LastName = "User", Role = "User", Department = "IT" },
             };
 
-            context.Menus.Add(newMenu);
+            foreach (User u in users)
+            {
+                context.Users.Add(u);
+            }
             await context.SaveChangesAsync();
         }
     }

@@ -32,7 +32,7 @@
             </div>
             <div class="mb-3">
                 <label asp-for="Department" class="form-label"></label>
-                <input asp-for="Department" class="form-control" />
+                <select asp-for="Department" class="form-control" asp-items="ViewBag.Departments"><option value="">-- Select Department --</option></select>
                 <span asp-validation-for="Department" class="text-danger"></span>
             </div>
             <div class="mb-3">

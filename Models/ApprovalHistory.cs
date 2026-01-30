@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace myapp.Models
 {
-    public class ApprovalHistory
+    public class ApprovalHistory : BaseEntity
     {
         public int Id { get; set; }
         public int SupportRequestId { get; set; }

@@ -29,6 +29,12 @@
         display: block;
         opacity: 1;
     }
+    .form-check-input {
+        cursor: pointer;
+    }
+    .table-responsive {
+        overflow-x: auto;
+    }
 </style>
 
 <div class="container mt-4">
@@ -71,10 +77,36 @@
                                         <thead class="table-light">
                                             <tr>
                                                 <th scope="col" style="width: 40%;">เมนู</th>
-                                                <th scope="col" class="text-center">อ่าน</th>
-                                                <th scope="col" class="text-center">สร้าง</th>
-                                                <th scope="col" class="text-center">แก้ไข</th>
-                                                <th scope="col" class="text-center">ลบ</th>
+                                                <th scope="col" class="text-center">
+                                                    <div class="form-check form-switch d-inline-block">
+                                                        <input class="form-check-input select-all-column" type="checkbox" data-column="read">
+                                                        <label class="form-check-label">อ่าน</label>
+                                                    </div>
+                                                </th>
+                                                <th scope="col" class="text-center">
+                                                    <div class="form-check form-switch d-inline-block">
+                                                        <input class="form-check-input select-all-column" type="checkbox" data-column="create">
+                                                        <label class="form-check-label">สร้าง</label>
+                                                    </div>
+                                                </th>
+                                                <th scope="col" class="text-center">
+                                                    <div class="form-check form-switch d-inline-block">
+                                                        <input class="form-check-input select-all-column" type="checkbox" data-column="edit">
+                                                        <label class="form-check-label">แก้ไข</label>
+                                                    </div>
+                                                </th>
+                                                <th scope="col" class="text-center">
+                                                     <div class="form-check form-switch d-inline-block">
+                                                        <input class="form-check-input select-all-column" type="checkbox" data-column="delete">
+                                                        <label class="form-check-label">ลบ</label>
+                                                    </div>
+                                                </th>
+                                                <th scope="col" class="text-center">
+                                                    <div class="form-check form-switch d-inline-block">
+                                                        <input class="form-check-input select-all-table" type="checkbox">
+                                                        <label class="form-check-label">ทั้งหมด</label>
+                                                    </div>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -90,11 +122,16 @@
                                                         var canP = (permission.GetType().GetProperty("Can" + p)?.GetValue(permission, null) as bool?) ?? false;
                                                         <td class="text-center align-middle">
                                                             <div class="form-check form-switch d-inline-block">
-                                                                <input class="form-check-input" type="checkbox" id="perm_@(user.Id)_@(menu.Id)_@p" name="SubmittedPermissions[@(user.Id)][@(menu.Id)].Can@p" value="true" @(canP ? "checked" : "")>
+                                                                <input class="form-check-input permission-checkbox" data-column="@p.ToLower()" type="checkbox" id="perm_@(user.Id)_@(menu.Id)_@p" name="SubmittedPermissions[@(user.Id)][@(menu.Id)].Can@p" value="true" @(canP ? "checked" : "")>
                                                                 <label class="form-check-label" for="perm_@(user.Id)_@(menu.Id)_@p"></label>
                                                             </div>
                                                         </td>
                                                     }
+                                                    <td class="text-center align-middle">
+                                                        <div class="form-check form-switch d-inline-block">
+                                                            <input class="form-check-input select-all-row" type="checkbox">
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             }
                                         </tbody>
@@ -132,17 +169,65 @@
                 $('.user-permissions-table').removeClass('active');
                 setTimeout(function() {
                     $('#user-permissions-' + selectedUserId).addClass('active');
-                }, 50); // Small delay to allow fade out
+                    // Reset checkboxes state when switching users
+                    $('.select-all-table, .select-all-column, .select-all-row').prop('checked', false);
+                    updateSelectAllCheckboxes();
+                }, 50);
+            }
+
+            function updateSelectAllCheckboxes() {
+                $('.user-permissions-table.active').each(function() {
+                    var $table = $(this);
+                    
+                    // Update row 'select-all'
+                    $table.find('tbody tr').each(function() {
+                        var $row = $(this);
+                        var allChecked = $row.find('.permission-checkbox').length === $row.find('.permission-checkbox:checked').length;
+                        $row.find('.select-all-row').prop('checked', allChecked);
+                    });
+
+                    // Update column 'select-all'
+                    ['read', 'create', 'edit', 'delete'].forEach(function(col) {
+                        var allChecked = $table.find('.permission-checkbox[data-column="' + col + '"]').length === $table.find('.permission-checkbox[data-column="' + col + '"]:checked').length;
+                         $table.find('.select-all-column[data-column="' + col + '"]').prop('checked', allChecked);
+                    });
+
+                    // Update table 'select-all'
+                    var allTableChecked = $table.find('.permission-checkbox').length === $table.find('.permission-checkbox:checked').length;
+                    $table.find('.select-all-table').prop('checked', allTableChecked);
+                });
             }
 
             $('#user-select').change(function () {
                 showPermissionsForSelectedUser();
-            });
-
-            // Show the first user's permissions by default
-            if ($('#user-select').val()) {
+            }).trigger('change');
+            
+            // Initial check on page load
+             if ($('#user-select').val()) {
                 showPermissionsForSelectedUser();
             }
+
+            // Event delegation for dynamically shown tables
+            $('form').on('change', '.user-permissions-table.active .select-all-table', function() {
+                var $table = $(this).closest('.user-permissions-table');
+                $table.find('.permission-checkbox, .select-all-row, .select-all-column').prop('checked', this.checked);
+            });
+
+            $('form').on('change', '.user-permissions-table.active .select-all-column', function() {
+                var $table = $(this).closest('.user-permissions-table');
+                var column = $(this).data('column');
+                $table.find('.permission-checkbox[data-column="' + column + '"]').prop('checked', this.checked);
+                updateSelectAllCheckboxes();
+            });
+
+            $('form').on('change', '.user-permissions-table.active .select-all-row', function() {
+                $(this).closest('tr').find('.permission-checkbox').prop('checked', this.checked);
+                updateSelectAllCheckboxes();
+            });
+
+            $('form').on('change', '.user-permissions-table.active .permission-checkbox', function() {
+                updateSelectAllCheckboxes();
+            });
         });
     </script>
 }

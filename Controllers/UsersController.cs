@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using myapp.Data;
 using myapp.Models;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace myapp.Controllers
@@ -25,8 +27,9 @@ namespace myapp.Controllers
 
         // GET: Users/Create
         [AllowAnonymous]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewBag.Departments = new SelectList(await _context.Departments.Where(d => d.Status == "Active").ToListAsync(), "Name", "Name");
             return View();
         }
 
@@ -42,6 +45,7 @@ namespace myapp.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Departments = new SelectList(await _context.Departments.Where(d => d.Status == "Active").ToListAsync(), "Name", "Name", user.Department);
             return View(user);
         }
 
@@ -58,6 +62,7 @@ namespace myapp.Controllers
             {
                 return NotFound();
             }
+            ViewBag.Departments = new SelectList(await _context.Departments.Where(d => d.Status == "Active").ToListAsync(), "Name", "Name", user.Department);
             return View(user);
         }
 
@@ -71,11 +76,35 @@ namespace myapp.Controllers
                 return NotFound();
             }
 
+            // Remove password from model state if it is not provided
+            if (string.IsNullOrEmpty(user.Password))
+            {
+                ModelState.Remove("Password");
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(user);
+                    var userToUpdate = await _context.Users.FindAsync(id);
+                    if (userToUpdate == null)
+                    {
+                        return NotFound();
+                    }
+
+                    userToUpdate.EmployeeId = user.EmployeeId;
+                    userToUpdate.FirstName = user.FirstName;
+                    userToUpdate.LastName = user.LastName;
+                    userToUpdate.Department = user.Department;
+                    userToUpdate.Role = user.Role;
+
+                    if (!string.IsNullOrEmpty(user.Password))
+                    {
+                        userToUpdate.Password = user.Password; 
+                    }
+
+
+                    _context.Update(userToUpdate);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -91,6 +120,7 @@ namespace myapp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewBag.Departments = new SelectList(await _context.Departments.Where(d => d.Status == "Active").ToListAsync(), "Name", "Name", user.Department);
             return View(user);
         }
 

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace myapp.Models
 {
-    public class WorkItem
+    public class WorkItem : BaseEntity
     {
         public int Id { get; set; }
 
@@ -15,9 +15,5 @@ namespace myapp.Models
 
         [Required]
         public WorkItemStatus Status { get; set; } = WorkItemStatus.New;
-
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
-
-        public DateTime UpdatedDate { get; set; } = DateTime.UtcNow;
     }
 }

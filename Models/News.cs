@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace myapp.Models
 {
-    public class News
+    public class News : BaseEntity
     {
         public int Id { get; set; }
 

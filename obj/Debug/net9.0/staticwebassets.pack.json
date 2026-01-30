@@ -5,6 +5,10 @@
       "PackagePath": "staticwebassets/app.css"
     },
     {
+      "Id": "/home/user/itservice/wwwroot/css/custom.css",
+      "PackagePath": "staticwebassets/css/custom.css"
+    },
+    {
       "Id": "/home/user/itservice/wwwroot/css/site.css",
       "PackagePath": "staticwebassets/css/site.css"
     },
@@ -23,6 +27,10 @@
     {
       "Id": "/home/user/itservice/wwwroot/images/factory.png",
       "PackagePath": "staticwebassets/images/factory.png"
+    },
+    {
+      "Id": "/home/user/itservice/wwwroot/js/site.js",
+      "PackagePath": "staticwebassets/js/site.js"
     },
     {
       "Id": "/home/user/itservice/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.css",
@@ -199,6 +207,10 @@
     {
       "Id": "/home/user/itservice/wwwroot/lib/bootstrap/dist/js/bootstrap.min.js.map",
       "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.min.js.map"
+    },
+    {
+      "Id": "/home/user/itservice/wwwroot/lib/jquery/dist/jquery.min.js",
+      "PackagePath": "staticwebassets/lib/jquery/dist/jquery.min.js"
     },
     {
       "Id": "obj/Debug/net9.0/staticwebassets/msbuild.build.myapp.props",

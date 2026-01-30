@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace myapp.Data
 {
@@ -18,7 +19,10 @@ namespace myapp.Data
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             builder.UseSqlite(connectionString);
 
-            return new ApplicationDbContext(builder.Options);
+            // Create a mock HttpContextAccessor for design time
+            var httpContextAccessor = new HttpContextAccessor();
+
+            return new ApplicationDbContext(builder.Options, httpContextAccessor);
         }
     }
 }

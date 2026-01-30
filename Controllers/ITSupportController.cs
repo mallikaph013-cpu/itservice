@@ -8,25 +8,30 @@ using Microsoft.AspNetCore.Authorization;
 using myapp.Data; 
 using Microsoft.EntityFrameworkCore; 
 using System;
+using myapp.ViewModels;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 namespace myapp.Controllers
 {
     [Authorize]
     public class ITSupportController : Controller
     {
-        private readonly ApplicationDbContext _context; 
+        private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _hostingEnvironment;
 
         public ITSupportController(ApplicationDbContext context, IWebHostEnvironment hostingEnvironment)
         {
-            _context = context; 
+            _context = context;
             _hostingEnvironment = hostingEnvironment;
         }
 
         public async Task<IActionResult> Index()
         {
             var supportRequests = await _context.SupportRequests
-                                                .Include(r => r.CurrentApprover) // Eager load the approver
+                                                .Include(r => r.CurrentApprover)
+                                                .ThenInclude(a => a != null ? a.User : null)
                                                 .OrderByDescending(r => r.CreatedAt)
                                                 .ToListAsync();
             return View(supportRequests);
@@ -36,10 +41,48 @@ namespace myapp.Controllers
         public async Task<IActionResult> WorkQueue()
         {   
             var supportRequests = await _context.SupportRequests
-                                                .Include(r => r.CurrentApprover) // Eager load the approver
+                                                .Include(r => r.CurrentApprover)
+                                                .ThenInclude(a => a != null ? a.User : null)
+                                                .Include(r => r.ResponsibleUser)
+                                                .Where(r => r.Status == SupportRequestStatus.Approved)
                                                 .OrderByDescending(r => r.CreatedAt)
                                                 .ToListAsync();
-            return View(supportRequests);
+
+            var assignableUsers = await _context.Users.Where(u => u.Role == "ITSupport").ToListAsync();
+
+            var viewModel = new WorkQueueViewModel
+            {
+                SupportRequests = supportRequests,
+                AssignableUsers = assignableUsers
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "ITSupport,Admin")]
+        public async Task<IActionResult> AssignResponsibleUser(int supportRequestId, int userId)
+        {
+            var supportRequest = await _context.SupportRequests.FindAsync(supportRequestId);
+            var user = await _context.Users.FindAsync(userId);
+
+            if (supportRequest == null || user == null)
+            {
+                return NotFound();
+            }
+
+            supportRequest.ResponsibleUserId = userId;
+            supportRequest.Status = SupportRequestStatus.InProgress;
+            supportRequest.UpdatedAt = DateTime.UtcNow;
+            supportRequest.UpdatedBy = User.Identity?.Name ?? "system";
+
+            _context.Update(supportRequest);
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = $"มอบหมายงานให้ {user.FullName} เรียบร้อยแล้ว";
+
+            return RedirectToAction(nameof(WorkQueue));
         }
 
         [HttpPost]
@@ -55,7 +98,7 @@ namespace myapp.Controllers
 
             request.Status = status;
             request.UpdatedAt = DateTime.UtcNow;
-            request.UpdatedBy = User.Identity?.Name; 
+            request.UpdatedBy = User.Identity?.Name ?? "system";
 
             _context.Update(request);
             await _context.SaveChangesAsync();
@@ -65,27 +108,54 @@ namespace myapp.Controllers
             return RedirectToAction(nameof(WorkQueue));
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            var employeeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.EmployeeId == employeeId);
+
+            var supportRequest = new SupportRequest();
+
+            if (currentUser != null)
+            {
+                supportRequest.EmployeeId = currentUser.EmployeeId;
+                supportRequest.RequesterName = currentUser.FullName;
+                supportRequest.Department = currentUser.Department;
+            }
+            
+            return View(supportRequest);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SupportRequest supportRequest)
         {
+            // Manually re-validate EmployeeId, RequesterName, Department to ensure they are not empty
+            if (string.IsNullOrEmpty(supportRequest.EmployeeId))
+            {
+                ModelState.AddModelError("EmployeeId", "Employee ID is required.");
+            }
+            if (string.IsNullOrEmpty(supportRequest.RequesterName))
+            {
+                ModelState.AddModelError("RequesterName", "Requester Name is required.");
+            }
+            if (string.IsNullOrEmpty(supportRequest.Department))
+            {
+                ModelState.AddModelError("Department", "Department is required.");
+            }
+
+
             if (ModelState.IsValid)
             {
                 supportRequest.CreatedAt = DateTime.UtcNow;
                 supportRequest.UpdatedAt = DateTime.UtcNow;
-                supportRequest.CreatedBy = User.Identity?.Name; 
-                supportRequest.UpdatedBy = User.Identity?.Name;
+                supportRequest.CreatedBy = User.Identity?.Name ?? "system";
+                supportRequest.UpdatedBy = User.Identity?.Name ?? "system";
 
                 if (!string.IsNullOrEmpty(supportRequest.Department))
                 {
                     var approvalSequence = await _context.ApprovalSequences
-                                               .Include(a => a.Approvers) 
-                                               .FirstOrDefaultAsync(a => string.Equals(a.Department, supportRequest.Department, StringComparison.OrdinalIgnoreCase));
+                                               .Include(a => a.Approvers)
+                                               .FirstOrDefaultAsync(a => a.Department.ToUpper() == supportRequest.Department.ToUpper());
 
                     if (approvalSequence != null && approvalSequence.Approvers.Any())
                     {
@@ -97,19 +167,19 @@ namespace myapp.Controllers
                         }
                         else
                         {
-                             supportRequest.Status = SupportRequestStatus.Approved; 
+                             supportRequest.Status = SupportRequestStatus.Approved;
                              supportRequest.CurrentApproverId = null;
                         }
                     }
                     else
                     {
-                        supportRequest.Status = SupportRequestStatus.Approved; 
+                        supportRequest.Status = SupportRequestStatus.Approved;
                         supportRequest.CurrentApproverId = null;
                     }
                 }
                 else
                 {
-                     supportRequest.Status = SupportRequestStatus.Approved; 
+                     supportRequest.Status = SupportRequestStatus.Approved;
                      supportRequest.CurrentApproverId = null;
                 }
 
@@ -120,7 +190,8 @@ namespace myapp.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-
+            
+            // If we got this far, something failed, redisplay form
             return View(supportRequest);
         }
 
@@ -133,6 +204,7 @@ namespace myapp.Controllers
 
             var request = await _context.SupportRequests
                 .Include(r => r.CurrentApprover)
+                .ThenInclude(a => a != null ? a.User : null)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (request == null)
@@ -202,7 +274,7 @@ namespace myapp.Controllers
                 // Copy other editable fields as necessary, omitting fields that shouldn't be changed.
 
                 requestToUpdate.UpdatedAt = DateTime.UtcNow;
-                requestToUpdate.UpdatedBy = User.Identity?.Name;
+                requestToUpdate.UpdatedBy = User.Identity?.Name ?? "system";
 
                 try
                 {
@@ -236,6 +308,7 @@ namespace myapp.Controllers
 
             var supportRequest = await _context.SupportRequests
                 .Include(s => s.CurrentApprover)
+                .ThenInclude(a => a != null ? a.User : null)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (supportRequest == null)

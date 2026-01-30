@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace myapp.Models
 {
-    public class SupportRequest
+    public class SupportRequest : BaseEntity
     {
         public int Id { get; set; }
 
@@ -116,18 +116,6 @@ namespace myapp.Models
         [Display(Name = "สถานะ")]
         public SupportRequestStatus Status { get; set; } = SupportRequestStatus.Pending;
 
-        [Display(Name = "วันที่สร้าง")]
-        public DateTime CreatedAt { get; set; }
-
-        [Display(Name = "วันที่แก้ไข")]
-        public DateTime UpdatedAt { get; set; }
-
-        [Display(Name = "ผู้สร้าง")]
-        public string? CreatedBy { get; set; }
-
-        [Display(Name = "ผู้แก้ไข")]
-        public string? UpdatedBy { get; set; }
-
         public List<ApprovalHistory> ApprovalHistories { get; set; } = new List<ApprovalHistory>();
 
         [Display(Name = "ผู้อนุมัติปัจจุบัน")]
@@ -135,5 +123,11 @@ namespace myapp.Models
 
         [ForeignKey("CurrentApproverId")]
         public Approver? CurrentApprover { get; set; }
+
+        [Display(Name = "ผู้รับผิดชอบ")]
+        public int? ResponsibleUserId { get; set; }
+
+        [ForeignKey("ResponsibleUserId")]
+        public User? ResponsibleUser { get; set; }
     }
 }

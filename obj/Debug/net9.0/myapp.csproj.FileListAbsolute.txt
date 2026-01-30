@@ -482,3 +482,6 @@
 /home/user/itservice/obj/Debug/net9.0/ref/myapp.dll
 /home/user/itservice/obj/Debug/net9.0/compressed/srsdvfsejk-angeebt5ch.gz
 /home/user/itservice/obj/Debug/net9.0/myapp.sourcelink.json
+/home/user/itservice/obj/Debug/net9.0/compressed/pa7u3kzeoc-gcta2ynobx.gz
+/home/user/itservice/obj/Debug/net9.0/compressed/hwnt904nd6-1qnc6z9y5o.gz
+/home/user/itservice/obj/Debug/net9.0/compressed/4372dns38l-o1o13a6vjx.gz

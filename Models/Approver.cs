@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace myapp.Models
 {
-    public class Approver
+    public class Approver : BaseEntity
     {
         public int Id { get; set; }
 

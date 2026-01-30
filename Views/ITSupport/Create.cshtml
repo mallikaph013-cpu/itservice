@@ -16,17 +16,17 @@
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label asp-for="EmployeeId" class="form-label"></label>
-                    <input asp-for="EmployeeId" class="form-control" />
+                    <input asp-for="EmployeeId" class="form-control" readonly />
                     <span asp-validation-for="EmployeeId" class="text-danger"></span>
                 </div>
                 <div class="col-md-4">
                     <label asp-for="RequesterName" class="form-label"></label>
-                    <input asp-for="RequesterName" class="form-control" />
+                    <input asp-for="RequesterName" class="form-control" readonly />
                     <span asp-validation-for="RequesterName" class="text-danger"></span>
                 </div>
                 <div class="col-md-4">
                     <label asp-for="Department" class="form-label"></label>
-                    <input asp-for="Department" class="form-control" />
+                    <input asp-for="Department" class="form-control" readonly />
                     <span asp-validation-for="Department" class="text-danger"></span>
                 </div>
             </div>
@@ -209,58 +209,75 @@
     }
 </style>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+@section Scripts {{
+    @{{await Html.RenderPartialAsync("_ValidationScriptsPartial");}}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const requestTypeSelect = document.getElementById('RequestType');
-            const programSelect = document.getElementById('Program');
-            const sapProblemSelect = document.getElementById('SAPProblem');
+        $(document).ready(function () {{
+            // --- Enum Values from C# ---
+            const REQUEST_TYPE_SOFTWARE = '1'; // Enum.Software
+            const PROGRAM_SAP = '0';           // Enum.SAP
+            const SAP_PROBLEM_REGISTER = '1';  // Enum.NewRegistration
+            const SAP_PROBLEM_CREATE_BOM = '2';// Enum.CreateBOM
 
-            const programSelectionDiv = document.getElementById('program-selection');
-            const sapProblemSelectionDiv = document.getElementById('sap-problem-selection');
-            const sapRegistrationFormDiv = document.getElementById('sap-registration-form');
-            const bomCreationFormDiv = document.getElementById('bom-creation-form');
+            // --- Element References ---
+            const $requestType = $('#RequestType');
+            const $program = $('#Program');
+            const $sapProblem = $('#SAPProblem');
 
-            function toggleSections() {
-                const selectedRequestType = requestTypeSelect.options[requestTypeSelect.selectedIndex].text.trim();
-                const selectedProgram = programSelect.options[programSelect.selectedIndex].text.trim();
-                const selectedSAPProblem = sapProblemSelect.options[sapProblemSelect.selectedIndex].text.trim();
+            const $programSelection = $('#program-selection');
+            const $sapProblemSelection = $('#sap-problem-selection');
+            const $sapRegistrationForm = $('#sap-registration-form');
+            const $bomCreationForm = $('#bom-creation-form');
 
-                // Hide all conditional sections by default
-                programSelectionDiv.style.display = 'none';
-                sapProblemSelectionDiv.style.display = 'none';
-                sapRegistrationFormDiv.style.display = 'none';
-                bomCreationFormDiv.style.display = 'none';
+            function updateForm() {{
+                const isSoftware = $requestType.val() === REQUEST_TYPE_SOFTWARE;
+                const isSap = $program.val() === PROGRAM_SAP;
+                const sapProblemType = $sapProblem.val();
 
-                // --- Cascading Logic ---
-                if (selectedRequestType === 'Software') {
-                    programSelectionDiv.style.display = 'block';
+                // Level 1: Program Selection
+                if (isSoftware) {{
+                    $programSelection.show();
+                }} else {{
+                    $programSelection.hide();
+                }}
 
-                    if (selectedProgram === 'SAP') {
-                        sapProblemSelectionDiv.style.display = 'block';
+                // Level 2: SAP Problem Selection
+                if (isSoftware && isSap) {{
+                    $sapProblemSelection.show();
+                }} else {{
+                    $sapProblemSelection.hide();
+                }}
 
-                        if (selectedSAPProblem === 'ขึ้นทะเบียน FG,SM,RM') {
-                            sapRegistrationFormDiv.style.display = 'block';
-                        } else if (selectedSAPProblem === 'สร้าง BOM') {
-                            bomCreationFormDiv.style.display = 'block';
-                        }
-                    }
-                }
-            }
+                // Level 3: SAP Forms
+                // Only show forms if the parent selections are correct
+                $sapRegistrationForm.toggle(isSoftware && isSap && sapProblemType === SAP_PROBLEM_REGISTER);
+                $bomCreationForm.toggle(isSoftware && isSap && sapProblemType === SAP_PROBLEM_CREATE_BOM);
+            }}
 
-            requestTypeSelect.addEventListener('change', toggleSections);
-            programSelect.addEventListener('change', toggleSections);
-            sapProblemSelect.addEventListener('change', toggleSections);
+            // --- Event Listeners ---
+            $requestType.on('change', function() {{
+                $program.val('');
+                $sapProblem.val('');
+                updateForm();
+            }});
 
-            // --- BOM Table Logic ---
+            $program.on('change', function() {{
+                $sapProblem.val('');
+                updateForm();
+            }});
+
+            $sapProblem.on('change', updateForm);
+
+            // --- Initial State ---
+            updateForm();
+
+            // --- BOM Table Logic (Corrected Vanilla JS) ---
             const addBomItemBtn = document.getElementById('add-bom-item-btn');
             const bomItemsTbody = document.getElementById('bom-items-tbody');
             const hiddenBomInputs = document.getElementById('hidden-bom-inputs');
             let bomItemIndex = 0;
 
-            addBomItemBtn.addEventListener('click', function() {
-                // Get values from input fields
+            addBomItemBtn.addEventListener('click', function() {{
                 const item = document.getElementById('bom-item').value;
                 const itemCategory = document.getElementById('bom-item-category').value;
                 const component = document.getElementById('bom-component').value;
@@ -270,7 +287,6 @@
                 const bomUnit = document.getElementById('bom-bomunit').value;
                 const sloc = document.getElementById('bom-sloc').value;
 
-                // Create table row
                 const newRow = bomItemsTbody.insertRow();
                 newRow.innerHTML = `
                     <td>${bomItemIndex + 1}</td>
@@ -285,7 +301,6 @@
                     <td><button type="button" class="btn btn-danger btn-sm remove-bom-item">Remove</button></td>
                 `;
 
-                // Create hidden inputs for model binding
                 hiddenBomInputs.insertAdjacentHTML('beforeend', `
                     <input type="hidden" name="BomComponents[${bomItemIndex}].Item" value="${item}" />
                     <input type="hidden" name="BomComponents[${bomItemIndex}].ItemCategory" value="${itemCategory}" />
@@ -299,59 +314,50 @@
 
                 bomItemIndex++;
 
-                // Clear input fields
                 document.getElementById('bom-item').value = '';
-                document.getElementById('bom-item-category').value = 'L'; // Reset to default
+                document.getElementById('bom-item-category').value = 'L';
                 document.getElementById('bom-component').value = '';
                 document.getElementById('bom-desc').value = '';
                 document.getElementById('bom-qty').value = '';
                 document.getElementById('bom-unit').value = '';
                 document.getElementById('bom-bomunit').value = '';
                 document.getElementById('bom-sloc').value = '';
-            });
+            }});
 
-            // Event listener for remove buttons
-            bomItemsTbody.addEventListener('click', function(e) {
-                if (e.target && e.target.classList.contains('remove-bom-item')) {
+            bomItemsTbody.addEventListener('click', function(e) {{
+                if (e.target && e.target.classList.contains('remove-bom-item')) {{
                     const row = e.target.closest('tr');
                     const rowIndex = Array.from(bomItemsTbody.rows).indexOf(row);
                     
-                    // Remove visual row
                     row.remove();
 
-                    // Remove hidden inputs associated with the removed row
-                    const hiddenInputs = hiddenBomInputs.querySelectorAll(`input[name^='BomComponents[${rowIndex}]']`);
+                    const hiddenInputsContainer = document.getElementById('hidden-bom-inputs');
+                    const hiddenInputs = hiddenInputsContainer.querySelectorAll(`input[name^='BomComponents[${rowIndex}]']`);
                     hiddenInputs.forEach(input => input.remove());
                     
-                    // Decrement the index for the next item
                     bomItemIndex--;
 
-                    // Re-index all subsequent hidden inputs to ensure the list is contiguous
-                    const allRemainingInputs = hiddenBomInputs.querySelectorAll('input[name^="BomComponents"]');
+                    const allRemainingInputs = hiddenInputsContainer.querySelectorAll('input[name^="BomComponents"]');
                     const fields = ['Item', 'ItemCategory', 'ComponentNumber', 'Description', 'ItemQuantity', 'Unit', 'BomUnit', 'Sloc'];
                     let currentNewIndex = 0;
-                    for (let i = 0; i < allRemainingInputs.length; i += fields.length) {
-                         for (let j = 0; j < fields.length; j++) {
+                    for (let i = 0; i < allRemainingInputs.length; i += fields.length) {{
+                         for (let j = 0; j < fields.length; j++) {{
                             const input = allRemainingInputs[i + j];
-                             if(input) {
+                             if(input) {{
                                 const oldName = input.getAttribute('name');
                                 const newName = oldName.replace(/\[\d+\]/, `[${currentNewIndex}]`);
                                 input.setAttribute('name', newName);
-                             }
-                        }
+                             }}
+                        }}
                         currentNewIndex++;
-                    }
+                    }}
 
-                    // Re-number the 'No.' column in the visible table
                     const tableRows = bomItemsTbody.querySelectorAll('tr');
-                    tableRows.forEach((tr, index) => {
+                    tableRows.forEach((tr, index) => {{
                         tr.cells[0].textContent = index + 1;
-                    });
-                }
-            });
-
-            // Initial check to set form state
-            toggleSections();
-        });
+                    }});
+                }}
+            }});
+        }});
     </script>
-}
+}}
