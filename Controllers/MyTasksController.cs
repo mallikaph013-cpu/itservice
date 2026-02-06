@@ -10,7 +10,7 @@ using System;
 
 namespace myapp.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "IsITSupport")]
     public class MyTasksController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -41,7 +41,7 @@ namespace myapp.Controllers
                 .OrderByDescending(r => r.UpdatedAt)
                 .ToListAsync();
 
-            return View(assignedTasks);
+            return View("~/Views/MyTasks/Index.cshtml", assignedTasks);
         }
 
         [HttpPost]

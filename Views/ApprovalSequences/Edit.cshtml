@@ -1,9 +1,8 @@
 @model myapp.Models.ApprovalSequence
-@using System.Text.Json;
 
 @{
     ViewData["Title"] = "Edit Approval Sequence";
-    var usersSelectList = (ViewBag.Users as IEnumerable<SelectListItem>) ?? new List<SelectListItem>();
+    var selectedApprovers = ViewData["SelectedApprovers"] as List<dynamic> ?? new List<dynamic>();
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -24,14 +23,16 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label asp-for="Department" class="form-label"></label>
-                            <select asp-for="Department" class="form-select" asp-items="ViewBag.Departments"></select>
+                            <select asp-for="Department" class="form-select" asp-items="ViewBag.Departments">
+                                <option value="">-- Select Department --</option>
+                            </select>
                             <span asp-validation-for="Department" class="text-danger"></span>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label asp-for="Status" class="form-label"></label>
                             <select asp-for="Status" class="form-select">
-                                <option value="Active" selected="@Model.Status == "Active"">Active</option>
-                                <option value="Inactive" selected="@Model.Status == "Inactive"">Inactive</option>
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
                             </select>
                             <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
@@ -39,26 +40,7 @@
 
                     <h5>Approvers</h5>
                     <div id="approvers-container">
-                        @foreach (var approver in Model.Approvers.OrderBy(a => a.Order))
-                        {
-                            <div class="row approver-row mb-2">
-                                <div class="col-md-6">
-                                     <select name="approverIds" class="form-select">
-                                        <option value="">-- Select User --</option>
-                                        @foreach(var user in usersSelectList)
-                                        {
-                                            <option value="@user.Value" selected="@(approver.UserId.ToString() == user.Value)">@user.Text</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <input type="number" name="approverOrders" class="form-control" value="@approver.Order" placeholder="Order" min="1">
-                                </div>
-                                <div class="col-md-2">
-                                    <button type="button" class="btn btn-danger remove-approver">Remove</button>
-                                </div>
-                            </div>
-                        }
+                        <!-- Dynamic approver rows will be injected here by JavaScript -->
                     </div>
                     <button type="button" id="add-approver" class="btn btn-secondary mt-2">Add Approver</button>
                 </div>
@@ -78,9 +60,11 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const approverContainer = document.getElementById('approvers-container');
-            const users = @Html.Raw(Json.Serialize(usersSelectList));
+            const users = @Html.Raw(Json.Serialize(ViewBag.Users as IEnumerable<SelectListItem> ?? new List<SelectListItem>()));
+            const selectedApprovers = @Html.Raw(Json.Serialize(selectedApprovers));
+            const initialApprovers = @Html.Raw(Json.Serialize(Model.Approvers.OrderBy(a => a.Order).Select(a => new { userId = a.UserId, order = a.Order })));
 
-            document.getElementById('add-approver').addEventListener('click', function () {
+            function addApproverRow(userId = '', order = '') {
                 const newRow = document.createElement('div');
                 newRow.className = 'row approver-row mb-2';
 
@@ -88,12 +72,12 @@
                 userSelect.name = 'approverIds';
                 userSelect.className = 'form-select';
                 userSelect.innerHTML = '<option value="">-- Select User --</option>' + 
-                                     users.map(user => `<option value="${user.value}">${user.text}</option>`).join('');
+                                     users.map(user => `<option value="${user.value}" ${user.value == userId ? 'selected' : ''}>${user.text}</option>`).join('');
 
                 newRow.innerHTML = `
                     <div class="col-md-6"></div>
                     <div class="col-md-4">
-                        <input type="number" name="approverOrders" class="form-control" placeholder="Order" min="1">
+                        <input type="number" name="approverOrders" class="form-control" placeholder="Order" min="1" value="${order}">
                     </div>
                     <div class="col-md-2">
                         <button type="button" class="btn btn-danger remove-approver">Remove</button>
@@ -101,6 +85,22 @@
                 `;
                 newRow.querySelector('.col-md-6').appendChild(userSelect);
                 approverContainer.appendChild(newRow);
+            }
+
+            // Determine which list of approvers to render.
+            // If selectedApprovers exists, it means validation failed and we should show the user's last input.
+            // Otherwise, show the initial approvers from the database.
+            const approversToRender = (selectedApprovers && selectedApprovers.length > 0) ? selectedApprovers : initialApprovers;
+
+            // Render the approver rows.
+            if (approversToRender && approversToRender.length > 0) {
+                approversToRender.forEach(function(approver) {
+                    addApproverRow(approver.userId, approver.order);
+                });
+            }
+
+            document.getElementById('add-approver').addEventListener('click', function () {
+                addApproverRow();
             });
 
             approverContainer.addEventListener('click', function (e) {

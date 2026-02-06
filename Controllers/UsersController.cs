@@ -37,10 +37,17 @@ namespace myapp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> Create([Bind("EmployeeId,FirstName,LastName,Password,Department,Role")] User user)
+        public async Task<IActionResult> Create([Bind("EmployeeId,FirstName,LastName,Password,Department,Role,IsITStaff,IsDxStaff,CanApprove")] User user)
         {
+            if (user.IsITStaff)
+            {
+                user.Department = "IT";
+                user.Role = "ITSupport";
+            }
+
             if (ModelState.IsValid)
             {
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -69,17 +76,22 @@ namespace myapp.Controllers
         // POST: Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,EmployeeId,FirstName,LastName,Password,Department,Role")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,EmployeeId,FirstName,LastName,Password,Department,Role,IsITStaff,IsDxStaff,CanApprove")] User user)
         {
             if (id != user.Id)
             {
                 return NotFound();
             }
 
-            // Remove password from model state if it is not provided
             if (string.IsNullOrEmpty(user.Password))
             {
                 ModelState.Remove("Password");
+            }
+
+            if (user.IsITStaff)
+            {
+                user.Department = "IT";
+                user.Role = "ITSupport";
             }
 
             if (ModelState.IsValid)
@@ -97,10 +109,13 @@ namespace myapp.Controllers
                     userToUpdate.LastName = user.LastName;
                     userToUpdate.Department = user.Department;
                     userToUpdate.Role = user.Role;
+                    userToUpdate.IsITStaff = user.IsITStaff;
+                    userToUpdate.IsDxStaff = user.IsDxStaff;
+                    userToUpdate.CanApprove = user.CanApprove;
 
                     if (!string.IsNullOrEmpty(user.Password))
                     {
-                        userToUpdate.Password = user.Password; 
+                        userToUpdate.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); 
                     }
 
 

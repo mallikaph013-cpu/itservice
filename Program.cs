@@ -6,8 +6,8 @@ using myapp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Force the app to run on port 8894 to avoid all conflicts
-builder.WebHost.UseUrls("http://localhost:8894");
+// Force the app to run on port 8898 to avoid all conflicts
+builder.WebHost.UseUrls("http://localhost:8898");
 
 // Add services to the container.
 var mvcBuilder = builder.Services.AddControllersWithViews();
@@ -31,11 +31,24 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
+        options.AccessDeniedPath = "/Account/AccessDenied"; // Also specify the access denied path
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
         options.SlidingExpiration = true;
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("IsITSupport", policy => policy.RequireRole("ITSupport"));
+
+    options.AddPolicy("CanAccessWorkQueue", policy =>
+        policy.RequireAssertion(context =>
+            context.User.IsInRole("Admin") ||
+            context.User.IsInRole("ITSupport") ||
+            context.User.HasClaim(c => c.Type == "IsDxStaff" && c.Value == "True")));
+
+    options.AddPolicy("IsApprover", policy =>
+        policy.RequireClaim("CanApprove", "True"));
+});
 
 var app = builder.Build();
 
@@ -46,6 +59,8 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
+        // This will apply pending migrations and create the database if it doesn't exist.
+        // It ensures data is preserved between application restarts.
         context.Database.Migrate();
         await SeedData.Initialize(context);
     }

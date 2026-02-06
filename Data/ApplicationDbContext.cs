@@ -79,17 +79,21 @@ namespace myapp.Data
 
             // Seed Users with Hashed Password
             modelBuilder.Entity<User>().HasData(
-                new { 
-                    Id = 1, 
-                    EmployeeId = "admin", 
-                    FirstName = "แอดมิน", 
-                    LastName = "ระบบ", 
+                new
+                {
+                    Id = 1,
+                    EmployeeId = "admin",
+                    FirstName = "แอดมิน",
+                    LastName = "ระบบ",
                     Password = "$2a$11$LhM27vKLaaDHqW9SJo3qoeswGqWwNQKADa6Z8CYfCg5NCk8UAFiHq", // "Admin@123"
-                    Department = "IT", 
+                    Department = "IT",
                     Role = "Admin",
-                    CreatedAt = utcNow, 
-                    UpdatedAt = utcNow, 
-                    CreatedBy = "system", 
+                    IsITStaff = false, // <-- I HAVE FIXED THIS
+                    IsDxStaff = false,
+                    CanApprove = true, // Added this line
+                    CreatedAt = utcNow,
+                    UpdatedAt = utcNow,
+                    CreatedBy = "system",
                     UpdatedBy = "system"
                 }
             );

@@ -599,6 +599,304 @@
       ]
     },
     {
+      "Route": "css/login.css",
+      "AssetFile": "css/login.css.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000736919676"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1356"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E=\""
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk="
+        }
+      ]
+    },
+    {
+      "Route": "css/login.css",
+      "AssetFile": "css/login.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4281"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk="
+        }
+      ]
+    },
+    {
+      "Route": "css/login.css.gz",
+      "AssetFile": "css/login.css.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1356"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E="
+        }
+      ]
+    },
+    {
+      "Route": "css/login.q9egs9rlws.css",
+      "AssetFile": "css/login.css.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000736919676"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1356"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E=\""
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "q9egs9rlws"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk="
+        },
+        {
+          "Name": "label",
+          "Value": "css/login.css"
+        }
+      ]
+    },
+    {
+      "Route": "css/login.q9egs9rlws.css",
+      "AssetFile": "css/login.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4281"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "q9egs9rlws"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk="
+        },
+        {
+          "Name": "label",
+          "Value": "css/login.css"
+        }
+      ]
+    },
+    {
+      "Route": "css/login.q9egs9rlws.css.gz",
+      "AssetFile": "css/login.css.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1356"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "q9egs9rlws"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E="
+        },
+        {
+          "Name": "label",
+          "Value": "css/login.css.gz"
+        }
+      ]
+    },
+    {
       "Route": "css/site.angeebt5ch.css",
       "AssetFile": "css/site.css.gz",
       "Selectors": [
@@ -1221,6 +1519,88 @@
         {
           "Name": "label",
           "Value": "images/factory.png"
+        }
+      ]
+    },
+    {
+      "Route": "images/t_stanley-electric8916.jpg",
+      "AssetFile": "images/t_stanley-electric8916.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8903"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:13:37 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk="
+        }
+      ]
+    },
+    {
+      "Route": "images/t_stanley-electric8916.z8ttw5vund.jpg",
+      "AssetFile": "images/t_stanley-electric8916.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8903"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:13:37 GMT"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "z8ttw5vund"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk="
+        },
+        {
+          "Name": "label",
+          "Value": "images/t_stanley-electric8916.jpg"
         }
       ]
     },

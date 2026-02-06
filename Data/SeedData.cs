@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using myapp.Models;
 using System.Linq;
 using System.Threading.Tasks;
+using BCrypt.Net;
 
 namespace myapp.Data
 {
@@ -9,23 +10,69 @@ namespace myapp.Data
     {
         public static async Task Initialize(ApplicationDbContext context)
         {
-            // Look for any users.
-            if (context.Users.Any())
+            // --- Seed Users ---
+            var initialUsers = new[]
             {
-                return;   // DB has been seeded
-            }
-
-            var users = new User[]
-            {
-                new User { EmployeeId = "admin", Password = BCrypt.Net.BCrypt.HashPassword("1234"), FirstName = "Admin", LastName = "User", Role = "Admin", Department = "IT" },
-                new User { EmployeeId = "006038", Password = BCrypt.Net.BCrypt.HashPassword("1234"), FirstName = "Test", LastName = "User", Role = "User", Department = "IT" },
+                new { EmployeeId = "admin", Password = "admin123", FirstName = "Admin", LastName = "User", Role = "Admin", Department = "IT", IsITStaff = false, IsDxStaff = true, CanApprove = true },
+                new { EmployeeId = "itsupport1", Password = "support123", FirstName = "IT", LastName = "Support 1", Role = "ITSupport", Department = "IT", IsITStaff = true, IsDxStaff = true, CanApprove = false },
+                new { EmployeeId = "006038", Password = "1234", FirstName = "Test", LastName = "User", Role = "User", Department = "IT", IsITStaff = false, IsDxStaff = false, CanApprove = true },
             };
 
-            foreach (User u in users)
+            foreach (var userData in initialUsers)
             {
-                context.Users.Add(u);
+                if (!await context.Users.AnyAsync(u => u.EmployeeId == userData.EmployeeId))
+                {
+                    context.Users.Add(new User
+                    {
+                        EmployeeId = userData.EmployeeId,
+                        Password = BCrypt.Net.BCrypt.HashPassword(userData.Password),
+                        FirstName = userData.FirstName,
+                        LastName = userData.LastName,
+                        Role = userData.Role,
+                        Department = userData.Department,
+                        IsITStaff = userData.IsITStaff,
+                        IsDxStaff = userData.IsDxStaff,
+                        CanApprove = userData.CanApprove
+                    });
+                }
+            }
+            await context.SaveChangesAsync(); // Save users to get their Ids
+
+            // --- Seed Departments ---
+            var initialDepartments = new[] { "IT", "HR", "Finance" };
+            foreach (var deptName in initialDepartments)
+            {
+                if (!await context.Departments.AnyAsync(d => d.Name == deptName))
+                {
+                    context.Departments.Add(new Department { Name = deptName, Status = "Active" });
+                }
             }
             await context.SaveChangesAsync();
+
+            // --- Seed IT Approval Sequence ---
+            var itDepartment = "IT";
+            var itSequence = await context.ApprovalSequences.FirstOrDefaultAsync(s => s.Department == itDepartment);
+
+            if (itSequence == null)
+            {
+                itSequence = new ApprovalSequence { Department = itDepartment, Approvers = new List<Approver>() };
+                context.ApprovalSequences.Add(itSequence);
+                await context.SaveChangesAsync(); // Save sequence to get its Id
+            }
+
+            // --- Seed Approver for IT Sequence ---
+            var approverUser = await context.Users.FirstOrDefaultAsync(u => u.EmployeeId == "006038");
+            if (approverUser != null)
+            {
+                // Check if this user is already an approver for this sequence
+                bool isAlreadyApprover = await context.Approvers.AnyAsync(a => a.ApprovalSequenceId == itSequence.Id && a.UserId == approverUser.Id);
+                
+                if (!isAlreadyApprover)
+                {
+                    context.Approvers.Add(new Approver { ApprovalSequenceId = itSequence.Id, UserId = approverUser.Id, Order = 1 });
+                    await context.SaveChangesAsync();
+                }
+            }
         }
     }
 }

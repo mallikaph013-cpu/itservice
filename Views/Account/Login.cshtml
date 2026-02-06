@@ -1,36 +1,36 @@
 @model myapp.Models.LoginViewModel
 @{
-    ViewData["Title"] = "เข้าสู่ระบบ";
+    ViewData["Title"] = "Welcome Back";
     Layout = "_LoginLayout";
 }
 
-<div class="col-md-12">
-    <div class="card shadow-lg border-0 rounded-lg">
-        <div class="card-body p-5">
-            <h3 class="text-center font-weight-light mb-4">@ViewData["Title"]</h3>
+<div class="login-container-split">
+    <div class="login-left">
+        <!-- Decorative content -->
+        <h1 class="display-4 text-white">ASI Service</h1>
+    </div>
+    <div class="login-right">
+        <div class="login-form-container">
+            <div class="login-logo">
+                 <img src="~/images/t_stanley-electric8916.jpg" alt="Stanley Logo" class="login-logo-img" />
+            </div>
+
             <form asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
-                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-                
-                <div class="form-floating mb-3">
-                    <input asp-for="UserName" class="form-control" placeholder="ชื่อผู้ใช้" />
-                    <label asp-for="UserName"></label>
-                    <span asp-validation-for="UserName" class="text-danger"></span>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+
+                <div class="input-group-login">
+                     <i class="fas fa-envelope fa-icon"></i>
+                    <input asp-for="UserName" class="form-control-login" placeholder="Username" />
                 </div>
-                
-                <div class="form-floating mb-3">
-                    <input asp-for="Password" type="password" class="form-control" placeholder="รหัสผ่าน" />
-                    <label asp-for="Password"></label>
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                <span asp-validation-for="UserName" class="text-danger d-block mb-3"></span>
+
+                <div class="input-group-login">
+                    <i class="fas fa-lock fa-icon"></i>
+                    <input asp-for="Password" type="password" class="form-control-login" placeholder="Password" />
                 </div>
-                
-                <div class="form-check mb-3">
-                    <input asp-for="RememberMe" class="form-check-input" />
-                    <label class="form-check-label" asp-for="RememberMe"></label>
-                </div>
-                
-                <div class="d-grid mt-4 mb-0">
-                     <button type="submit" class="btn btn-primary btn-block">เข้าสู่ระบบ</button>
-                </div>
+                <span asp-validation-for="Password" class="text-danger d-block mb-3"></span>
+
+                <button type="submit" class="btn btn-get-started">Get Started</button>
             </form>
         </div>
     </div>

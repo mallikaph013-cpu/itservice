@@ -21,57 +21,71 @@ namespace myapp.Services
 
         public async Task<List<Menu>> GetMenuItemsAsync()
         {
-            var user = _httpContextAccessor.HttpContext?.User;
-            if (user?.Identity?.IsAuthenticated != true)
+            var userPrincipal = _httpContextAccessor.HttpContext?.User;
+            if (userPrincipal?.Identity?.IsAuthenticated != true)
             {
                 return new List<Menu>(); // Return empty list if not authenticated
             }
 
-            var userIdStr = user.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!int.TryParse(userIdStr, out var userId))
-            {
-                return new List<Menu>(); // Return empty list if user id is not found or invalid
-            }
-
-            // Fetch all menus with their submenus
-            var menus = await _context.Menus
+            // Fetch all menus with their submenus for structural reference
+            var allMenus = await _context.Menus
                 .Include(m => m.SubMenus)
                 .Where(m => m.ParentMenuId == null) // Start with top-level menus
                 .ToListAsync();
 
             // If the user is an Admin, return all menus without filtering
-            if (user.IsInRole("Admin"))
+            if (userPrincipal.IsInRole("Admin"))
             {
-                return menus;
+                return allMenus;
             }
 
-            // For other users, get the menu IDs assigned to the user where CanRead is true
+            // For non-admin users, filter based on permissions.
+            var employeeId = userPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(employeeId))
+            {
+                return new List<Menu>();
+            }
+
+            var currentUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.EmployeeId == employeeId);
+            if (currentUser == null)
+            {
+                return new List<Menu>();
+            }
+
             var allowedMenuIds = await _context.UserMenuPermissions
-                .Where(p => p.UserId == userId && p.CanRead)
+                .Where(p => p.UserId == currentUser.Id && p.CanRead)
                 .Select(p => p.MenuId)
                 .ToListAsync();
             
-            // Filter menus based on permissions
-            return FilterMenus(menus, allowedMenuIds);
+            var canApprove = userPrincipal.HasClaim("CanApprove", "True");
+
+            return FilterMenus(allMenus, allowedMenuIds, canApprove);
         }
 
-        private List<Menu> FilterMenus(List<Menu> menus, List<int> allowedMenuIds)
+        private List<Menu> FilterMenus(List<Menu> menus, List<int> allowedMenuIds, bool canApprove)
         {
             var accessibleMenus = new List<Menu>();
 
             foreach (var menu in menus)
             {
-                // A menu is accessible if it's directly in the allowed list
+                // Specific check for the Approval menu
+                if (menu.ControllerName == "Approval" && !canApprove)
+                {
+                    continue; // Skip this menu if the user is not an approver
+                }
+
                 var isDirectlyAllowed = allowedMenuIds.Contains(menu.Id);
+                List<Menu> accessibleSubMenus = new List<Menu>();
 
                 if (menu.SubMenus != null && menu.SubMenus.Any())
                 {
                     // Recursively filter submenus
-                    menu.SubMenus = FilterMenus(menu.SubMenus.ToList(), allowedMenuIds);
+                    accessibleSubMenus = FilterMenus(menu.SubMenus.ToList(), allowedMenuIds, canApprove);
+                    // Update submenus with the filtered list
+                    menu.SubMenus = accessibleSubMenus;
                 }
 
-                // A dropdown parent is accessible if any of its children are accessible
-                var hasAccessibleChildren = menu.SubMenus != null && menu.SubMenus.Any();
+                var hasAccessibleChildren = accessibleSubMenus.Any();
 
                 if (isDirectlyAllowed || hasAccessibleChildren)
                 {

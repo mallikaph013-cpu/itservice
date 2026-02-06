@@ -1,16 +1,19 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using myapp.Data;
 using myapp.Models;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using myapp.ViewModels;
 using System;
-using myapp.ViewModels; 
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace myapp.Controllers
 {
-    [Authorize]
+    [Authorize(Policy = "IsApprover")]
     public class ApprovalController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,120 +23,132 @@ namespace myapp.Controllers
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(SupportRequestStatus? selectedStatus)
         {
-            var employeeId = User.Identity?.Name;
+            var employeeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(employeeId))
             {
                 return Unauthorized("Employee ID claim not found.");
             }
 
-            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.EmployeeId == employeeId);
+            var currentUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.EmployeeId == employeeId);
             if (currentUser == null)
             {
                 return NotFound("User not found.");
             }
 
-            var requestsToApprove = await _context.SupportRequests
-                .Include(r => r.CurrentApprover)
-                    .ThenInclude(ca => ca != null ? ca.User : null)
-                .Where(r => r.Status == SupportRequestStatus.Pending && r.CurrentApprover != null && r.CurrentApprover.UserId == currentUser.Id)
-                .OrderByDescending(r => r.CreatedAt)
-                .ToListAsync();
+            var viewModel = new ApprovalIndexViewModel();
+            
+            // --- Reverted to Original Logic for Status Filter ---
+            var statuses = Enum.GetValues(typeof(SupportRequestStatus)).Cast<SupportRequestStatus>();
+            viewModel.StatusOptions = new SelectList(statuses, selectedStatus);
+            viewModel.SelectedStatus = selectedStatus ?? SupportRequestStatus.Pending; // Default to Pending
 
-            // Fix: Fetch all users into memory first, then sort by the calculated FullName property.
-            var allUsers = await _context.Users.ToListAsync();
-            var assignableUsers = allUsers.OrderBy(u => u.FullName).ToList();
+            List<SupportRequest> requests;
 
-            var viewModel = new ApprovalIndexViewModel
+            if (viewModel.SelectedStatus == SupportRequestStatus.Pending)
             {
-                PendingRequests = requestsToApprove,
-                AssignableUsers = assignableUsers
-            };
+                var userApproverIds = await _context.Approvers
+                    .Where(a => a.UserId == currentUser.Id)
+                    .Select(a => a.Id)
+                    .ToListAsync();
 
+                var firstApprovalDepts = await _context.ApprovalSequences
+                    .Where(s => s.Approvers.Any(a => a.Order == 1 && a.UserId == currentUser.Id))
+                    .Select(s => s.Department)
+                    .ToListAsync();
+
+                requests = await _context.SupportRequests
+                    .Include(r => r.CurrentApprover).ThenInclude(a => a.User)
+                    .Where(r => r.Status == SupportRequestStatus.Pending && !string.IsNullOrEmpty(r.Department) &&
+                        (
+                            (r.CurrentApproverId != null && userApproverIds.Contains(r.CurrentApproverId.Value)) ||
+                            (r.CurrentApproverId == null && firstApprovalDepts.Contains(r.Department))
+                        )
+                    )
+                    .OrderByDescending(r => r.CreatedAt)
+                    .ToListAsync();
+            }
+            else // For Approved/Rejected, show historical requests
+            {
+                var userManagedDepts = await _context.ApprovalSequences
+                    .Where(s => s.Approvers.Any(a => a.UserId == currentUser.Id))
+                    .Select(s => s.Department)
+                    .Distinct()
+                    .ToListAsync();
+
+                requests = await _context.SupportRequests
+                    .Include(r => r.CurrentApprover).ThenInclude(a => a.User)
+                    .Where(r => r.Status == viewModel.SelectedStatus && userManagedDepts.Contains(r.Department))
+                    .OrderByDescending(r => r.UpdatedAt)
+                    .ToListAsync();
+            }
+
+            viewModel.Requests = requests;
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Approve(int id, int responsibleUserId)
-        {
+        public async Task<IActionResult> Approve(int id)
+        {            
             var supportRequest = await _context.SupportRequests
-                                                .Include(r => r.CurrentApprover)
-                                                    .ThenInclude(ca => ca != null ? ca.ApprovalSequence : null)
-                                                        .ThenInclude(s => s != null ? s.Approvers : null)
-                                                .FirstOrDefaultAsync(r => r.Id == id);
+                .Include(r => r.CurrentApprover)
+                .FirstOrDefaultAsync(r => r.Id == id);
 
-            if (supportRequest == null)
+            if (supportRequest == null || string.IsNullOrEmpty(supportRequest.Department))
             {
                 return NotFound();
             }
-            
-            var userToAssign = await _context.Users.FindAsync(responsibleUserId);
-            if (userToAssign == null)
-            {
-                ModelState.AddModelError(string.Empty, "ผู้ใช้ที่เลือกสำหรับมอบหมายงานไม่ถูกต้อง");
-                return RedirectToAction(nameof(Index)); 
-            }
 
-            var currentApprover = supportRequest.CurrentApprover;
-            bool isFinalApproval = false;
+            var sequence = await _context.ApprovalSequences
+                .Include(s => s.Approvers.OrderBy(a => a.Order))
+                .FirstOrDefaultAsync(s => s.Department == supportRequest.Department);
 
-            if (currentApprover != null && currentApprover.ApprovalSequence?.Approvers != null)
-            {
-                var nextApprover = currentApprover.ApprovalSequence.Approvers
-                                                  .OrderBy(a => a.Order)
-                                                  .FirstOrDefault(a => a.Order > currentApprover.Order);
-
-                if (nextApprover != null)
-                {
-                    supportRequest.CurrentApproverId = nextApprover.Id;
-                }
-                else
-                {
-                    isFinalApproval = true;
-                }
-            }
-            else
-            {
-                isFinalApproval = true;
-            }
-
-            if(isFinalApproval)
+            if (sequence == null || !sequence.Approvers.Any())
             {
                 supportRequest.Status = SupportRequestStatus.Approved;
                 supportRequest.CurrentApproverId = null;
-                supportRequest.ResponsibleUserId = responsibleUserId;
+            }
+            else
+            {
+                var currentOrder = supportRequest.CurrentApprover?.Order ?? 0;
+                var nextApprover = sequence.Approvers.FirstOrDefault(a => a.Order > currentOrder);
+
+                if (nextApprover == null)
+                {
+                    supportRequest.Status = SupportRequestStatus.Approved;
+                    supportRequest.CurrentApproverId = null;
+                }
+                else
+                {
+                    supportRequest.CurrentApproverId = nextApprover.Id;
+                }
             }
 
             supportRequest.UpdatedAt = DateTime.UtcNow;
-            supportRequest.UpdatedBy = User.Identity?.Name ?? "system";
-
+            supportRequest.UpdatedBy = User.FindFirstValue(ClaimTypes.Name);
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = isFinalApproval 
-                ? $"อนุมัติและมอบหมายงานให้ {userToAssign.FullName} เรียบร้อยแล้ว"
-                : "อนุมัติรายการแจ้งซ่อมเรียบร้อยแล้ว และส่งต่อไปยังผู้อนุมัติคนถัดไป";
-
+            
+            TempData["SuccessMessage"] = "รายการได้รับการอนุมัติเรียบร้อยแล้ว";
             return RedirectToAction(nameof(Index));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reject(int id)
-        {
+        { 
             var supportRequest = await _context.SupportRequests.FindAsync(id);
-            if (supportRequest == null)
-            {
-                return NotFound();
-            }
+            if (supportRequest == null) return NotFound();
 
             supportRequest.Status = SupportRequestStatus.Rejected;
+            supportRequest.CurrentApproverId = null; // Clear the approver
             supportRequest.UpdatedAt = DateTime.UtcNow;
-            supportRequest.UpdatedBy = User.Identity?.Name ?? "system";
+            supportRequest.UpdatedBy = User.FindFirstValue(ClaimTypes.Name);
 
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "ปฏิเสธรายการแจ้งซ่อมเรียบร้อยแล้ว";
 
+            TempData["SuccessMessage"] = "รายการได้รับการปฏิเสธเรียบร้อยแล้ว";
             return RedirectToAction(nameof(Index));
         }
     }

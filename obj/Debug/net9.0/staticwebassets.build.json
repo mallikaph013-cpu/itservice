@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "fHwSxq4IPs1dy4v1dUHYD8tMZYd82G5oP89rCVpRLrk=",
+  "Hash": "JbRDxADftlTC6QPdfOt3tkHoQQjUh0Kc7LHqgmGF9JE=",
   "Source": "myapp",
   "BasePath": "_content/myapp",
   "Mode": "Default",
@@ -878,6 +878,27 @@
       "OriginalItemSpec": "/home/user/itservice/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.css.map"
     },
     {
+      "Identity": "/home/user/itservice/obj/Debug/net9.0/compressed/rj5ip4k8mp-q9egs9rlws.gz",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/user/itservice/obj/Debug/net9.0/compressed/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "css/login#[.{fingerprint=q9egs9rlws}]?.css.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "/home/user/itservice/wwwroot/css/login.css",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "bd0p4xscfm",
+      "Integrity": "4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "/home/user/itservice/wwwroot/css/login.css"
+    },
+    {
       "Identity": "/home/user/itservice/obj/Debug/net9.0/compressed/rpyi86ul28-bqjiyaj88i.gz",
       "SourceId": "myapp",
       "SourceType": "Discovered",
@@ -1088,6 +1109,27 @@
       "OriginalItemSpec": "wwwroot/css/custom.css"
     },
     {
+      "Identity": "/home/user/itservice/wwwroot/css/login.css",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/user/itservice/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "css/login#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "q9egs9rlws",
+      "Integrity": "wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/css/login.css"
+    },
+    {
       "Identity": "/home/user/itservice/wwwroot/css/site.css",
       "SourceId": "myapp",
       "SourceType": "Discovered",
@@ -1191,6 +1233,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/images/factory.png"
+    },
+    {
+      "Identity": "/home/user/itservice/wwwroot/images/t_stanley-electric8916.jpg",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/user/itservice/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "images/t_stanley-electric8916#[.{fingerprint}]?.jpg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "z8ttw5vund",
+      "Integrity": "U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/images/t_stanley-electric8916.jpg"
     },
     {
       "Identity": "/home/user/itservice/wwwroot/js/site.js",
@@ -2757,6 +2820,304 @@
       ]
     },
     {
+      "Route": "css/login.css",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/rj5ip4k8mp-q9egs9rlws.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000736919676"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1356"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk="
+        }
+      ]
+    },
+    {
+      "Route": "css/login.css",
+      "AssetFile": "/home/user/itservice/wwwroot/css/login.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4281"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk="
+        }
+      ]
+    },
+    {
+      "Route": "css/login.css.gz",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/rj5ip4k8mp-q9egs9rlws.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1356"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E="
+        }
+      ]
+    },
+    {
+      "Route": "css/login.q9egs9rlws.css",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/rj5ip4k8mp-q9egs9rlws.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000736919676"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1356"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "q9egs9rlws"
+        },
+        {
+          "Name": "label",
+          "Value": "css/login.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk="
+        }
+      ]
+    },
+    {
+      "Route": "css/login.q9egs9rlws.css",
+      "AssetFile": "/home/user/itservice/wwwroot/css/login.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "4281"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "q9egs9rlws"
+        },
+        {
+          "Name": "label",
+          "Value": "css/login.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx+IahUk="
+        }
+      ]
+    },
+    {
+      "Route": "css/login.q9egs9rlws.css.gz",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/rj5ip4k8mp-q9egs9rlws.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "1356"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:10:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "q9egs9rlws"
+        },
+        {
+          "Name": "label",
+          "Value": "css/login.css.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-4clgJvKQLeX/e9p/GilDbPAGufgU2v3Hn7f8KkuZh5E="
+        }
+      ]
+    },
+    {
       "Route": "css/site.angeebt5ch.css",
       "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/srsdvfsejk-angeebt5ch.gz",
       "Selectors": [
@@ -3379,6 +3740,88 @@
         {
           "Name": "integrity",
           "Value": "sha256-5dwbLH4mgbhqrLflSl+BpII87xG9tgi0yr4zbJMCtrU="
+        }
+      ]
+    },
+    {
+      "Route": "images/t_stanley-electric8916.jpg",
+      "AssetFile": "/home/user/itservice/wwwroot/images/t_stanley-electric8916.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8903"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:13:37 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=3600, must-revalidate"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk="
+        }
+      ]
+    },
+    {
+      "Route": "images/t_stanley-electric8916.z8ttw5vund.jpg",
+      "AssetFile": "/home/user/itservice/wwwroot/images/t_stanley-electric8916.jpg",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "8903"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "image/jpeg"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Fri, 06 Feb 2026 02:13:37 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "z8ttw5vund"
+        },
+        {
+          "Name": "label",
+          "Value": "images/t_stanley-electric8916.jpg"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk="
         }
       ]
     },

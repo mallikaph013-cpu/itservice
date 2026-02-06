@@ -9,6 +9,10 @@
       "PackagePath": "staticwebassets/css/custom.css"
     },
     {
+      "Id": "/home/user/itservice/wwwroot/css/login.css",
+      "PackagePath": "staticwebassets/css/login.css"
+    },
+    {
       "Id": "/home/user/itservice/wwwroot/css/site.css",
       "PackagePath": "staticwebassets/css/site.css"
     },
@@ -27,6 +31,10 @@
     {
       "Id": "/home/user/itservice/wwwroot/images/factory.png",
       "PackagePath": "staticwebassets/images/factory.png"
+    },
+    {
+      "Id": "/home/user/itservice/wwwroot/images/t_stanley-electric8916.jpg",
+      "PackagePath": "staticwebassets/images/t_stanley-electric8916.jpg"
     },
     {
       "Id": "/home/user/itservice/wwwroot/js/site.js",

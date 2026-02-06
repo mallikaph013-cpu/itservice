@@ -556,6 +556,9 @@ namespace myapp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("CanApprove")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Department")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -567,6 +570,12 @@ namespace myapp.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDxStaff")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsITStaff")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -588,9 +597,12 @@ namespace myapp.Migrations
                         new
                         {
                             Id = 1,
+                            CanApprove = true,
                             Department = "IT",
                             EmployeeId = "admin",
                             FirstName = "แอดมิน",
+                            IsDxStaff = false,
+                            IsITStaff = false,
                             LastName = "ระบบ",
                             Password = "$2a$11$LhM27vKLaaDHqW9SJo3qoeswGqWwNQKADa6Z8CYfCg5NCk8UAFiHq",
                             Role = "Admin"

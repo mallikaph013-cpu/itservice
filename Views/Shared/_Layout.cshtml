@@ -7,7 +7,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <title>@ViewData["Title"] - myapp</title>
+    <title>@ViewData["Title"] - ASI Service</title>
     
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
@@ -31,35 +31,47 @@
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="News" asp-action="Index">News</a>
-                            </li>
+                            @if (User.IsInRole("Admin") || User.IsInRole("ITSupport"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="News" asp-action="Index">News</a>
+                                </li>
+                            }
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="ITSupport" asp-action="Index">แจ้งซ่อม</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Approval" asp-action="Index">อนุมัติรายการ</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="MyTasks" asp-action="Index">งานของฉัน</a>
-                            </li>
-                            @if (User.IsInRole("Admin") || User.IsInRole("ITSupport"))
+                            @if (User.HasClaim("CanApprove", "True"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Approval" asp-action="Index">อนุมัติรายการ</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("ITSupport"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="MyTasks" asp-action="Index">งานของฉัน</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Admin") || User.IsInRole("ITSupport") || (User.FindFirst("IsDxStaff")?.Value == "True"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="ITSupport" asp-action="WorkQueue">รับงาน</a>
                                 </li>
                             }
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    จัดการข้อมูล
-                                </a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Departments" asp-action="Index">ข้อมูลฝ่าย</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Users</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="ApprovalSequences" asp-action="Index">Approval Sequences</a></li>
-                                    <li><a class="dropdown-item" asp-area="" asp-controller="UserMenu" asp-action="Index">กำหนดสิทธิ์</a></li>
-                                </ul>
-                            </li>
+                            @if (User.IsInRole("Admin") || User.IsInRole("ITSupport"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        จัดการข้อมูล
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Departments" asp-action="Index">ข้อมูลฝ่าย</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">Users</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="ApprovalSequences" asp-action="Index">Approval Sequences</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="UserMenu" asp-action="Index">กำหนดสิทธิ์</a></li>
+                                    </ul>
+                                </li>
+                            }
                         </ul>
                         <partial name="_LoginPartial" />
                     </div>
@@ -75,7 +87,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2024 - myapp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - ASI Service - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
     

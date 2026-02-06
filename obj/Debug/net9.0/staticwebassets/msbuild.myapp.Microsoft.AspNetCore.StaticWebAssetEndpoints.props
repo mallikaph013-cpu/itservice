@@ -24,6 +24,18 @@
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"gcta2ynobx"},{"Name":"integrity","Value":"sha256-EC30sBtXlRcaQEr2FIsgax455cSdP5jSTVwbq5sAZ3I="},{"Name":"label","Value":"_content/myapp/css/custom.css"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1756"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022EC30sBtXlRcaQEr2FIsgax455cSdP5jSTVwbq5sAZ3I=\u0022"},{"Name":"Last-Modified","Value":"Mon, 26 Jan 2026 07:15:25 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/css/login.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\login.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx\u002BIahUk="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"4281"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx\u002BIahUk=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 02:10:53 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/css/login.q9egs9rlws.css">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\login.css'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"q9egs9rlws"},{"Name":"integrity","Value":"sha256-wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx\u002BIahUk="},{"Name":"label","Value":"_content/myapp/css/login.css"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"4281"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022wgP1UIQNESyoP08PlXx41Aa5rPLgfda6tc3yx\u002BIahUk=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 02:10:53 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/myapp/css/site.angeebt5ch.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\site.css'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
@@ -83,6 +95,18 @@
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"tiksuq4jfm"},{"Name":"integrity","Value":"sha256-5dwbLH4mgbhqrLflSl\u002BBpII87xG9tgi0yr4zbJMCtrU="},{"Name":"label","Value":"_content/myapp/images/factory.png"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"16566"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u00225dwbLH4mgbhqrLflSl\u002BBpII87xG9tgi0yr4zbJMCtrU=\u0022"},{"Name":"Last-Modified","Value":"Thu, 15 Jan 2026 04:19:27 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/images/t_stanley-electric8916.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\t_stanley-electric8916.jpg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"8903"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 02:13:37 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/images/t_stanley-electric8916.z8ttw5vund.jpg">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\t_stanley-electric8916.jpg'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"z8ttw5vund"},{"Name":"integrity","Value":"sha256-U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk="},{"Name":"label","Value":"_content/myapp/images/t_stanley-electric8916.jpg"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"8903"},{"Name":"Content-Type","Value":"image/jpeg"},{"Name":"ETag","Value":"\u0022U/3HdPGdVRJx1JCrUCoVUCRPpPbIPXKUsVRQeV5wbbk=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 02:13:37 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/myapp/js/site.1qnc6z9y5o.js">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\js\site.js'))</AssetFile>

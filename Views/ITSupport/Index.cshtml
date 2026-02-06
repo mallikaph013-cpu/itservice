@@ -22,9 +22,14 @@
     </div>
 }
 
-<p>
+<div class="d-flex justify-content-between mb-3">
     <a asp-action="Create" class="btn btn-primary">สร้างรายการแจ้งซ่อมใหม่</a>
-</p>
+    <form asp-action="Index" method="get" class="d-flex">
+        <input type="text" name="searchString" value="@ViewData["CurrentFilter"]" class="form-control me-2" placeholder="ค้นหา..." />
+        <button type="submit" class="btn btn-secondary">ค้นหา</button>
+        <a asp-action="Index" class="btn btn-outline-secondary ms-2">ล้าง</a>
+    </form>
+</div>
 
 <div class="table-responsive">
     <table class="table table-striped table-hover align-middle">
@@ -35,7 +40,7 @@
                 <th>@Html.DisplayNameFor(model => model.RequestType)</th>
                 <th>@Html.DisplayNameFor(model => model.Urgency)</th>
                 <th>@Html.DisplayNameFor(model => model.Status)</th>
-                <th>@Html.DisplayNameFor(model => model.CurrentApprover)</th>
+                <th>ผู้อนุมัติ</th>
                 <th>@Html.DisplayNameFor(model => model.CreatedAt)</th>
                 <th style="width: 200px;"></th>
             </tr>

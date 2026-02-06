@@ -47,7 +47,8 @@ namespace myapp.Controllers
 
                 if (approverIds != null && approverOrders != null)
                 {
-                    for (int i = 0; i < approverIds.Length; i++)
+                    int count = Math.Min(approverIds.Length, approverOrders.Length);
+                    for (int i = 0; i < count; i++)
                     {
                         if (approverIds[i] > 0 && approverOrders[i] > 0)
                         {
@@ -61,6 +62,17 @@ namespace myapp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             
+            // If we got this far, something failed, redisplay form
+            // Preserve the user's selected approvers so they don't lose their work.
+            if (approverIds != null && approverOrders != null)
+            {
+                int count = Math.Min(approverIds.Length, approverOrders.Length);
+                ViewData["SelectedApprovers"] = Enumerable.Range(0, count)
+                    .Select(i => new { UserId = approverIds[i], Order = approverOrders[i] })
+                    .Where(a => a.UserId > 0)
+                    .ToList();
+            }
+
             await PopulateViewData(approvalSequence);
             return View(approvalSequence);
         }
@@ -85,11 +97,17 @@ namespace myapp.Controllers
         // POST: ApprovalSequences/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Department,Status,CreatedBy,CreatedAt")] ApprovalSequence approvalSequence, int[] approverIds, int[] approverOrders)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Department,Status")] ApprovalSequence approvalSequence, int[] approverIds, int[] approverOrders)
         {
             if (id != approvalSequence.Id)
             {
                 return NotFound();
+            }
+
+            // Manually check for required Department as model state might be tricky with dynamic fields
+            if (string.IsNullOrEmpty(approvalSequence.Department))
+            {
+                 ModelState.AddModelError("Department", "The Department field is required.");
             }
 
             if (ModelState.IsValid)
@@ -108,7 +126,8 @@ namespace myapp.Controllers
                     sequenceToUpdate.Approvers.Clear();
                      if (approverIds != null && approverOrders != null)
                     {
-                        for (int i = 0; i < approverIds.Length; i++)
+                        int count = Math.Min(approverIds.Length, approverOrders.Length);
+                        for (int i = 0; i < count; i++)
                         {
                             if (approverIds[i] > 0 && approverOrders[i] > 0)
                             {
@@ -133,6 +152,18 @@ namespace myapp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            
+            // If we got this far, something failed, redisplay form
+            // Preserve the user's selected approvers so they don't lose their work.
+             if (approverIds != null && approverOrders != null)
+            {
+                int count = Math.Min(approverIds.Length, approverOrders.Length);
+                ViewData["SelectedApprovers"] = Enumerable.Range(0, count)
+                    .Select(i => new { UserId = approverIds[i], Order = approverOrders[i] })
+                    .Where(a => a.UserId > 0)
+                    .ToList();
+            }
+
             await PopulateViewData(approvalSequence);
             return View(approvalSequence);
         }

@@ -11,14 +11,14 @@ using myapp.Data;
 namespace myapp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260119095208_AddBomComponentToSupportRequest")]
-    partial class AddBomComponentToSupportRequest
+    [Migration("20260205041115_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.0-rc.2.24474.1");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.0-preview.3.24172.4");
 
             modelBuilder.Entity("myapp.Models.ActivityLog", b =>
                 {
@@ -64,8 +64,20 @@ namespace myapp.Migrations
                     b.Property<string>("Comments")
                         .HasColumnType("TEXT");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("SupportRequestId")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -114,8 +126,20 @@ namespace myapp.Migrations
                     b.Property<int>("ApprovalSequenceId")
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("Order")
                         .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("UserId")
                         .HasColumnType("INTEGER");
@@ -146,6 +170,9 @@ namespace myapp.Migrations
 
                     b.Property<int?>("Item")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("ItemCategory")
+                        .HasColumnType("TEXT");
 
                     b.Property<int?>("ItemQuantity")
                         .HasColumnType("INTEGER");
@@ -320,7 +347,7 @@ namespace myapp.Migrations
                         {
                             Id = 9,
                             ActionName = "Index",
-                            ControllerName = "RoleMenu",
+                            ControllerName = "UserMenu",
                             IsDropdown = false,
                             Name = "จัดการสิทธิ์เมนู",
                             ParentMenuId = 4
@@ -335,6 +362,12 @@ namespace myapp.Migrations
 
                     b.Property<string>("Content")
                         .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImagePath")
@@ -352,30 +385,15 @@ namespace myapp.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
 
-                    b.ToTable("News");
-                });
-
-            modelBuilder.Entity("myapp.Models.RoleMenu", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("MenuId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("RoleName")
-                        .IsRequired()
-                        .HasMaxLength(50)
+                    b.Property<string>("UpdatedBy")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MenuId");
-
-                    b.ToTable("RoleMenus");
+                    b.ToTable("News");
                 });
 
             modelBuilder.Entity("myapp.Models.SupportRequest", b =>
@@ -390,7 +408,13 @@ namespace myapp.Migrations
                     b.Property<string>("BOICode")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("BOIDescription")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("BaseUnit")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CommCodeTariffCode")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CostingLotSize")
@@ -434,6 +458,9 @@ namespace myapp.Migrations
                     b.Property<bool>("IsSM")
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("IsTooling")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("MRPController")
                         .HasColumnType("TEXT");
 
@@ -441,6 +468,9 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("MaterialGroup")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ModelName")
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("PerPrice")
@@ -451,6 +481,9 @@ namespace myapp.Migrations
 
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("PriceControl")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ProblemDescription")
                         .IsRequired()
@@ -465,6 +498,9 @@ namespace myapp.Migrations
                     b.Property<int?>("Program")
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("PurchasingGroup")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("RequestType")
                         .HasColumnType("INTEGER");
 
@@ -472,12 +508,14 @@ namespace myapp.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("ResponsibleUserId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int?>("SAPProblem")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("StorageLoc")
                         .HasColumnType("TEXT");
@@ -486,6 +524,12 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StorageLocBP")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("SupplierCode")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TariffCodePercentage")
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -501,6 +545,10 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CurrentApproverId");
+
+                    b.HasIndex("ResponsibleUserId");
 
                     b.ToTable("SupportRequests");
                 });
@@ -522,6 +570,9 @@ namespace myapp.Migrations
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsDxStaff")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -546,10 +597,91 @@ namespace myapp.Migrations
                             Department = "IT",
                             EmployeeId = "admin",
                             FirstName = "แอดมิน",
+                            IsDxStaff = false,
                             LastName = "ระบบ",
                             Password = "$2a$11$LhM27vKLaaDHqW9SJo3qoeswGqWwNQKADa6Z8CYfCg5NCk8UAFiHq",
                             Role = "Admin"
                         });
+                });
+
+            modelBuilder.Entity("myapp.Models.UserMenuPermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("CanCreate")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("CanDelete")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("CanEdit")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("CanRead")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("MenuId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuId");
+
+                    b.HasIndex("UserId", "MenuId")
+                        .IsUnique();
+
+                    b.ToTable("UserMenuPermissions");
+                });
+
+            modelBuilder.Entity("myapp.Models.WorkItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("WorkItems");
                 });
 
             modelBuilder.Entity("myapp.Models.ApprovalHistory", b =>
@@ -603,15 +735,38 @@ namespace myapp.Migrations
                     b.Navigation("ParentMenu");
                 });
 
-            modelBuilder.Entity("myapp.Models.RoleMenu", b =>
+            modelBuilder.Entity("myapp.Models.SupportRequest", b =>
+                {
+                    b.HasOne("myapp.Models.Approver", "CurrentApprover")
+                        .WithMany()
+                        .HasForeignKey("CurrentApproverId");
+
+                    b.HasOne("myapp.Models.User", "ResponsibleUser")
+                        .WithMany()
+                        .HasForeignKey("ResponsibleUserId");
+
+                    b.Navigation("CurrentApprover");
+
+                    b.Navigation("ResponsibleUser");
+                });
+
+            modelBuilder.Entity("myapp.Models.UserMenuPermission", b =>
                 {
                     b.HasOne("myapp.Models.Menu", "Menu")
-                        .WithMany("RoleMenus")
+                        .WithMany("UserMenuPermissions")
                         .HasForeignKey("MenuId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("myapp.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Menu");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("myapp.Models.ApprovalSequence", b =>
@@ -621,9 +776,9 @@ namespace myapp.Migrations
 
             modelBuilder.Entity("myapp.Models.Menu", b =>
                 {
-                    b.Navigation("RoleMenus");
-
                     b.Navigation("SubMenus");
+
+                    b.Navigation("UserMenuPermissions");
                 });
 
             modelBuilder.Entity("myapp.Models.SupportRequest", b =>

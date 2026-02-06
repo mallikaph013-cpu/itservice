@@ -27,41 +27,94 @@ namespace myapp.Controllers
             _hostingEnvironment = hostingEnvironment;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchString)
         {
-            var supportRequests = await _context.SupportRequests
+            var supportRequestsQuery = _context.SupportRequests
                                                 .Include(r => r.CurrentApprover)
                                                 .ThenInclude(a => a != null ? a.User : null)
-                                                .OrderByDescending(r => r.CreatedAt)
-                                                .ToListAsync();
+                                                .AsQueryable();
+
+            var isPrivilegedUser = User.IsInRole("Admin") || User.IsInRole("ITSupport");
+            if (!isPrivilegedUser)
+            {
+                var employeeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (!string.IsNullOrEmpty(employeeId))
+                {
+                    supportRequestsQuery = supportRequestsQuery.Where(r => r.EmployeeId == employeeId);
+                }
+                else
+                {
+                    return View(new List<SupportRequest>()); 
+                }
+            }
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                var upperSearchString = searchString.ToUpper();
+                supportRequestsQuery = supportRequestsQuery.Where(s => s.RequestType.ToString().ToUpper().Contains(upperSearchString) || 
+                                                              s.ProblemDescription.ToUpper().Contains(upperSearchString) || 
+                                                              s.RequesterName.ToUpper().Contains(upperSearchString));
+            }
+
+            var supportRequests = await supportRequestsQuery.OrderByDescending(r => r.CreatedAt).ToListAsync();
+            ViewData["CurrentFilter"] = searchString;
             return View(supportRequests);
         }
 
-        [Authorize(Roles = "ITSupport,Admin")]
-        public async Task<IActionResult> WorkQueue()
+        [Authorize(Policy = "CanAccessWorkQueue")]
+        public async Task<IActionResult> WorkQueue(string searchString, SupportRequestStatus? selectedStatus)
         {   
-            var supportRequests = await _context.SupportRequests
+            var statusToFilter = selectedStatus;
+
+            var supportRequestsQuery = _context.SupportRequests
                                                 .Include(r => r.CurrentApprover)
                                                 .ThenInclude(a => a != null ? a.User : null)
                                                 .Include(r => r.ResponsibleUser)
-                                                .Where(r => r.Status == SupportRequestStatus.Approved)
-                                                .OrderByDescending(r => r.CreatedAt)
-                                                .ToListAsync();
+                                                .AsQueryable();
 
-            var assignableUsers = await _context.Users.Where(u => u.Role == "ITSupport").ToListAsync();
+            if (statusToFilter.HasValue)
+            {
+                 supportRequestsQuery = supportRequestsQuery.Where(r => r.Status == statusToFilter.Value);
+            }
+
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                var upperSearchString = searchString.ToUpper();
+                supportRequestsQuery = supportRequestsQuery.Where(s => s.RequestType.ToString().ToUpper().Contains(upperSearchString) || 
+                                                              s.ProblemDescription.ToUpper().Contains(upperSearchString) || 
+                                                              s.RequesterName.ToUpper().Contains(upperSearchString));
+            }
+
+            var supportRequests = await supportRequestsQuery.OrderByDescending(r => r.CreatedAt).ToListAsync();
+
+            var assignableUsers = await _context.Users
+                                          .Where(u => u.Role == "ITSupport")
+                                          .ToListAsync();
+
+            var filterableStatuses = new List<SupportRequestStatus>
+            {
+                SupportRequestStatus.Approved,
+                SupportRequestStatus.InProgress,
+                SupportRequestStatus.Done,
+                SupportRequestStatus.Pending,
+                SupportRequestStatus.Rejected
+            };
 
             var viewModel = new WorkQueueViewModel
             {
                 SupportRequests = supportRequests,
-                AssignableUsers = assignableUsers
+                AssignableUsers = assignableUsers,
+                StatusOptions = new SelectList(filterableStatuses, selectedStatus),
+                SelectedStatus = selectedStatus
             };
-
+            
+            ViewData["CurrentFilter"] = searchString;
             return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ITSupport,Admin")]
+        [Authorize(Policy = "CanAccessWorkQueue")]
         public async Task<IActionResult> AssignResponsibleUser(int supportRequestId, int userId)
         {
             var supportRequest = await _context.SupportRequests.FindAsync(supportRequestId);
@@ -85,9 +138,10 @@ namespace myapp.Controllers
             return RedirectToAction(nameof(WorkQueue));
         }
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "ITSupport,Admin")]
+        [Authorize(Policy = "CanAccessWorkQueue")]
         public async Task<IActionResult> UpdateStatus(int id, SupportRequestStatus status)
         {
             var request = await _context.SupportRequests.FindAsync(id);
@@ -129,7 +183,6 @@ namespace myapp.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(SupportRequest supportRequest)
         {
-            // Manually re-validate EmployeeId, RequesterName, Department to ensure they are not empty
             if (string.IsNullOrEmpty(supportRequest.EmployeeId))
             {
                 ModelState.AddModelError("EmployeeId", "Employee ID is required.");
@@ -143,45 +196,17 @@ namespace myapp.Controllers
                 ModelState.AddModelError("Department", "Department is required.");
             }
 
-
             if (ModelState.IsValid)
             {
+                // Set the status to Pending and CurrentApproverId to null.
+                // The ApprovalController is responsible for determining who should see this new request.
+                supportRequest.Status = SupportRequestStatus.Pending;
+                supportRequest.CurrentApproverId = null;
+
                 supportRequest.CreatedAt = DateTime.UtcNow;
                 supportRequest.UpdatedAt = DateTime.UtcNow;
                 supportRequest.CreatedBy = User.Identity?.Name ?? "system";
                 supportRequest.UpdatedBy = User.Identity?.Name ?? "system";
-
-                if (!string.IsNullOrEmpty(supportRequest.Department))
-                {
-                    var approvalSequence = await _context.ApprovalSequences
-                                               .Include(a => a.Approvers)
-                                               .FirstOrDefaultAsync(a => a.Department.ToUpper() == supportRequest.Department.ToUpper());
-
-                    if (approvalSequence != null && approvalSequence.Approvers.Any())
-                    {
-                        var firstApprover = approvalSequence.Approvers.OrderBy(ap => ap.Order).FirstOrDefault();
-                        if (firstApprover != null)
-                        {
-                            supportRequest.Status = SupportRequestStatus.Pending;
-                            supportRequest.CurrentApproverId = firstApprover.Id;
-                        }
-                        else
-                        {
-                             supportRequest.Status = SupportRequestStatus.Approved;
-                             supportRequest.CurrentApproverId = null;
-                        }
-                    }
-                    else
-                    {
-                        supportRequest.Status = SupportRequestStatus.Approved;
-                        supportRequest.CurrentApproverId = null;
-                    }
-                }
-                else
-                {
-                     supportRequest.Status = SupportRequestStatus.Approved;
-                     supportRequest.CurrentApproverId = null;
-                }
 
                 _context.SupportRequests.Add(supportRequest);
                 await _context.SaveChangesAsync();
@@ -191,7 +216,6 @@ namespace myapp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             
-            // If we got this far, something failed, redisplay form
             return View(supportRequest);
         }
 
