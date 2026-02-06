@@ -20,12 +20,13 @@ namespace myapp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            var activeNews = await _context.News
-                                             .Where(n => n.Status == "Active")
+            // Corrected to filter for "Published" status instead of "Active"
+            var publishedNews = await _context.News
+                                             .Where(n => n.Status == "Published")
                                              .OrderByDescending(n => n.PublishedDate)
                                              .ToListAsync();
             
-            return View(activeNews);
+            return View(publishedNews);
         }
 
         public IActionResult Privacy()

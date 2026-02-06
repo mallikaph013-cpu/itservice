@@ -10,7 +10,21 @@
     <div class="card-body">
         <h5 class="card-title">สร้างรายการแจ้งซ่อมใหม่</h5>
         <form method="post" asp-action="Create" enctype="multipart/form-data">
+
+            @if (TempData["ValidationErrors"] != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    <strong>Please correct the following errors:</strong>
+                    <p>@TempData["ValidationErrors"]</p>
+                </div>
+            }
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <!-- Hidden fields for pre-filled data -->
+            <input type="hidden" asp-for="EmployeeId" />
+            <input type="hidden" asp-for="RequesterName" />
+            <input type="hidden" asp-for="Department" />
 
             <!-- Requester Info -->
             <div class="row mb-3">
@@ -185,8 +199,8 @@
             </div>
             <div class="row mb-3">
                  <div class="col-md-6">
-                    <label asp-for="Attachment" class="form-label"></label>
-                    <input asp-for="Attachment" class="form-control" />
+                    <label for="attachmentFile" class="form-label">Attachment</label>
+                    <input type="file" name="attachmentFile" class="form-control" />
                     <span asp-validation-for="Attachment" class="text-danger"></span>
                 </div>
                 <div class="col-md-6">
@@ -209,10 +223,10 @@
     }
 </style>
 
-@section Scripts {{
+@section Scripts {
     @{{await Html.RenderPartialAsync("_ValidationScriptsPartial");}}
     <script>
-        $(document).ready(function () {{
+        $(document).ready(function () {
             // --- Enum Values from C# ---
             const REQUEST_TYPE_SOFTWARE = '1'; // Enum.Software
             const PROGRAM_SAP = '0';           // Enum.SAP
@@ -229,42 +243,42 @@
             const $sapRegistrationForm = $('#sap-registration-form');
             const $bomCreationForm = $('#bom-creation-form');
 
-            function updateForm() {{
+            function updateForm() {
                 const isSoftware = $requestType.val() === REQUEST_TYPE_SOFTWARE;
                 const isSap = $program.val() === PROGRAM_SAP;
                 const sapProblemType = $sapProblem.val();
 
                 // Level 1: Program Selection
-                if (isSoftware) {{
+                if (isSoftware) {
                     $programSelection.show();
-                }} else {{
+                } else {
                     $programSelection.hide();
-                }}
+                }
 
                 // Level 2: SAP Problem Selection
-                if (isSoftware && isSap) {{
+                if (isSoftware && isSap) {
                     $sapProblemSelection.show();
-                }} else {{
+                } else {
                     $sapProblemSelection.hide();
-                }}
+                }
 
                 // Level 3: SAP Forms
                 // Only show forms if the parent selections are correct
                 $sapRegistrationForm.toggle(isSoftware && isSap && sapProblemType === SAP_PROBLEM_REGISTER);
                 $bomCreationForm.toggle(isSoftware && isSap && sapProblemType === SAP_PROBLEM_CREATE_BOM);
-            }}
+            }
 
             // --- Event Listeners ---
-            $requestType.on('change', function() {{
+            $requestType.on('change', function() {
                 $program.val('');
                 $sapProblem.val('');
                 updateForm();
-            }});
+            });
 
-            $program.on('change', function() {{
+            $program.on('change', function() {
                 $sapProblem.val('');
                 updateForm();
-            }});
+            });
 
             $sapProblem.on('change', updateForm);
 
@@ -277,7 +291,7 @@
             const hiddenBomInputs = document.getElementById('hidden-bom-inputs');
             let bomItemIndex = 0;
 
-            addBomItemBtn.addEventListener('click', function() {{
+            addBomItemBtn.addEventListener('click', function() {
                 const item = document.getElementById('bom-item').value;
                 const itemCategory = document.getElementById('bom-item-category').value;
                 const component = document.getElementById('bom-component').value;
@@ -322,10 +336,10 @@
                 document.getElementById('bom-unit').value = '';
                 document.getElementById('bom-bomunit').value = '';
                 document.getElementById('bom-sloc').value = '';
-            }});
+            });
 
-            bomItemsTbody.addEventListener('click', function(e) {{
-                if (e.target && e.target.classList.contains('remove-bom-item')) {{
+            bomItemsTbody.addEventListener('click', function(e) {
+                if (e.target && e.target.classList.contains('remove-bom-item')) {
                     const row = e.target.closest('tr');
                     const rowIndex = Array.from(bomItemsTbody.rows).indexOf(row);
                     
@@ -340,24 +354,24 @@
                     const allRemainingInputs = hiddenInputsContainer.querySelectorAll('input[name^="BomComponents"]');
                     const fields = ['Item', 'ItemCategory', 'ComponentNumber', 'Description', 'ItemQuantity', 'Unit', 'BomUnit', 'Sloc'];
                     let currentNewIndex = 0;
-                    for (let i = 0; i < allRemainingInputs.length; i += fields.length) {{
-                         for (let j = 0; j < fields.length; j++) {{
+                    for (let i = 0; i < allRemainingInputs.length; i += fields.length) {
+                         for (let j = 0; j < fields.length; j++) {
                             const input = allRemainingInputs[i + j];
-                             if(input) {{
+                             if(input) {
                                 const oldName = input.getAttribute('name');
                                 const newName = oldName.replace(/\[\d+\]/, `[${currentNewIndex}]`);
                                 input.setAttribute('name', newName);
-                             }}
-                        }}
+                             }
+                        }
                         currentNewIndex++;
-                    }}
+                    }
 
                     const tableRows = bomItemsTbody.querySelectorAll('tr');
-                    tableRows.forEach((tr, index) => {{
+                    tableRows.forEach((tr, index) => {
                         tr.cells[0].textContent = index + 1;
-                    }});
-                }}
-            }});
-        }});
+                    });
+                }
+            });
+        });
     </script>
-}}
+}

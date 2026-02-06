@@ -6,8 +6,8 @@ using myapp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Force the app to run on port 8898 to avoid all conflicts
-builder.WebHost.UseUrls("http://localhost:8898");
+// Force the app to run on port 8899 to avoid all conflicts
+builder.WebHost.UseUrls("http://localhost:8899");
 
 // Add services to the container.
 var mvcBuilder = builder.Services.AddControllersWithViews();

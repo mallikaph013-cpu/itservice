@@ -59,7 +59,7 @@ namespace myapp.Controllers
                     .ToListAsync();
 
                 requests = await _context.SupportRequests
-                    .Include(r => r.CurrentApprover).ThenInclude(a => a.User)
+                    .Include(r => r.CurrentApprover).ThenInclude(a => a!.User)
                     .Where(r => r.Status == SupportRequestStatus.Pending && !string.IsNullOrEmpty(r.Department) &&
                         (
                             (r.CurrentApproverId != null && userApproverIds.Contains(r.CurrentApproverId.Value)) ||
@@ -78,7 +78,7 @@ namespace myapp.Controllers
                     .ToListAsync();
 
                 requests = await _context.SupportRequests
-                    .Include(r => r.CurrentApprover).ThenInclude(a => a.User)
+                    .Include(r => r.CurrentApprover).ThenInclude(a => a!.User)
                     .Where(r => r.Status == viewModel.SelectedStatus && userManagedDepts.Contains(r.Department))
                     .OrderByDescending(r => r.UpdatedAt)
                     .ToListAsync();

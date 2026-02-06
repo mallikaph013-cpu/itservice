@@ -12,6 +12,8 @@ using myapp.ViewModels;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace myapp.Controllers
 {
@@ -31,7 +33,7 @@ namespace myapp.Controllers
         {
             var supportRequestsQuery = _context.SupportRequests
                                                 .Include(r => r.CurrentApprover)
-                                                .ThenInclude(a => a != null ? a.User : null)
+                                                .ThenInclude(a => a!.User)
                                                 .AsQueryable();
 
             var isPrivilegedUser = User.IsInRole("Admin") || User.IsInRole("ITSupport");
@@ -68,7 +70,7 @@ namespace myapp.Controllers
 
             var supportRequestsQuery = _context.SupportRequests
                                                 .Include(r => r.CurrentApprover)
-                                                .ThenInclude(a => a != null ? a.User : null)
+                                                .ThenInclude(a => a!.User)
                                                 .Include(r => r.ResponsibleUser)
                                                 .AsQueryable();
 
@@ -181,42 +183,134 @@ namespace myapp.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(SupportRequest supportRequest)
+        public async Task<IActionResult> Create(SupportRequest supportRequest, IFormFile? attachmentFile)
         {
-            if (string.IsNullOrEmpty(supportRequest.EmployeeId))
+            // --- Start of Conditional Validation ---
+            bool isSoftwareRequest = supportRequest.RequestType == RequestType.Software;
+            bool isSapProgram = isSoftwareRequest && supportRequest.Program == ProgramName.SAP;
+            bool isSapRegistration = isSapProgram && supportRequest.SAPProblem == SAPProblemType.NewRegistration;
+            bool isBomCreation = isSapProgram && supportRequest.SAPProblem == SAPProblemType.CreateBOM;
+
+            if (!isSoftwareRequest)
             {
-                ModelState.AddModelError("EmployeeId", "Employee ID is required.");
+                ModelState.Remove(nameof(SupportRequest.Program));
             }
-            if (string.IsNullOrEmpty(supportRequest.RequesterName))
+
+            if (!isSapProgram)
             {
-                ModelState.AddModelError("RequesterName", "Requester Name is required.");
+                ModelState.Remove(nameof(SupportRequest.SAPProblem));
             }
-            if (string.IsNullOrEmpty(supportRequest.Department))
+
+            if (!isSapRegistration)
             {
-                ModelState.AddModelError("Department", "Department is required.");
+                RemoveSapRegistrationFields(ModelState);
             }
+
+            if (!isBomCreation)
+            {
+                ModelState.Remove(nameof(SupportRequest.BomComponents));
+                 // Also remove individual items in case they are added to ModelState
+                foreach (var key in ModelState.Keys.Where(k => k.StartsWith("BomComponents[")).ToList())
+                {
+                    ModelState.Remove(key);
+                }
+            }
+            // --- End of Conditional Validation ---
 
             if (ModelState.IsValid)
             {
-                // Set the status to Pending and CurrentApproverId to null.
-                // The ApprovalController is responsible for determining who should see this new request.
-                supportRequest.Status = SupportRequestStatus.Pending;
-                supportRequest.CurrentApproverId = null;
+                try 
+                {
+                    if (attachmentFile != null && attachmentFile.Length > 0)
+                    {
+                        var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                        if (!Directory.Exists(uploadsFolder))
+                        {
+                            Directory.CreateDirectory(uploadsFolder);
+                        }
+                        var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(attachmentFile.FileName);
+                        var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            await attachmentFile.CopyToAsync(fileStream);
+                        }
+                        supportRequest.AttachmentPath = "/uploads/" + uniqueFileName; 
+                    }
 
-                supportRequest.CreatedAt = DateTime.UtcNow;
-                supportRequest.UpdatedAt = DateTime.UtcNow;
-                supportRequest.CreatedBy = User.Identity?.Name ?? "system";
-                supportRequest.UpdatedBy = User.Identity?.Name ?? "system";
+                    supportRequest.Status = SupportRequestStatus.Pending;
+                    supportRequest.CurrentApproverId = null;
 
-                _context.SupportRequests.Add(supportRequest);
-                await _context.SaveChangesAsync();
+                    supportRequest.CreatedAt = DateTime.UtcNow;
+                    supportRequest.UpdatedAt = DateTime.UtcNow;
+                    supportRequest.CreatedBy = User.Identity?.Name ?? "system";
+                    supportRequest.UpdatedBy = User.Identity?.Name ?? "system";
 
-                TempData["SuccessMessage"] = "บันทึกรายการแจ้งซ่อมสำเร็จแล้ว เอกสารจะถูกส่งไปตามลำดับการอนุมัติ";
+                    _context.SupportRequests.Add(supportRequest);
+                    await _context.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Index));
+                    TempData["SuccessMessage"] = "บันทึกรายการแจ้งซ่อมสำเร็จแล้ว เอกสารจะถูกส่งไปตามลำดับการอนุมัติ";
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    var innerExceptionMessage = ex.InnerException?.Message ?? ex.Message;
+                    TempData["ValidationErrors"] = $"Database Save Error: {innerExceptionMessage}";
+                    return View(supportRequest);
+                }
             }
-            
-            return View(supportRequest);
+            else
+            {
+                var errorsWithKeys = ModelState
+                    .Where(ms => ms.Value.Errors.Any())
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
+
+                var errorMessage = "Validation Error: ";
+                foreach (var error in errorsWithKeys)
+                {
+                    errorMessage += $"Field: '{error.Key}', Problem: '{string.Join(", ", error.Value)}'; ";
+                }
+                
+                TempData["ValidationErrors"] = errorMessage;
+                 return View(supportRequest);
+            }
+        }
+
+        private void RemoveSapRegistrationFields(ModelStateDictionary modelState)
+        {
+            modelState.Remove(nameof(SupportRequest.IsFG));
+            modelState.Remove(nameof(SupportRequest.IsSM));
+            modelState.Remove(nameof(SupportRequest.IsRM));
+            modelState.Remove(nameof(SupportRequest.IsTooling));
+            modelState.Remove(nameof(SupportRequest.ICSCode));
+            modelState.Remove(nameof(SupportRequest.EnglishMatDescription));
+            modelState.Remove(nameof(SupportRequest.MaterialGroup));
+            modelState.Remove(nameof(SupportRequest.Division));
+            modelState.Remove(nameof(SupportRequest.ProfitCenter));
+            modelState.Remove(nameof(SupportRequest.DistributionChannel));
+            modelState.Remove(nameof(SupportRequest.BOICode));
+            modelState.Remove(nameof(SupportRequest.MRPController));
+            modelState.Remove(nameof(SupportRequest.StorageLoc));
+            modelState.Remove(nameof(SupportRequest.StorageLocBP));
+            modelState.Remove(nameof(SupportRequest.StorageLocB1));
+            modelState.Remove(nameof(SupportRequest.ProductionSupervisor));
+            modelState.Remove(nameof(SupportRequest.CostingLotSize));
+            modelState.Remove(nameof(SupportRequest.ValClass));
+            modelState.Remove(nameof(SupportRequest.Plant));
+            modelState.Remove(nameof(SupportRequest.BaseUnit));
+            modelState.Remove(nameof(SupportRequest.MakerMfrPartNumber));
+            modelState.Remove(nameof(SupportRequest.Price));
+            modelState.Remove(nameof(SupportRequest.PerPrice));
+            modelState.Remove(nameof(SupportRequest.ModelName));
+            modelState.Remove(nameof(SupportRequest.BOIDescription));
+            modelState.Remove(nameof(SupportRequest.PurchasingGroup));
+            modelState.Remove(nameof(SupportRequest.CommCodeTariffCode));
+            modelState.Remove(nameof(SupportRequest.TariffCodePercentage));
+            modelState.Remove(nameof(SupportRequest.PriceControl));
+            modelState.Remove(nameof(SupportRequest.SupplierCode));
         }
 
         public async Task<IActionResult> Details(int? id)
@@ -228,7 +322,7 @@ namespace myapp.Controllers
 
             var request = await _context.SupportRequests
                 .Include(r => r.CurrentApprover)
-                .ThenInclude(a => a != null ? a.User : null)
+                .ThenInclude(a => a!.User)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (request == null)
@@ -238,7 +332,6 @@ namespace myapp.Controllers
             return View(request);
         }
 
-        // GET: ITSupport/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -251,20 +344,13 @@ namespace myapp.Controllers
             {
                 return NotFound();
             }
-            
-            if (supportRequest.Status != SupportRequestStatus.Pending)
-            {
-                TempData["ErrorMessage"] = "ไม่สามารถแก้ไขรายการที่อนุมัติแล้วได้";
-                return RedirectToAction(nameof(Index));
-            }
 
             return View(supportRequest);
         }
 
-        // POST: ITSupport/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, SupportRequest supportRequest)
+        public async Task<IActionResult> Edit(int id, SupportRequest supportRequest, IFormFile? attachmentFile)
         {
             if (id != supportRequest.Id)
             {
@@ -278,15 +364,35 @@ namespace myapp.Controllers
                 return NotFound();
             }
 
-            if (requestToUpdate.Status != SupportRequestStatus.Pending)
+            // Remove validation for conditionally hidden fields
+            if (supportRequest.RequestType != RequestType.Software)
             {
-                TempData["ErrorMessage"] = "ไม่สามารถแก้ไขรายการที่อนุมัติแล้วได้";
-                return RedirectToAction(nameof(Index));
+                ModelState.Remove(nameof(SupportRequest.Program));
+                ModelState.Remove(nameof(SupportRequest.SAPProblem));
+            }
+            else if (supportRequest.Program != ProgramName.SAP)
+            {
+                ModelState.Remove(nameof(SupportRequest.SAPProblem));
             }
 
             if (ModelState.IsValid)
             {
-                // Manually update the properties of the tracked entity
+                 if (attachmentFile != null && attachmentFile.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(_hostingEnvironment.WebRootPath, "uploads");
+                    if (!Directory.Exists(uploadsFolder))
+                    {
+                        Directory.CreateDirectory(uploadsFolder);
+                    }
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(attachmentFile.FileName);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await attachmentFile.CopyToAsync(fileStream);
+                    }
+                    requestToUpdate.AttachmentPath = "/uploads/" + uniqueFileName; 
+                }
+
                 requestToUpdate.EmployeeId = supportRequest.EmployeeId;
                 requestToUpdate.RequesterName = supportRequest.RequesterName;
                 requestToUpdate.Department = supportRequest.Department;
@@ -295,13 +401,13 @@ namespace myapp.Controllers
                 requestToUpdate.SAPProblem = supportRequest.SAPProblem;
                 requestToUpdate.ProblemDescription = supportRequest.ProblemDescription;
                 requestToUpdate.Urgency = supportRequest.Urgency;
-                // Copy other editable fields as necessary, omitting fields that shouldn't be changed.
 
                 requestToUpdate.UpdatedAt = DateTime.UtcNow;
                 requestToUpdate.UpdatedBy = User.Identity?.Name ?? "system";
 
                 try
                 {
+                    _context.Update(requestToUpdate);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -309,36 +415,23 @@ namespace myapp.Controllers
                     if (!_context.SupportRequests.Any(e => e.Id == supportRequest.Id))
                     {
                         return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    } else { throw; }
                 }
                 TempData["SuccessMessage"] = "แก้ไขรายการแจ้งซ่อมสำเร็จแล้ว";
                 return RedirectToAction(nameof(Index));
             }
-            // If model state is invalid, return the view with the data entered by the user.
             return View(supportRequest);
         }
 
-        // GET: ITSupport/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) { return NotFound(); }
 
             var supportRequest = await _context.SupportRequests
-                .Include(s => s.CurrentApprover)
-                .ThenInclude(a => a != null ? a.User : null)
+                .Include(s => s.CurrentApprover).ThenInclude(a => a!.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (supportRequest == null)
-            {
-                return NotFound();
-            }
+            if (supportRequest == null) { return NotFound(); }
 
             if (supportRequest.Status != SupportRequestStatus.Pending)
             {
@@ -349,16 +442,12 @@ namespace myapp.Controllers
             return View(supportRequest);
         }
 
-        // POST: ITSupport/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var supportRequest = await _context.SupportRequests.FindAsync(id);
-             if (supportRequest == null) // Add null check
-            {
-                return NotFound();
-            }
+             if (supportRequest == null) { return NotFound(); }
 
             if (supportRequest.Status != SupportRequestStatus.Pending)
             {

@@ -8,28 +8,28 @@ namespace myapp.Models
 
         [Required]
         [Display(Name = "รหัสพนักงาน")]
-        public string EmployeeId { get; set; }
+        public string EmployeeId { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "ชื่อจริง")]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "นามสกุล")]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = string.Empty;
 
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "รหัสผ่าน")]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "แผนก")]
-        public string Department { get; set; }
+        public string Department { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "ตำแหน่ง")]
-        public string Role { get; set; }
+        public string Role { get; set; } = string.Empty;
 
         [Display(Name = "เป็นเจ้าหน้าที่ IT")]
         public bool IsITStaff { get; set; } 

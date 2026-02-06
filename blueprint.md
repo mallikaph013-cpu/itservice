@@ -1,66 +1,67 @@
+# ASI Service Blueprint
 
-# Blueprint: IT Service Request App
+## 1. Overview
 
-## 1. Purpose & Capabilities
+ASI Service is a comprehensive internal IT support ticketing and company news portal. It allows users to submit IT support requests, tracks the request status through an approval workflow, and provides a work queue for IT staff. A key feature is the text-based news management system, which allows authorized administrators to create, edit, delete, and publish company news and announcements. These updates are displayed to all users on the home page and on a dedicated news management page.
 
-This application is an internal tool for the IT department to manage service requests from various departments. It allows IT staff to track the status of each request, assign tasks, and manage user permissions for accessing different parts of the application. The system has been updated to support a more granular, user-level permission model instead of a role-based one.
+## 2. Project Outline & Features
 
----
+This section documents the project's structure, design, and implemented features from the initial version to the current one.
 
-## 2. Project Outline & Design
+### 2.1. Core Architecture
 
-### 2.1. Core Features
+*   **.NET 6 / ASP.NET Core MVC:** Built on the Model-View-Controller pattern.
+*   **Entity Framework Core & SQLite:** For database operations and local data storage.
+*   **ASP.NET Core Identity:** Manages user authentication and role-based authorization (Admin, ITSupport).
+*   **Dependency Injection:** Manages services like `ApplicationDbContext`.
 
-*   **User Authentication:** Users can log in with predefined credentials.
-*   **User-Based Access Control:** The application uses a user-based system to control access to different menus and features, allowing for fine-grained control over individual user permissions.
-*   **Permission Management:** A dedicated page for Admins to manage menu access permissions for each user individually, with granular control (Read, Create, Edit, Delete).
-*   **Navigation Menu:** A dynamic navigation bar that displays menu items based on the logged-in user's specific permissions.
-*   **IT Support Request Tracking:** A feature for creating, viewing, and managing IT support requests. This includes a work queue for IT staff and an approval workflow.
-*   **Approval Workflow Management:** Admins can define multi-step approval sequences for different departments.
-*   **Dynamic Forms:** The IT Support request form uses cascading dropdowns to dynamically show and hide relevant form sections based on user input, providing a streamlined user experience.
+### 2.2. Design & Styling
 
-### 2.2. Technology Stack
+*   **Bootstrap 5:** Primary CSS framework.
+*   **Custom Fonts & Icons:** Uses 'Poppins' from Google Fonts and Bootstrap Icons for a modern UI.
+*   **Scoped CSS:** For component-specific styles.
+*   **Layout & Navigation:** Consistent navigation via `_Layout.cshtml`.
+*   **UI Components:**
+    *   **Dynamic News Carousel:** Features the 3 most recent news articles with images on the home and news pages. *Note: The ability to add new images has been removed.*
+    *   **Rich Text Editor (CKEditor):** For creating and editing news content. The inline image upload feature within the editor is still present but no longer saves the image to the database record.
+    *   **Cards, Tables, Badges, Forms:** Standard UI components for data presentation and interaction.
 
-*   **Backend:** ASP.NET Core, C#, Entity Framework Core
-*   **Frontend:** Razor Pages, Tailwind CSS, JavaScript, jQuery
-*   **Database:** SQLite (for development)
+### 2.3. Implemented Features
 
-### 2.3. Project Structure
+*   **News Management (Text-Only):**
+    *   The `/News/Index` page serves as a full-featured **News Management Dashboard** for authorized users (Admin, ITSupport).
+    *   The system is now purely **text-based**, supporting only Title, Content, and Status.
+    *   **CRUD Operations:** Admins can Create, Read, Update, and Delete news articles.
+    *   **Status Indicators:** Each news card clearly displays its status ("Published" or "Draft").
+    *   **Security:** Actions are secured using `[Bind]` attribute to prevent over-posting attacks.
+*   **Support Request Management & Workflow:**
+    *   Ticketing system with status tracking and work queue.
+*   **Reporting:**
+    *   Various reports on support tickets and staff workload.
 
-*   **/Controllers:** Handles incoming HTTP requests and application logic (e.g., `UserMenuController`, `ITSupportController`).
-*   **/Data:** Contains the `ApplicationDbContext`, migrations, and data seeding logic.
-*   **/Models:** Defines the data structures (entities) of the application (e.g., `User`, `Menu`, `UserMenuPermission`, `SupportRequest`).
-*   **/ViewModels:** Provides data shapes specifically for the views (e.g., `UserMenuViewModel`).
-*   **/Services:** Contains business logic services (e.g., `NavigationService`).
-*   **/Views:** Contains the Razor templates for the UI.
-*   **/wwwroot:** Static assets (CSS, JS, images).
+## 4. Current Change Plan: Remove Image Functionality from News
 
-### 2.4. Visual Design
+This section outlines the plan and steps taken for the most recent request.
 
-*   **Layout:** A clean, professional layout using Tailwind CSS.
-*   **Navigation:** A top navigation bar for primary menus.
-*   **Tables & Forms:** Styled for clarity and ease of use, providing a modern and intuitive user experience.
-*   **Permissions UI:** Permissions are managed on a per-user basis, with a clear table layout showing each user and their corresponding access rights for each menu item.
+### 4.1. User Request
 
----
+The user requested to completely remove the image upload feature ("รูปภาพประกอบ") from the news creation and editing process.
 
-## 3. Current Task: Final Fix for Cascading Dropdown and JS Errors
+### 4.2. Plan & Execution
 
-### 3.1. Goal
+1.  **Frontend (Views):**
+    *   Modified `Views/News/Create.cshtml` to remove the file input field and the form's `enctype`.
+    *   Modified `Views/News/Edit.cshtml` to remove the file input field, the current image display, and the form's `enctype`.
+2.  **Backend (Controller):**
+    *   Refactored `NewsController.cs` comprehensively.
+    *   Removed all logic for handling `ImageFile` and `ImagePath` from the `Create`, `Edit`, and `DeleteConfirmed` actions.
+    *   Removed the unused helper methods `UploadFile` and `DeleteFile`.
+    *   Removed the `UploadImage` action that was used by CKEditor.
+    *   Removed the unused `IWebHostEnvironment` dependency from the constructor.
+    *   Secured `Create` and `Edit` actions with the `[Bind]` attribute to protect against over-posting.
+3.  **Verification:**
+    *   Ran `dotnet build` to confirm the changes resulted in a successful build with no errors.
 
-To resolve all outstanding JavaScript errors on the "Create IT Service Request" form, ensuring the cascading dropdowns work flawlessly and all page resources load correctly.
+### 4.3. Result
 
-### 3.2. Implementation Steps
-
-1.  **Error Identification (from Console):**
-    *   `Uncaught SyntaxError: Unexpected token '+'`: A fatal JavaScript syntax error was identified in the BOM table logic within `Create.cshtml`. This was caused by incorrect use of template literal syntax (`${{...}}`) in a standard string context.
-    *   `404 (Not Found)` for `myapp.styles.css` and `jquery.validate.*.js`: These errors were symptomatic of the main syntax error. The fatal JS error halted page rendering, preventing the correct paths for these resources from being injected.
-
-2.  **Corrective Actions in `Create.cshtml`:**
-    *   **Fixed Syntax Error:** The incorrect template literal syntax in the BOM table's JavaScript section was removed. The code was corrected to use standard string concatenation (`'...' + variable + '...'`).
-    *   **Optimized jQuery Logic:** The `updateForm` function was further refined using jQuery's `.toggle(boolean)` function for showing and hiding form sections. This provides a cleaner, more readable, and more efficient implementation than separate `.show()` and `.hide()` calls.
-
-3.  **Result:**
-    *   With the fatal syntax error resolved, the browser can now correctly parse and execute all JavaScript on the page.
-    *   The cascading dropdown logic, managed by jQuery, now functions as intended.
-    *   The secondary `404 Not Found` errors are resolved as the page can now complete its render cycle and correctly reference the static assets.
+The news management system is now a purely text-based feature. The user interface for creating and editing news is simpler, and the backend code is cleaner, more secure, and free of unnecessary complexity related to file handling.

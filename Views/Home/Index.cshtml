@@ -12,11 +12,50 @@
         if (plainText.Length <= length) return plainText;
         return plainText.Substring(0, length) + "...";
     };
+
+    // Get the latest 3 news items with images for the banner
+    var bannerNews = Model.Where(n => !string.IsNullOrEmpty(n.ImagePath)).OrderByDescending(n => n.PublishedDate).Take(3).ToList();
 }
 
-<div class="news-banner d-flex flex-column justify-content-center align-items-center text-white text-center">
-    
-</div>
+@if (bannerNews.Any())
+{
+    <div id="newsBannerCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            @for (int i = 0; i < bannerNews.Count; i++)
+            {
+                <button type="button" data-bs-target="#newsBannerCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="true" aria-label="Slide @(i + 1)"></button>
+            }
+        </div>
+        <div class="carousel-inner">
+            @for (int i = 0; i < bannerNews.Count; i++)
+            {
+                var item = bannerNews[i];
+                <div class="carousel-item @(i == 0 ? "active" : "")" style="background-image: url('@item.ImagePath')">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h2 class="display-5 fw-bold">@item.Title</h2>
+                        <p class="lead">@TruncateHtml(item.Content, 150)</p>
+                        <a asp-controller="News" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-lg">อ่านต่อ &raquo;</a>
+                    </div>
+                </div>
+            }
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#newsBannerCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#newsBannerCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+}
+else
+{
+    // Fallback for when there are no news with images
+    <div class="news-banner-placeholder d-flex flex-column justify-content-center align-items-center text-white text-center">
+    </div>
+}
+
 
 <div class="container mt-5 mb-5">
     <div class="row">
@@ -31,6 +70,7 @@
         else
         {
             <div class="col-12">
+                <h2 class="mb-4 text-center fw-bold">ข่าวสารและกิจกรรมล่าสุด</h2>
                 @foreach (var item in Model)
                 {
                     <div class="card news-card mb-4 shadow">
@@ -66,7 +106,27 @@
 @section Styles {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <style>
-        .news-banner {
+        .carousel-item {
+            height: 60vh;
+            min-height: 400px;
+            background-size: cover;
+            background-position: center center;
+        }
+
+        .carousel-caption {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 3rem 2rem 2rem;
+            text-align: left;
+        }
+        
+        .carousel-caption .display-5 {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+
+        .news-banner-placeholder {
             height: 50vh;
             background-image: url('/images/Banner ASI.png');
             background-size: cover;
@@ -83,6 +143,7 @@
             transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             border: none;
             overflow: hidden;
+            border-radius: 0.5rem;
         }
 
         .news-card:hover {

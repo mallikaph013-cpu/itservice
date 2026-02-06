@@ -15,14 +15,14 @@
     <StaticWebAssetEndpoint Include="_content/myapp/css/custom.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\custom.css'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-EC30sBtXlRcaQEr2FIsgax455cSdP5jSTVwbq5sAZ3I="}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"1756"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022EC30sBtXlRcaQEr2FIsgax455cSdP5jSTVwbq5sAZ3I=\u0022"},{"Name":"Last-Modified","Value":"Mon, 26 Jan 2026 07:15:25 GMT"}]]]></ResponseHeaders>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-HXno24\u002BqyeiilD7EGpoAUOKYaqmhGYTODcDH1w81dw4="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"1914"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022HXno24\u002BqyeiilD7EGpoAUOKYaqmhGYTODcDH1w81dw4=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 04:31:33 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
-    <StaticWebAssetEndpoint Include="_content/myapp/css/custom.gcta2ynobx.css">
+    <StaticWebAssetEndpoint Include="_content/myapp/css/custom.jw9z2yafxp.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\custom.css'))</AssetFile>
       <Selectors><![CDATA[[]]]></Selectors>
-      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"gcta2ynobx"},{"Name":"integrity","Value":"sha256-EC30sBtXlRcaQEr2FIsgax455cSdP5jSTVwbq5sAZ3I="},{"Name":"label","Value":"_content/myapp/css/custom.css"}]]]></EndpointProperties>
-      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1756"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022EC30sBtXlRcaQEr2FIsgax455cSdP5jSTVwbq5sAZ3I=\u0022"},{"Name":"Last-Modified","Value":"Mon, 26 Jan 2026 07:15:25 GMT"}]]]></ResponseHeaders>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"jw9z2yafxp"},{"Name":"integrity","Value":"sha256-HXno24\u002BqyeiilD7EGpoAUOKYaqmhGYTODcDH1w81dw4="},{"Name":"label","Value":"_content/myapp/css/custom.css"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"1914"},{"Name":"Content-Type","Value":"text/css"},{"Name":"ETag","Value":"\u0022HXno24\u002BqyeiilD7EGpoAUOKYaqmhGYTODcDH1w81dw4=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 04:31:33 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/myapp/css/login.css">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\css\login.css'))</AssetFile>
@@ -95,6 +95,30 @@
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"tiksuq4jfm"},{"Name":"integrity","Value":"sha256-5dwbLH4mgbhqrLflSl\u002BBpII87xG9tgi0yr4zbJMCtrU="},{"Name":"label","Value":"_content/myapp/images/factory.png"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"16566"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u00225dwbLH4mgbhqrLflSl\u002BBpII87xG9tgi0yr4zbJMCtrU=\u0022"},{"Name":"Last-Modified","Value":"Thu, 15 Jan 2026 04:19:27 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/images/news/0eea64b1-9fe8-4515-aae8-740dd5fcd32b_ChatGPT Image Feb 6, 2026, 03_54_48 PM.i34z2bfb7k.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\news\0eea64b1-9fe8-4515-aae8-740dd5fcd32b_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"i34z2bfb7k"},{"Name":"integrity","Value":"sha256-ggKpFtV/3Gi1cabpHMNQH2/i32LjJUig9snkjz2st3o="},{"Name":"label","Value":"_content/myapp/images/news/0eea64b1-9fe8-4515-aae8-740dd5fcd32b_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"2705920"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022ggKpFtV/3Gi1cabpHMNQH2/i32LjJUig9snkjz2st3o=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 08:59:59 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/images/news/0eea64b1-9fe8-4515-aae8-740dd5fcd32b_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\news\0eea64b1-9fe8-4515-aae8-740dd5fcd32b_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-ggKpFtV/3Gi1cabpHMNQH2/i32LjJUig9snkjz2st3o="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"2705920"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022ggKpFtV/3Gi1cabpHMNQH2/i32LjJUig9snkjz2st3o=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 08:59:59 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/images/news/5845aa01-1bee-4e55-a78f-65cea046ffa0_ChatGPT Image Feb 6, 2026, 03_54_48 PM.i34z2bfb7k.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\news\5845aa01-1bee-4e55-a78f-65cea046ffa0_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"i34z2bfb7k"},{"Name":"integrity","Value":"sha256-ggKpFtV/3Gi1cabpHMNQH2/i32LjJUig9snkjz2st3o="},{"Name":"label","Value":"_content/myapp/images/news/5845aa01-1bee-4e55-a78f-65cea046ffa0_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"2705920"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022ggKpFtV/3Gi1cabpHMNQH2/i32LjJUig9snkjz2st3o=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 08:55:03 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/images/news/5845aa01-1bee-4e55-a78f-65cea046ffa0_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\news\5845aa01-1bee-4e55-a78f-65cea046ffa0_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-ggKpFtV/3Gi1cabpHMNQH2/i32LjJUig9snkjz2st3o="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=3600, must-revalidate"},{"Name":"Content-Length","Value":"2705920"},{"Name":"Content-Type","Value":"image/png"},{"Name":"ETag","Value":"\u0022ggKpFtV/3Gi1cabpHMNQH2/i32LjJUig9snkjz2st3o=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 08:55:03 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/myapp/images/t_stanley-electric8916.jpg">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\images\t_stanley-electric8916.jpg'))</AssetFile>
@@ -647,6 +671,30 @@
       <Selectors><![CDATA[[]]]></Selectors>
       <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"notf2xhcfb"},{"Name":"integrity","Value":"sha256-\u002BUW802wgVfnjaSbdwyHLlU7AVplb0WToOlvN1CnzIac="},{"Name":"label","Value":"_content/myapp/lib/bootstrap/dist/js/bootstrap.js"}]]]></EndpointProperties>
       <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"145401"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022\u002BUW802wgVfnjaSbdwyHLlU7AVplb0WToOlvN1CnzIac=\u0022"},{"Name":"Last-Modified","Value":"Thu, 15 Jan 2026 04:01:38 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.48y08845bh.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"48y08845bh"},{"Name":"integrity","Value":"sha256-RFWFWIIPsjB4DucR4jqwxTWw13ZmtI\u002Bs6tVR2LJmZXk="},{"Name":"label","Value":"_content/myapp/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"5831"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022RFWFWIIPsjB4DucR4jqwxTWw13ZmtI\u002Bs6tVR2LJmZXk=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 05:49:19 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\jquery-validation-unobtrusive\jquery.validate.unobtrusive.min.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-RFWFWIIPsjB4DucR4jqwxTWw13ZmtI\u002Bs6tVR2LJmZXk="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"5831"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022RFWFWIIPsjB4DucR4jqwxTWw13ZmtI\u002Bs6tVR2LJmZXk=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 05:49:19 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/lib/jquery-validation/jquery.validate.min.b7iojwaux1.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\jquery-validation\jquery.validate.min.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"fingerprint","Value":"b7iojwaux1"},{"Name":"integrity","Value":"sha256-JwUksNJ6/R07ZiLRoXbGeNrtlFZMFDKX4hemPiHOmCA="},{"Name":"label","Value":"_content/myapp/lib/jquery-validation/jquery.validate.min.js"}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"max-age=31536000, immutable"},{"Name":"Content-Length","Value":"24601"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022JwUksNJ6/R07ZiLRoXbGeNrtlFZMFDKX4hemPiHOmCA=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 05:49:19 GMT"}]]]></ResponseHeaders>
+    </StaticWebAssetEndpoint>
+    <StaticWebAssetEndpoint Include="_content/myapp/lib/jquery-validation/jquery.validate.min.js">
+      <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\jquery-validation\jquery.validate.min.js'))</AssetFile>
+      <Selectors><![CDATA[[]]]></Selectors>
+      <EndpointProperties><![CDATA[[{"Name":"integrity","Value":"sha256-JwUksNJ6/R07ZiLRoXbGeNrtlFZMFDKX4hemPiHOmCA="}]]]></EndpointProperties>
+      <ResponseHeaders><![CDATA[[{"Name":"Accept-Ranges","Value":"bytes"},{"Name":"Cache-Control","Value":"no-cache"},{"Name":"Content-Length","Value":"24601"},{"Name":"Content-Type","Value":"text/javascript"},{"Name":"ETag","Value":"\u0022JwUksNJ6/R07ZiLRoXbGeNrtlFZMFDKX4hemPiHOmCA=\u0022"},{"Name":"Last-Modified","Value":"Fri, 06 Feb 2026 05:49:19 GMT"}]]]></ResponseHeaders>
     </StaticWebAssetEndpoint>
     <StaticWebAssetEndpoint Include="_content/myapp/lib/jquery/dist/jquery.min.js">
       <AssetFile>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\staticwebassets\lib\jquery\dist\jquery.min.js'))</AssetFile>

@@ -13,12 +13,16 @@
 body {
     background-color: var(--background-color);
     color: var(--secondary-color);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Poppins', sans-serif;
 }
 
 .navbar {
     background-color: var(--card-background-color);
     box-shadow: var(--box-shadow);
+}
+
+.bg-primary {
+    background-color: var(--primary-color) !important;
 }
 
 .btn-primary {
@@ -32,26 +36,26 @@ body {
     border-color: var(--primary-hover-color);
 }
 
-.btn-success {
-    background-color: #4CAF50;
-    border-color: #4CAF50;
+.btn-approve {
+    background-color: #FFA726; /* Lighter orange for approval */
+    border-color: #FFA726;
+    color: white;
     transition: background-color var(--transition-speed);
 }
 
-.btn-success:hover {
-    background-color: #66BB6A;
-    border-color: #66BB6A;
+.btn-approve:hover {
+    background-color: #FFB74D;
 }
 
-.btn-danger {
-    background-color: #F44336;
-    border-color: #F44336;
+.btn-reject {
+    background-color: #D84315; /* Deeper orange for rejection */
+    border-color: #D84315;
+    color: white;
     transition: background-color var(--transition-speed);
 }
 
-.btn-danger:hover {
-    background-color: #EF5350;
-    border-color: #EF5350;
+.btn-reject:hover {
+    background-color: #E64A19;
 }
 
 .table {
@@ -74,4 +78,8 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
     color: var(--primary-color);
+}
+
+.text-orange {
+    color: var(--primary-color) !important;
 }

@@ -63,8 +63,6 @@
                 <span asp-validation-for="SAPProblem" class="text-danger"></span>
             </div>
 
-            <!-- Other forms related to SAP/BOM will go here... -->
-
             <!-- Problem Description, Attachment, Urgency -->
             <div class="mb-3">
                 <label asp-for="ProblemDescription" class="form-label"></label>
@@ -73,9 +71,17 @@
             </div>
             <div class="row mb-3">
                  <div class="col-md-6">
-                    <label asp-for="Attachment" class="form-label"></label>
-                    <input asp-for="Attachment" class="form-control" />
-                    <span asp-validation-for="Attachment" class="text-danger"></span>
+                    <label asp-for="AttachmentPath" class="form-label">ไฟล์แนบปัจจุบัน</label>
+                    @if (!string.IsNullOrEmpty(Model.AttachmentPath))
+                    {
+                        <a href="@Url.Content(Model.AttachmentPath)" target="_blank">ดูไฟล์แนบ</a>
+                    }
+                    else
+                    {
+                        <p class="form-control-static">ไม่มีไฟล์แนบ</p>
+                    }
+                    <label class="form-label mt-2">อัปโหลดไฟล์ใหม่ (ถ้ามี)</label>
+                    <input type="file" name="attachmentFile" class="form-control" />
                 </div>
                 <div class="col-md-6">
                     <label asp-for="Urgency" class="form-label"></label>
@@ -96,7 +102,6 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // JS logic from Create.cshtml to show/hide sections
             const requestTypeSelect = document.getElementById('RequestType');
             const programSelect = document.getElementById('Program');
             const sapProblemSelect = document.getElementById('SAPProblem');
@@ -107,20 +112,24 @@
                 const selectedRequestType = requestTypeSelect.options[requestTypeSelect.selectedIndex].text.trim();
                 const selectedProgram = programSelect.options[programSelect.selectedIndex].text.trim();
 
+                // Reset by hiding and disabling first
                 programSelectionDiv.style.display = 'none';
+                programSelect.disabled = true;
                 sapProblemSelectionDiv.style.display = 'none';
+                sapProblemSelect.disabled = true;
 
                 if (selectedRequestType === 'Software') {
                     programSelectionDiv.style.display = 'block';
+                    programSelect.disabled = false; // Enable when shown
                     if (selectedProgram === 'SAP') {
                         sapProblemSelectionDiv.style.display = 'block';
+                        sapProblemSelect.disabled = false; // Enable when shown
                     }
                 }
             }
 
             requestTypeSelect.addEventListener('change', toggleSections);
             programSelect.addEventListener('change', toggleSections);
-            sapProblemSelect.addEventListener('change', toggleSections);
 
             // Initial check to set the correct form state based on model data
             toggleSections();

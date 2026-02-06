@@ -1,33 +1,203 @@
 @model IEnumerable<myapp.Models.News>
+@using System.Text.RegularExpressions
 
 @{
-    Layout = "_Layout";
-    ViewData["Title"] = "News";
+    ViewData["Title"] = "จัดการข่าวสาร";
+
+    // Helper function to truncate text and remove HTML
+    Func<string, int, string> TruncateHtml = (html, length) => {
+        if (string.IsNullOrEmpty(html)) return "";
+        string plainText = Regex.Replace(html, "<.*?>", String.Empty);
+        plainText = System.Net.WebUtility.HtmlDecode(plainText);
+        if (plainText.Length <= length) return plainText;
+        return plainText.Substring(0, length) + "...";
+    };
+
+    var bannerNews = Model.Where(n => !string.IsNullOrEmpty(n.ImagePath)).OrderByDescending(n => n.PublishedDate).Take(3).ToList();
 }
 
-<div class="container px-4 py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h2">Latest News</h1>
-        <a asp-action="Create" class="btn btn-primary">Create New</a>
-    </div>
-
-    <div class="row g-4">
-        @foreach (var item in Model)
+@functions {
+    string GetStatusColor(string status)
+    {
+        return status switch
         {
-            <div class="col-lg-12">
-                <div class="card card-dashboard h-100">
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">@Html.DisplayFor(modelItem => item.Title)</h5>
-                        <p class="card-subtitle mb-2 text-muted">Published on: @item.PublishedDate.ToString("dd January yyyy")</p>
-                        <p class="card-text flex-grow-1">@Html.DisplayFor(modelItem => item.Content)</p>
-                        <div class="mt-auto">
-                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">Read more &raquo;</a>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Delete</a>
-                        </div>
+            "Published" => "success",
+            "Draft" => "secondary",
+            _ => "dark",
+        };
+    }
+}
+
+@if (bannerNews.Any())
+{
+    <div id="newsBannerCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            @for (int i = 0; i < bannerNews.Count; i++)
+            {
+                <button type="button" data-bs-target="#newsBannerCarousel" data-bs-slide-to="@i" class="@(i == 0 ? "active" : "")" aria-current="true" aria-label="Slide @(i + 1)"></button>
+            }
+        </div>
+        <div class="carousel-inner">
+            @for (int i = 0; i < bannerNews.Count; i++)
+            {
+                var item = bannerNews[i];
+                <div class="carousel-item @(i == 0 ? "active" : "")" style="background-image: url('@item.ImagePath')">
+                    <div class="carousel-caption d-none d-md-block">
+                        <h2 class="display-5 fw-bold">@item.Title</h2>
+                        <p class="lead">@TruncateHtml(item.Content, 150)</p>
+                        <a asp-controller="News" asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary btn-lg">อ่านต่อ &raquo;</a>
                     </div>
                 </div>
+            }
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#newsBannerCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#newsBannerCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+}
+else
+{
+    <div class="news-banner-placeholder d-flex flex-column justify-content-center align-items-center text-white text-center">
+    </div>
+}
+
+<div class="container mt-5 mb-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">รายการข่าวทั้งหมด</h2>
+        @if (User.IsInRole("Admin") || User.IsInRole("ITSupport"))
+        {
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle-fill me-2"></i>สร้างข่าวใหม่
+            </a>
+        }
+    </div>
+
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center mt-5">
+                <i class="bi bi-newspaper" style="font-size: 4rem; color: #6c757d;"></i>
+                <h3 class="mt-3">ยังไม่มีข่าวสาร</h3>
+                <p class="lead text-muted">เชิญสร้างข่าวใหม่โดยกดปุ่ม "สร้างข่าวใหม่" ด้านบน</p>
+            </div>
+        }
+        else
+        {
+            <div class="col-12">
+                @foreach (var item in Model)
+                {
+                    <div class="card news-card mb-4 shadow">
+                        <div class="row g-0">
+                            @if (!string.IsNullOrEmpty(item.ImagePath))
+                            {
+                                <div class="col-md-4">
+                                    <a asp-controller="News" asp-action="Details" asp-route-id="@item.Id">
+                                        <img src="@item.ImagePath" class="news-card-img" alt="@item.Title">
+                                    </a>
+                                </div>
+                            }
+                            <div class="col-md-@(string.IsNullOrEmpty(item.ImagePath) ? "12" : "8")">
+                                <div class="card-body d-flex flex-column h-100">
+                                    <h3 class="card-title mb-2">@item.Title</h3>
+                                    <p class="card-text">
+                                        <small class="text-muted">เผยแพร่เมื่อ: @item.PublishedDate.ToString("dd MMMM yyyy")</small>
+                                        <br>
+                                        <small class="text-muted">สถานะ: <span class="badge bg-@GetStatusColor(item.Status)">@item.Status</span></small>
+                                    </p>
+                                    <p class="card-text flex-grow-1">
+                                        @TruncateHtml(item.Content, 180)
+                                    </p>
+                                    <div class="mt-auto d-flex justify-content-end align-items-center">
+                                        <a asp-controller="News" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary">อ่านต่อ</a>
+                                        @if (User.IsInRole("Admin") || User.IsInRole("ITSupport"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary ms-2">แก้ไข</a>
+                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger ms-2">ลบ</a>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         }
     </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <style>
+        .carousel-item {
+            height: 60vh;
+            min-height: 400px;
+            background-size: cover;
+            background-position: center center;
+        }
+
+        .carousel-caption {
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 3rem 2rem 2rem;
+            text-align: left;
+        }
+        
+        .carousel-caption .display-5 {
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+
+        .news-banner-placeholder {
+            height: 50vh;
+            background-image: url('/images/Banner ASI.png');
+            background-size: cover;
+            background-position: center;
+            width: 100vw;
+            margin-left: calc(50% - 50vw);
+        }
+
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .news-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: none;
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .news-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .news-card:hover .news-card-img {
+            transform: scale(1.05);
+        }
+
+        .card-title {
+            color: #0d6efd;
+            font-weight: bold;
+        }
+        
+        .mt-auto.d-flex .btn {
+            font-weight: 600;
+        }
+
+    </style>
+}

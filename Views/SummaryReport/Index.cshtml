@@ -1,0 +1,85 @@
+@model myapp.Models.SummaryReportViewModel
+@using myapp.Models
+
+@{
+    ViewData["Title"] = "รายงานสรุป";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <style>
+        .summary-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .summary-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 3rem rgba(0,0,0,.175)!important;
+        }
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+    </style>
+}
+
+<h1 class="display-4 text-primary mb-4">@ViewData["Title"]</h1>
+<p class="lead mb-5">ภาพรวมของรายการแจ้งซ่อมทั้งหมดในระบบ</p>
+
+<div class="row">
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-sm border-light">
+            <div class="card-header bg-white border-bottom-0 py-3">
+                <h2 class="h5 mb-0 text-primary"><i class="fas fa-tags me-2"></i>สรุปตามประเภท</h2>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    @if (Model.SummaryByRequestType.Any()){
+                         @foreach (var entry in Model.SummaryByRequestType.OrderByDescending(kv => kv.Value)){
+                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                @(entry.Key.ToString())
+                                <span class="badge bg-primary rounded-pill">@entry.Value</span>
+                            </li>
+                         }
+                    } else {
+                        <li class="list-group-item text-muted text-center p-4">ไม่พบข้อมูล</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6 mb-4">
+        <div class="card h-100 shadow-sm border-light">
+            <div class="card-header bg-white border-bottom-0 py-3">
+                <h2 class="h5 mb-0 text-success"><i class="fas fa-chart-pie me-2"></i>สรุปตามสถานะ</h2>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                     @if (Model.SummaryByStatus.Any()){
+                        @foreach (var entry in Model.SummaryByStatus.OrderBy(kv => (int)kv.Key)){
+                            var statusClass = "secondary";
+                            switch (entry.Key)
+                            {
+                                case SupportRequestStatus.Pending: statusClass = "warning text-dark"; break;
+                                case SupportRequestStatus.InProgress: statusClass = "info text-dark"; break;
+                                case SupportRequestStatus.Approved: statusClass = "primary"; break;
+                                case SupportRequestStatus.Done: statusClass = "success"; break;
+                                case SupportRequestStatus.Rejected: statusClass = "danger"; break;
+                            }
+                            <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                @(entry.Key.ToString())
+                                <span class="badge bg-@statusClass rounded-pill">@entry.Value</span>
+                            </li>
+                        }
+                     } else {
+                        <li class="list-group-item text-muted text-center p-4">ไม่พบข้อมูล</li>
+                     }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

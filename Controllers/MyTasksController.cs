@@ -57,7 +57,18 @@ namespace myapp.Controllers
             var employeeId = User.Identity?.Name;
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.EmployeeId == employeeId);
 
-            if (supportRequest.ResponsibleUserId != currentUser?.Id)
+            if (currentUser == null) 
+            {
+                return Unauthorized();
+            }
+
+            // If the task has no responsible user, assign the current user.
+            if (supportRequest.ResponsibleUserId == null) 
+            {
+                supportRequest.ResponsibleUserId = currentUser.Id;
+            }
+            // Ensure the current user is the responsible one.
+            else if (supportRequest.ResponsibleUserId != currentUser.Id)
             {
                 return Forbid(); // User is not the responsible person for this task
             }

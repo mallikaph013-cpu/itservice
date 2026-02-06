@@ -9,9 +9,13 @@
     <meta http-equiv="Expires" content="0" />
     <title>@ViewData["Title"] - ASI Service</title>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/custom.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/myapp.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ASI_SERVICE.styles.css" asp-append-version="true" />
     
     @await RenderSectionAsync("Styles", required: false)
 </head>
@@ -38,7 +42,7 @@
                                 </li>
                             }
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="ITSupport" asp-action="Index">แจ้งซ่อม</a>
+                                <a class="nav-link text-orange" asp-area="" asp-controller="ITSupport" asp-action="Index">แจ้งซ่อม</a>
                             </li>
                             @if (User.HasClaim("CanApprove", "True"))
                             {
@@ -52,10 +56,22 @@
                                     <a class="nav-link text-dark" asp-area="" asp-controller="MyTasks" asp-action="Index">งานของฉัน</a>
                                 </li>
                             }
-                            @if (User.IsInRole("Admin") || User.IsInRole("ITSupport") || (User.FindFirst("IsDxStaff")?.Value == "True"))
+                             @if (User.IsInRole("Admin") || User.IsInRole("ITSupport") || (User.FindFirst("IsDxStaff")?.Value == "True"))
                             {
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="ITSupport" asp-action="WorkQueue">รับงาน</a>
+                                </li>
+                            }
+                            @if (User.IsInRole("Admin") || User.IsInRole("ITSupport") || User.FindFirst("IsDxStaff")?.Value == "True")
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" href="#" id="reportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        รายงาน
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="reportDropdown">
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Report" asp-action="Index">สรุปการแจ้งซ่อม</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="SummaryReport" asp-action="Index">สรุปภาพรวม</a></li>
+                                    </ul>
                                 </li>
                             }
                             @if (User.IsInRole("Admin") || User.IsInRole("ITSupport"))
@@ -92,6 +108,8 @@
     </footer>
     
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     

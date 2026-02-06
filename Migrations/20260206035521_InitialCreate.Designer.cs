@@ -11,7 +11,7 @@ using myapp.Data;
 namespace myapp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260205041115_InitialCreate")]
+    [Migration("20260206035521_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -406,18 +406,23 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("BOICode")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("BOIDescription")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("BaseUnit")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CommCodeTariffCode")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("CostingLotSize")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("CreatedAt")
@@ -434,9 +439,11 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("DistributionChannel")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Division")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("EmployeeId")
@@ -444,9 +451,11 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("EnglishMatDescription")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ICSCode")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsFG")
@@ -462,27 +471,33 @@ namespace myapp.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("MRPController")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("MakerMfrPartNumber")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("MaterialGroup")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ModelName")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("PerPrice")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Plant")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<decimal?>("Price")
                         .HasColumnType("decimal(18, 2)");
 
                     b.Property<string>("PriceControl")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProblemDescription")
@@ -490,15 +505,18 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProductionSupervisor")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ProfitCenter")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int?>("Program")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("PurchasingGroup")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<int>("RequestType")
@@ -518,18 +536,23 @@ namespace myapp.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("StorageLoc")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StorageLocB1")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("StorageLocBP")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SupplierCode")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("TariffCodePercentage")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -542,6 +565,7 @@ namespace myapp.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ValClass")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -559,6 +583,9 @@ namespace myapp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<bool>("CanApprove")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Department")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -572,6 +599,9 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsDxStaff")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("IsITStaff")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LastName")
@@ -594,10 +624,12 @@ namespace myapp.Migrations
                         new
                         {
                             Id = 1,
+                            CanApprove = true,
                             Department = "IT",
                             EmployeeId = "admin",
                             FirstName = "แอดมิน",
                             IsDxStaff = false,
+                            IsITStaff = false,
                             LastName = "ระบบ",
                             Password = "$2a$11$LhM27vKLaaDHqW9SJo3qoeswGqWwNQKADa6Z8CYfCg5NCk8UAFiHq",
                             Role = "Admin"

@@ -4,9 +4,8 @@ using myapp.Data;
 using myapp.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
 using System;
+using System.Linq;
 
 namespace myapp.Controllers
 {
@@ -14,12 +13,10 @@ namespace myapp.Controllers
     public class NewsController : Controller
     {
         private readonly ApplicationDbContext _context;
-        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public NewsController(ApplicationDbContext context, IWebHostEnvironment webHostEnvironment)
+        public NewsController(ApplicationDbContext context)
         {
             _context = context;
-            _webHostEnvironment = webHostEnvironment;
         }
 
         // GET: News
@@ -50,24 +47,19 @@ namespace myapp.Controllers
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
-            return View();
+            return View(new News());
         }
 
         // POST: News/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create(News news)
+        public async Task<IActionResult> Create([Bind("Title,Content,Status")] News news)
         {
             if (ModelState.IsValid)
             {
                 news.PublishedDate = DateTime.UtcNow;
-
-                if (news.ImageFile != null)
-                {
-                    news.ImagePath = await UploadFile(news.ImageFile);
-                }
-
+                
                 _context.Add(news);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -96,7 +88,7 @@ namespace myapp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, News news)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Content,Status,PublishedDate")] News news)
         {
             if (id != news.Id)
             {
@@ -107,23 +99,7 @@ namespace myapp.Controllers
             {
                 try
                 {
-                    var newsToUpdate = await _context.News.FindAsync(id);
-                    if (newsToUpdate == null) return NotFound();
-
-                    newsToUpdate.Title = news.Title;
-                    newsToUpdate.Content = news.Content;
-                    newsToUpdate.Status = news.Status;
-
-                    if (news.ImageFile != null)
-                    {
-                        if (!string.IsNullOrEmpty(newsToUpdate.ImagePath))
-                        {
-                            DeleteFile(newsToUpdate.ImagePath);
-                        }
-                        newsToUpdate.ImagePath = await UploadFile(news.ImageFile);
-                    }
-
-                    _context.Update(newsToUpdate);
+                    _context.Update(news);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -170,59 +146,11 @@ namespace myapp.Controllers
             var news = await _context.News.FindAsync(id);
             if (news != null)
             {
-                if (!string.IsNullOrEmpty(news.ImagePath))
-                {
-                    DeleteFile(news.ImagePath);
-                }
                  _context.News.Remove(news);
                  await _context.SaveChangesAsync();
             }
 
             return RedirectToAction(nameof(Index));
-        }
-
-        [HttpPost]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UploadImage(IFormFile upload)
-        {
-            if (upload == null || upload.Length == 0)
-            {
-                return BadRequest("No file uploaded.");
-            }
-
-            var imageUrl = await UploadFile(upload);
-
-            return Json(new { uploaded = 1, fileName = Path.GetFileName(imageUrl), url = imageUrl });
-        }
-        
-        private async Task<string> UploadFile(IFormFile file)
-        {
-            string uploadsFolder = Path.Combine(_webHostEnvironment.WebRootPath, "images", "news");
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + file.FileName;
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-            
-            return "/images/news/" + uniqueFileName;
-        }
-
-        private void DeleteFile(string imagePath)
-        {
-            if (string.IsNullOrEmpty(imagePath)) return;
-
-            string fullPath = Path.Combine(_webHostEnvironment.WebRootPath, imagePath.TrimStart('/'));
-            if (System.IO.File.Exists(fullPath))
-            {
-                System.IO.File.Delete(fullPath);
-            }
         }
 
         private bool NewsExists(int id)

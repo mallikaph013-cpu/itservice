@@ -9,11 +9,10 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <form asp-action="Edit" method="post">
                 <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
                 <input type="hidden" asp-for="Id" />
                 <input type="hidden" asp-for="PublishedDate" />
-                <input type="hidden" asp-for="ImagePath" />
 
                 <div class="mb-3">
                     <label asp-for="Title" class="form-label"></label>
@@ -28,25 +27,13 @@
                 </div>
 
                 <div class="row mb-3">
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <label asp-for="Status" class="form-label"></label>
                         <select asp-for="Status" class="form-select">
                             <option value="Published">เผยแพร่</option>
                             <option value="Draft">แบบร่าง</option>
                         </select>
                         <span asp-validation-for="Status" class="text-danger"></span>
-                    </div>
-                    <div class="col-md-6">
-                        <label asp-for="ImageFile" class="form-label">รูปภาพประกอบ (เลือกใหม่เพื่อแทนที่)</label>
-                        <input asp-for="ImageFile" type="file" class="form-control" accept="image/*">
-                        <span asp-validation-for="ImageFile" class="text-danger"></span>
-                        @if (!string.IsNullOrEmpty(Model.ImagePath))
-                        {
-                            <div class="mt-2">
-                                <label>รูปภาพปัจจุบัน:</label>
-                                <img src="@Model.ImagePath" class="img-thumbnail" style="max-width: 200px;" alt="Current Image"/>
-                            </div>
-                        }
                     </div>
                 </div>
 

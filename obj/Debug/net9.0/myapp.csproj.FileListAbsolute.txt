@@ -1,5 +1,6 @@
 /home/user/itservice/bin/Debug/net9.0/appsettings.Development.json
 /home/user/itservice/bin/Debug/net9.0/appsettings.json
+/home/user/itservice/bin/Debug/net9.0/libman.json
 /home/user/itservice/bin/Debug/net9.0/myapp.staticwebassets.runtime.json
 /home/user/itservice/bin/Debug/net9.0/myapp.staticwebassets.endpoints.json
 /home/user/itservice/bin/Debug/net9.0/myapp
@@ -422,7 +423,8 @@
 /home/user/itservice/obj/Debug/net9.0/myapp.sourcelink.json
 /home/user/itservice/obj/Debug/net9.0/scopedcss/bundle/myapp.styles.css
 /home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-khy4lop6wu.gz
-/home/user/itservice/obj/Debug/net9.0/compressed/pa7u3kzeoc-gcta2ynobx.gz
+/home/user/itservice/obj/Debug/net9.0/compressed/pa7u3kzeoc-jw9z2yafxp.gz
+/home/user/itservice/obj/Debug/net9.0/compressed/rj5ip4k8mp-q9egs9rlws.gz
 /home/user/itservice/obj/Debug/net9.0/compressed/srsdvfsejk-angeebt5ch.gz
 /home/user/itservice/obj/Debug/net9.0/compressed/hwnt904nd6-1qnc6z9y5o.gz
 /home/user/itservice/obj/Debug/net9.0/compressed/rpyi86ul28-bqjiyaj88i.gz
@@ -469,6 +471,8 @@
 /home/user/itservice/obj/Debug/net9.0/compressed/nzykc0dj00-h1s4sie4z3.gz
 /home/user/itservice/obj/Debug/net9.0/compressed/pr3o6rvvao-63fj8s7r0e.gz
 /home/user/itservice/obj/Debug/net9.0/compressed/lwlj643z5y-0j3bgjxly4.gz
+/home/user/itservice/obj/Debug/net9.0/compressed/aehextxf91-48y08845bh.gz
+/home/user/itservice/obj/Debug/net9.0/compressed/ndzrswu63e-b7iojwaux1.gz
 /home/user/itservice/obj/Debug/net9.0/compressed/4372dns38l-o1o13a6vjx.gz
 /home/user/itservice/obj/Debug/net9.0/staticwebassets.build.json
 /home/user/itservice/obj/Debug/net9.0/staticwebassets.development.json
@@ -485,4 +489,3 @@
 /home/user/itservice/obj/Debug/net9.0/myapp.pdb
 /home/user/itservice/obj/Debug/net9.0/myapp.genruntimeconfig.cache
 /home/user/itservice/obj/Debug/net9.0/ref/myapp.dll
-/home/user/itservice/obj/Debug/net9.0/compressed/rj5ip4k8mp-q9egs9rlws.gz

@@ -33,6 +33,14 @@
       "PackagePath": "staticwebassets/images/factory.png"
     },
     {
+      "Id": "/home/user/itservice/wwwroot/images/news/0eea64b1-9fe8-4515-aae8-740dd5fcd32b_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png",
+      "PackagePath": "staticwebassets/images/news/0eea64b1-9fe8-4515-aae8-740dd5fcd32b_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png"
+    },
+    {
+      "Id": "/home/user/itservice/wwwroot/images/news/5845aa01-1bee-4e55-a78f-65cea046ffa0_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png",
+      "PackagePath": "staticwebassets/images/news/5845aa01-1bee-4e55-a78f-65cea046ffa0_ChatGPT Image Feb 6, 2026, 03_54_48 PM.png"
+    },
+    {
       "Id": "/home/user/itservice/wwwroot/images/t_stanley-electric8916.jpg",
       "PackagePath": "staticwebassets/images/t_stanley-electric8916.jpg"
     },
@@ -215,6 +223,14 @@
     {
       "Id": "/home/user/itservice/wwwroot/lib/bootstrap/dist/js/bootstrap.min.js.map",
       "PackagePath": "staticwebassets/lib/bootstrap/dist/js/bootstrap.min.js.map"
+    },
+    {
+      "Id": "/home/user/itservice/wwwroot/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"
+    },
+    {
+      "Id": "/home/user/itservice/wwwroot/lib/jquery-validation/jquery.validate.min.js",
+      "PackagePath": "staticwebassets/lib/jquery-validation/jquery.validate.min.js"
     },
     {
       "Id": "/home/user/itservice/wwwroot/lib/jquery/dist/jquery.min.js",

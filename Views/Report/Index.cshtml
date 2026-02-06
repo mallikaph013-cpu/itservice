@@ -1,0 +1,120 @@
+@model myapp.Models.ReportViewModel
+@using myapp.Models
+
+@{
+    ViewData["Title"] = "รายงานสรุปการแจ้งซ่อม";
+
+    // Create a custom timezone for UTC+7 (Thailand) to ensure it works in any environment.
+    var thaiZone = TimeZoneInfo.CreateCustomTimeZone(
+        "SE Asia Standard Time", 
+        TimeSpan.FromHours(7), 
+        "(UTC+07:00) Bangkok, Hanoi, Jakarta", 
+        "SE Asia Standard Time"
+    );
+}
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <style>
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .table th {
+            font-weight: 600; /* Make headers bolder */
+        }
+    </style>
+}
+
+<div class="card shadow-sm border-light">
+    <div class="card-header bg-white py-3 card-header-flex">
+        <h1 class="mb-0 h4" style="color: #E67E22;">@ViewData["Title"]</h1>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="py-3">ผู้แจ้ง</th>
+                        <th class="py-3">แผนก</th>
+                        <th class="py-3">ประเภท</th>
+                        <th class="py-3">ผู้รับผิดชอบ</th>
+                        <th class="py-3">ความเร่งด่วน</th>
+                        <th class="py-3">สถานะ</th>
+                        <th class="py-3">วันที่แจ้ง</th>
+                        <th class="py-3">วันที่เสร็จสิ้น</th>
+                        <th class="py-3 text-end">ระยะเวลา</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model == null || !Model.ReportItems.Any())
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-5">
+                                <h4>ไม่พบข้อมูล</h4>
+                                <p>ยังไม่มีรายการแจ้งซ่อมในระบบ</p>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var item in Model.ReportItems)
+                        {
+                            var statusClass = "secondary";
+                            var statusIcon = "fa-circle-notch";
+                            switch (item.Request.Status)
+                            {
+                                case SupportRequestStatus.Pending:
+                                    statusClass = "warning text-dark"; statusIcon = "fa-clock"; break;
+                                case SupportRequestStatus.InProgress:
+                                    statusClass = "info text-dark"; statusIcon = "fa-sync-alt"; break;
+                                case SupportRequestStatus.Approved:
+                                    statusClass = "primary"; statusIcon = "fa-thumbs-up"; break;
+                                case SupportRequestStatus.Done:
+                                    statusClass = "success"; statusIcon = "fa-check-circle"; break;
+                                case SupportRequestStatus.Rejected:
+                                    statusClass = "danger"; statusIcon = "fa-times-circle"; break;
+                            }
+                            
+                            var createdDateLocal = TimeZoneInfo.ConvertTimeFromUtc(item.Request.CreatedAt, thaiZone);
+                            var updatedDateLocal = TimeZoneInfo.ConvertTimeFromUtc(item.Request.UpdatedAt, thaiZone);
+
+                            string resolutionTimeDisplay = "-";
+                            if(item.Request.Status == SupportRequestStatus.Done)
+                            {
+                                TimeSpan duration = item.Request.UpdatedAt - item.Request.CreatedAt;
+                                var parts = new List<string>();
+                                if (duration.Days > 0) parts.Add($"{duration.Days} วัน");
+                                if (duration.Hours > 0) parts.Add($"{duration.Hours} ชั่วโมง");
+                                if (duration.Minutes > 0) parts.Add($"{duration.Minutes} นาที");
+                                
+                                resolutionTimeDisplay = parts.Any() ? string.Join(" ", parts) : "< 1 นาที";
+                            }
+
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => item.Request.RequesterName)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Request.Department)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Request.RequestType)</td>
+                                <td>@(item.Request.ResponsibleUser?.FullName ?? "-")</td>
+                                <td>@Html.DisplayFor(modelItem => item.Request.Urgency)</td>
+                                <td>
+                                    <span class="badge bg-@statusClass rounded-pill px-2 py-1 d-inline-flex align-items-center">
+                                        <i class="fas @statusIcon me-1"></i>
+                                        @Html.DisplayFor(modelItem => item.Request.Status)
+                                    </span>
+                                </td>
+                                <td>@createdDateLocal.ToString("dd/MM/yy HH:mm")</td>
+                                <td>
+                                    @(item.Request.Status == SupportRequestStatus.Done ? updatedDateLocal.ToString("dd/MM/yy HH:mm") : "-")
+                                </td>
+                                <td class="text-end">@resolutionTimeDisplay</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

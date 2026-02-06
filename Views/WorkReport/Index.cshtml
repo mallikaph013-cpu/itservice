@@ -1,0 +1,43 @@
+@model IEnumerable<myapp.ViewModels.WorkReportViewModel>
+
+@{
+    ViewData["Title"] = "รายงานสรุปการทำงาน";
+}
+
+<div class="container py-4">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h1 class="h3 mb-0">@ViewData["Title"]</h1>
+        </div>
+        <div class="card-body">
+            @if (!Model.Any())
+            {
+                <div class="alert alert-info" role="alert">
+                    ยังไม่มีข้อมูลงานที่เสร็จสิ้น (Done) ในระบบ
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">เจ้าหน้าที่</th>
+                                <th scope="col" class="text-center">จำนวนงานที่เสร็จสิ้น</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.ResponsibleUserName</td>
+                                    <td class="text-center">@item.CompletedCount</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>

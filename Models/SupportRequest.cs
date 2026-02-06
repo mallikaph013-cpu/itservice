@@ -9,15 +9,15 @@ namespace myapp.Models
 
         [Required]
         [Display(Name = "รหัสพนักงาน")]
-        public string? EmployeeId { get; set; }
+        public string EmployeeId { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "ชื่อผู้แจ้ง")]
-        public string? RequesterName { get; set; }
+        public string RequesterName { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "ฝ่าย")]
-        public string? Department { get; set; }
+        public string Department { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "ประเภทการแจ้งซ่อม")]
@@ -29,7 +29,7 @@ namespace myapp.Models
         [Display(Name = "ประเภทปัญหา SAP")]
         public SAPProblemType? SAPProblem { get; set; }
 
-        // SAP Registration Fields
+        // SAP Registration Fields (Now Nullable)
         [Display(Name = "FG")]
         public bool IsFG { get; set; }
         [Display(Name = "SM")]
@@ -78,7 +78,6 @@ namespace myapp.Models
         [Display(Name = "Per Price")]
         public int? PerPrice { get; set; }
 
-        // New Fields from previous request
         [Display(Name = "BOI Description")]
         public string? BOIDescription { get; set; }
         [Display(Name = "Purcasing Group")]
@@ -92,7 +91,6 @@ namespace myapp.Models
         [Display(Name = "Supplier Code")]
         public string? SupplierCode { get; set; }
 
-        // New Field for this request
         [Display(Name = "Model Name")]
         public string? ModelName { get; set; }
 
@@ -101,7 +99,7 @@ namespace myapp.Models
 
         [Required]
         [Display(Name = "รายละเอียดปัญหา")]
-        public string? ProblemDescription { get; set; }
+        public string ProblemDescription { get; set; } = string.Empty;
 
         [NotMapped]
         [Display(Name = "ไฟล์แนบ")]

@@ -11,8 +11,8 @@ using myapp.Data;
 namespace myapp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260205083807_AddIsITStaffToUser")]
-    partial class AddIsITStaffToUser
+    [Migration("20260206074013_MakeSapFieldsNullable")]
+    partial class MakeSapFieldsNullable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
