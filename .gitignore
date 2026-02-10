@@ -2,32 +2,75 @@
 # Nuget packages
 *.nupkg
 
-# The Visual Studio symbol files
-*.pdb
+# The packages folder can be ignored because of Package Restore
+**/packages/*
 
-# Files built by Visual Studio
-[Oo]bj/
-[Bb]in/
-
-# User-specific files
-*.user
+# Cache files
 *.suo
+
+# User specific files
+*.user
 
 # Build results
 [Dd]ebug/
+[Dd]ebugPublic/
 [Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
 
-# Dotnet files
-project.lock.json
-project.assets.json
+# Visual Studio 2015 cache/options directory
+.vs/
 
-# Databases
+# MSTest test Results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+
+# NUnit
+*.VisualState.xml
+TestResult.xml
+
+# Build Results of an ATL Project
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
+
+# Benchmark Results
+BenchmarkDotNet.Artifacts/
+
+# DotCover
+*.dotcover
+
+# ReSharper
+*_i. Междустрочный*
+*_i.ReSharper*
+*.[Pp]rivat
+*.pidb
+*.suo
+*.user
+*_i.ReSharper.user
+*.resharper.user
+
+# Rider
+.idea/
+
+# Backup files
+*.bak
+
+# Others
+*.vspscc
+*.vssscc
+.builds
+*.pidb.meta
+*.pdb
+*.opendb
 *.db
-*.db-shm
-*.db-wal
 
-# Environment files
+# Environment variables
 .env
 
-# Rider files
-.idea/
+# Firebase
+firebase-debug.log

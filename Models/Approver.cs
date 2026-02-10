@@ -5,8 +5,6 @@ namespace myapp.Models
 {
     public class Approver : BaseEntity
     {
-        public int Id { get; set; }
-
         public int ApprovalSequenceId { get; set; }
         [ForeignKey("ApprovalSequenceId")]
         public ApprovalSequence? ApprovalSequence { get; set; }

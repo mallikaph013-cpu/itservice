@@ -4,7 +4,6 @@ namespace myapp.Models
 {
     public class ApprovalHistory : BaseEntity
     {
-        public int Id { get; set; }
         public int SupportRequestId { get; set; }
         public SupportRequest? SupportRequest { get; set; }
         public string? ApproverName { get; set; }

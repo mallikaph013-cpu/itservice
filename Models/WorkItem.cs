@@ -5,8 +5,6 @@ namespace myapp.Models
 {
     public class WorkItem : BaseEntity
     {
-        public int Id { get; set; }
-
         [Required]
         [StringLength(100)]
         public string Title { get; set; } = string.Empty;

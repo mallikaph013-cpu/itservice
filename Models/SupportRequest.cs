@@ -5,8 +5,6 @@ namespace myapp.Models
 {
     public class SupportRequest : BaseEntity
     {
-        public int Id { get; set; }
-
         [Required]
         [Display(Name = "รหัสพนักงาน")]
         public string EmployeeId { get; set; } = string.Empty;
