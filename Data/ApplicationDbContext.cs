@@ -20,6 +20,7 @@ namespace myapp.Data
 
         public DbSet<User> Users { get; set; } = default!;
         public DbSet<Department> Departments { get; set; } = default!;
+        public DbSet<Section> Sections { get; set; } = default!;
         public DbSet<ApprovalSequence> ApprovalSequences { get; set; } = default!;
         public DbSet<Approver> Approvers { get; set; } = default!;
         public DbSet<SupportRequest> SupportRequests { get; set; } = default!;

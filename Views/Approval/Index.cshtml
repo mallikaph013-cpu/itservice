@@ -5,111 +5,311 @@
     ViewData["Title"] = "อนุมัติรายการ";
 }
 
+<style>
+    :root {
+        --approval-pending-bg: #fffbe6;
+        --approval-pending-text: #b45309;
+        --approval-approved-bg: #f0fdf4;
+        --approval-approved-text: #16a34a;
+        --approval-rejected-bg: #fef2f2;
+        --approval-rejected-text: #dc2626;
+        --approval-inprogress-bg: #eff6ff;
+        --approval-inprogress-text: #2563eb;
+        --approval-default-bg: #f8fafc;
+        --approval-default-text: #475569;
+    }
+
+    .approval-list-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background-color: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        flex-wrap: wrap; /* For responsiveness */
+    }
+
+    .approval-list-item.fading-out {
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
+    }
+
+    .approval-list-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.07), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        border-color: #c7d2fe;
+    }
+
+    .item-main-info {
+        flex-grow: 1;
+        min-width: 300px;
+    }
+
+    .item-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #334155;
+        text-decoration: none;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+    .item-title:hover {
+        color: #6366f1;
+    }
+
+    .item-subtitle {
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+    .item-subtitle i {
+        margin-right: 0.5rem;
+    }
+
+    .item-details {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        min-width: 250px;
+        flex-wrap: wrap;
+    }
+    
+    .item-actions {
+        margin-left: auto;
+        padding-left: 1rem;
+        min-width: 180px; /* Ensure buttons don't wrap */
+        text-align: right;
+    }
+    
+    .status-badge {
+        font-size: 0.85rem;
+        padding: 0.4em 0.9em;
+        border-radius: 15px;
+        font-weight: 600;
+        text-align: center;
+        min-width: 100px;
+    }
+
+    .status-Pending { background-color: var(--approval-pending-bg); color: var(--approval-pending-text); }
+    .status-Approved { background-color: var(--approval-approved-bg); color: var(--approval-approved-text); }
+    .status-Rejected { background-color: var(--approval-rejected-bg); color: var(--approval-rejected-text); }
+    .status-InProgress { background-color: var(--approval-inprogress-bg); color: var(--approval-inprogress-text); }
+    .status-Default { background-color: var(--approval-default-bg); color: var(--approval-default-text); }
+
+    .filter-card {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    
+    .btn-approve, .btn-reject {
+        border-radius: 20px !important;
+        padding: 0.3rem 1rem !important;
+        font-size: 0.9rem !important;
+        transition: all 0.2s ease-in-out;
+    }
+    .btn-approve:hover, .btn-reject:hover {
+        transform: scale(1.05);
+    }
+</style>
+
 <div class="container-fluid py-4">
-    <div class="card shadow-lg">
-        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-            <h1 class="h3 mb-0">@ViewData["Title"] (@Model.SelectedStatus)</h1>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="display-5 fw-bold" style="color: #333;">@ViewData["Title"]</h1>
+    </div>
+
+    <div class="card filter-card mb-4">
+         <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3 align-items-center">
+                 @Html.AntiForgeryToken()
+                <div class="col-auto">
+                    <label for="selectedStatus" class="col-form-label fw-bold">เลือกสถานะ:</label>
+                </div>
+                <div class="col-md-4">
+                    <select name="selectedStatus" asp-for="SelectedStatus" asp-items="Model.StatusOptions" class="form-select form-select-lg"></select>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-search me-2"></i>ค้นหา
+                    </button>
+                </div>
+            </form>
         </div>
-        <div class="card-body">
+    </div>
 
-            <div class="card-header mb-3">
-                <form asp-action="Index" method="get" class="row g-3 align-items-center">
-                    <div class="col-auto">
-                        <label for="selectedStatus" class="col-form-label">สถานะ:</label>
-                    </div>
-                    <div class="col-md-4">
-                        <select name="selectedStatus" asp-for="SelectedStatus" asp-items="Model.StatusOptions" class="form-select"></select>
-                    </div>
-                    <div class="col-auto">
-                        <button type="submit" class="btn btn-primary">ค้นหา</button>
-                    </div>
-                </form>
-            </div>
-
-            @if (!Model.Requests.Any())
+    @if (!Model.Requests.Any())
+    {
+        <div class="text-center p-5 bg-light rounded-3" id="no-items-message">
+            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+            <h3 class="text-muted">ไม่พบรายการ</h3>
+            <p class="lead">ไม่พบรายการในสถานะ "@Model.SelectedStatus"</p>
+        </div>
+    }
+    
+    <div class="list-container">
+        @if(Model.Requests.Any())
+        {
+            @foreach (var item in Model.Requests)
             {
-                <div class="alert alert-info" role="alert">
-                    ไม่พบรายการในสถานะ "@Model.SelectedStatus"
+                string statusClass = "status-" + item.Status;
+                var bangkokTime = item.CreatedAt.AddHours(7);
+
+                <div class="approval-list-item" data-id="@item.Id">
+                    <div class="item-main-info">
+                        <a asp-controller="ITSupport" asp-action="Details" asp-route-id="@item.Id" class="item-title text-decoration-none">
+                            <i class="fas fa-file-alt me-1"></i>@item.DocumentNo
+                        </a>
+                        <div class="item-subtitle">
+                            <span><i class="fas fa-user"></i>@item.RequesterName</span>
+                            <span class="mx-2">|</span>
+                            <span><i class="fas fa-building"></i>@item.Department</span>
+                        </div>
+                    </div>
+                    <div class="item-details">
+                         <div class="d-flex flex-column text-center">
+                            <span class="fw-bold">@bangkokTime.ToString("dd MMM")</span>
+                            <small class="text-muted">@bangkokTime.ToString("yyyy, HH:mm")</small>
+                        </div>
+                        <span class="badge @statusClass status-badge">@item.Status</span>
+                         @if (Model.SelectedStatus == SupportRequestStatus.Pending)
+                        {
+                            <div class="d-flex flex-column text-center">
+                                <span class="fw-bold">@(item.CurrentApprover?.User?.FirstName ?? "N/A")</span>
+                                <small class="text-muted">ผู้อนุมัติ</small>
+                            </div>
+                        }
+                    </div>
+                    @if (Model.SelectedStatus == SupportRequestStatus.Pending)
+                    {
+                        <div class="item-actions">
+                            <form asp-action="Approve" asp-route-id="@item.Id" method="post" class="d-inline">
+                                <button type="button" class="btn btn-success btn-approve btn-sm btn-action" data-action-type="approve">
+                                    <i class="fas fa-check"></i> อนุมัติ
+                                </button>
+                            </form>
+                            <form asp-action="Reject" asp-route-id="@item.Id" method="post" class="d-inline">
+                                <button type="button" class="btn btn-danger btn-reject btn-sm btn-action" data-action-type="reject">
+                                    <i class="fas fa-times"></i> ปฏิเสธ
+                                </button>
+                            </form>
+                        </div>
+                    }
                 </div>
             }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle table-orange-theme">
-                        <thead class="table-light">
-                            <tr>
-                                <th>รหัสคำขอ</th>
-                                <th>ผู้แจ้ง</th>
-                                <th>แผนก</th>
-                                <th>หัวข้อ</th>
-                                <th class="text-center">วันที่แจ้ง</th>
-                                <th class="text-center">สถานะ</th>
-                                @if (Model.SelectedStatus == SupportRequestStatus.Pending)
-                                {
-                                    <th class="text-center">ผู้อนุมัติปัจจุบัน</th>
-                                    <th class="text-center">การดำเนินการ</th>
-                                }
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model.Requests)
-                            {
-                                string statusClass = "";
-                                switch (item.Status)
-                                {
-                                    case SupportRequestStatus.Pending:
-                                        statusClass = "bg-warning text-dark";
-                                        break;
-                                    case SupportRequestStatus.Approved:
-                                        statusClass = "bg-success";
-                                        break;
-                                    case SupportRequestStatus.Rejected:
-                                        statusClass = "bg-danger";
-                                        break;
-                                    case SupportRequestStatus.InProgress:
-                                        statusClass = "bg-info text-dark";
-                                        break;
-                                    default:
-                                        statusClass = "bg-secondary";
-                                        break;
-                                }
-
-                                <tr>
-                                    <td>@item.Id</td>
-                                    <td>@item.RequesterName</td>
-                                    <td>@item.Department</td>
-                                    <td><a asp-controller="ITSupport" asp-action="Details" asp-route-id="@item.Id">@item.ProblemDescription</a></td>
-                                    <td class="text-center">@item.CreatedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
-                                    <td class="text-center"><span class="badge @statusClass">@item.Status</span></td>
-                                    
-                                    @if (Model.SelectedStatus == SupportRequestStatus.Pending)
-                                    {
-                                        <td class="text-center">@(item.CurrentApprover?.User?.FirstName ?? "N/A")</td>
-                                        <td class="text-center">
-                                            <div class="btn-group" role="group">
-                                                <form asp-action="Approve" asp-route-id="@item.Id" method="post" onsubmit="return confirm('คุณแน่ใจหรือไม่ว่าต้องการอนุมัติรายการนี้?');">
-                                                    <button type="submit" class="btn btn-approve btn-sm me-1">
-                                                        <i class="fas fa-check"></i> อนุมัติ
-                                                    </button>
-                                                </form>
-                                                <form asp-action="Reject" asp-route-id="@item.Id" method="post" onsubmit="return confirm('คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธรายการนี้?');">
-                                                    <button type="submit" class="btn btn-reject btn-sm">
-                                                        <i class="fas fa-times"></i> ปฏิเสธ
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    }
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-            }
-        </div>
+        }
     </div>
 </div>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
 @section Scripts {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const requestVerificationToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+
+            function handleApprovalAction(form, actionType) {
+                const url = form.getAttribute('action');
+                const listItem = form.closest('.approval-list-item');
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': requestVerificationToken,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin' //  <-- THE FIX IS HERE
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: actionType === 'approve' ? 'อนุมัติสำเร็จ!' : 'ปฏิเสธสำเร็จ!',
+                            icon: 'success',
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+
+                        if ('@Model.SelectedStatus' === 'Pending') {
+                            listItem.classList.add('fading-out');
+                            setTimeout(() => {
+                                listItem.remove();
+                                if (document.querySelectorAll('.approval-list-item').length === 0) {
+                                    const noItemsMsg = document.getElementById('no-items-message');
+                                    if(noItemsMsg) noItemsMsg.classList.remove('d-none');
+                                }
+                            }, 500); 
+                        } else {
+                            const statusBadge = listItem.querySelector('.status-badge');
+                            if (statusBadge) {
+                                statusBadge.textContent = data.newStatus;
+                                statusBadge.className = 'badge status-badge'; // Reset
+                                statusBadge.classList.add(`status-${data.newStatus}`);
+                            }
+                            const actionDiv = listItem.querySelector('.item-actions');
+                            if (actionDiv) actionDiv.remove();
+                        }
+                    } else {
+                        Swal.fire('เกิดข้อผิดพลาด!', data.message || 'ไม่สามารถดำเนินการได้', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    Swal.fire('เกิดข้อผิดพลาด!', 'การเชื่อมต่อล้มเหลว หรือเกิดปัญหาในการยืนยันตัวตน', 'error');
+                });
+            }
+
+            document.querySelector('.list-container').addEventListener('click', function(e) {
+                const button = e.target.closest('.btn-action');
+                if (!button) return;
+
+                e.preventDefault();
+                const form = button.closest('form');
+                const actionType = button.dataset.actionType;
+                
+                const config = {
+                    approve: {
+                        title: 'ยืนยันการอนุมัติ',
+                        text: "คุณแน่ใจหรือไม่ว่าต้องการอนุมัติรายการนี้?",
+                        icon: 'question',
+                        confirmButtonColor: '#28a745',
+                    },
+                    reject: {
+                        title: 'ยืนยันการปฏิเสธ',
+                        text: "คุณแน่ใจหรือไม่ว่าต้องการปฏิเสธรายการนี้?",
+                        icon: 'warning',
+                        confirmButtonColor: '#dc3545',
+                    }
+                };
+
+                const currentConfig = config[actionType];
+
+                Swal.fire({
+                    ...currentConfig,
+                    showCancelButton: true,
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'ยืนยัน',
+                    cancelButtonText: 'ยกเลิก'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        handleApprovalAction(form, actionType);
+                    }
+                });
+            });
+
+            const noItemsMsg = document.getElementById('no-items-message');
+            if (document.querySelectorAll('.approval-list-item').length > 0) {
+                 if(noItemsMsg) noItemsMsg.classList.add('d-none');
+            } else {
+                 if(noItemsMsg) noItemsMsg.classList.remove('d-none');
+            }
+        });
+    </script>
 }

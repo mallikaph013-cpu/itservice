@@ -30,6 +30,7 @@ namespace myapp.Controllers
         public async Task<IActionResult> Create()
         {
             ViewBag.Departments = new SelectList(await _context.Departments.Where(d => d.Status == "Active").ToListAsync(), "Name", "Name");
+            ViewBag.Sections = new SelectList(await _context.Sections.Where(s => s.Status == "Active").ToListAsync(), "Name", "Name");
             return View();
         }
 
@@ -37,7 +38,7 @@ namespace myapp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
-        public async Task<IActionResult> Create([Bind("EmployeeId,FirstName,LastName,Password,Department,Role,IsITStaff,IsDxStaff,CanApprove")] User user)
+        public async Task<IActionResult> Create([Bind("EmployeeId,FirstName,LastName,Password,Department,Section,Role,IsITStaff,IsDxStaff,CanApprove")] User user)
         {
             if (user.IsITStaff)
             {
@@ -53,6 +54,7 @@ namespace myapp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Departments = new SelectList(await _context.Departments.Where(d => d.Status == "Active").ToListAsync(), "Name", "Name", user.Department);
+            ViewBag.Sections = new SelectList(await _context.Sections.Where(s => s.Status == "Active").ToListAsync(), "Name", "Name", user.Section);
             return View(user);
         }
 
@@ -70,13 +72,14 @@ namespace myapp.Controllers
                 return NotFound();
             }
             ViewBag.Departments = new SelectList(await _context.Departments.Where(d => d.Status == "Active").ToListAsync(), "Name", "Name", user.Department);
+            ViewBag.Sections = new SelectList(await _context.Sections.Where(s => s.Status == "Active").ToListAsync(), "Name", "Name", user.Section);
             return View(user);
         }
 
         // POST: Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,EmployeeId,FirstName,LastName,Password,Department,Role,IsITStaff,IsDxStaff,CanApprove")] User user)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,EmployeeId,FirstName,LastName,Password,Department,Section,Role,IsITStaff,IsDxStaff,CanApprove")] User user)
         {
             if (id != user.Id)
             {
@@ -108,6 +111,7 @@ namespace myapp.Controllers
                     userToUpdate.FirstName = user.FirstName;
                     userToUpdate.LastName = user.LastName;
                     userToUpdate.Department = user.Department;
+                    userToUpdate.Section = user.Section;
                     userToUpdate.Role = user.Role;
                     userToUpdate.IsITStaff = user.IsITStaff;
                     userToUpdate.IsDxStaff = user.IsDxStaff;
@@ -136,6 +140,7 @@ namespace myapp.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewBag.Departments = new SelectList(await _context.Departments.Where(d => d.Status == "Active").ToListAsync(), "Name", "Name", user.Department);
+            ViewBag.Sections = new SelectList(await _context.Sections.Where(s => s.Status == "Active").ToListAsync(), "Name", "Name", user.Section);
             return View(user);
         }
 

@@ -1,100 +1,123 @@
 @model myapp.Models.SupportRequest
 
 @{
-    ViewData["Title"] = "แก้ไขรายการแจ้งซ่อม";
+    var isReadOnly = (ViewData["IsReadOnly"] as bool?) ?? false;
+    ViewData["Title"] = isReadOnly ? "รายละเอียดรายการแจ้งซ่อม" : "แก้ไขรายการแจ้งซ่อม";
 }
 
-<h1>@ViewData["Title"]</h1>
+<div class="container my-5">
+    <div class="card shadow-lg border-light-subtle">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">@ViewData["Title"] #@Model.DocumentNo</h4>
+        </div>
+        <div class="card-body p-4">
+            <form method="post" asp-action="Edit" enctype="multipart/form-data">
+                <fieldset disabled="@isReadOnly">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreatedAt" />
+                    <input type="hidden" asp-for="CreatedBy" />
+                    <input type="hidden" asp-for="Status" />
+                    <input type="hidden" asp-for="CurrentApproverId" />
 
-<div class="card shadow-lg">
-    <div class="card-body">
-        <h5 class="card-title">แก้ไขรายการแจ้งซ่อม #@Model.Id</h5>
-        <form method="post" asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-            <input type="hidden" asp-for="Id" />
-            <input type="hidden" asp-for="CreatedAt" />
-            <input type="hidden" asp-for="CreatedBy" />
-            <input type="hidden" asp-for="Status" />
-            <input type="hidden" asp-for="CurrentApproverId" />
+                    <h5 class="text-primary-emphasis mb-3">ข้อมูลผู้แจ้ง</h5>
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label asp-for="EmployeeId" class="form-label fw-semibold"></label>
+                            <input asp-for="EmployeeId" class="form-control" readonly="@isReadOnly" />
+                            <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="RequesterName" class="form-label fw-semibold"></label>
+                            <input asp-for="RequesterName" class="form-control" readonly="@isReadOnly" />
+                            <span asp-validation-for="RequesterName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-4">
+                            <label asp-for="Department" class="form-label fw-semibold"></label>
+                            <input asp-for="Department" class="form-control" readonly="@isReadOnly" />
+                            <span asp-validation-for="Department" class="text-danger"></span>
+                        </div>
+                    </div>
 
-            <!-- Requester Info -->
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label asp-for="EmployeeId" class="form-label"></label>
-                    <input asp-for="EmployeeId" class="form-control" />
-                    <span asp-validation-for="EmployeeId" class="text-danger"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="RequesterName" class="form-label"></label>
-                    <input asp-for="RequesterName" class="form-control" />
-                    <span asp-validation-for="RequesterName" class="text-danger"></span>
-                </div>
-                <div class="col-md-4">
-                    <label asp-for="Department" class="form-label"></label>
-                    <input asp-for="Department" class="form-control" />
-                    <span asp-validation-for="Department" class="text-danger"></span>
-                </div>
-            </div>
+                    <hr class="my-4">
 
-            <!-- Request Type -->
-            <div class="mb-3">
-                <label asp-for="RequestType" class="form-label"></label>
-                <select id="RequestType" asp-for="RequestType" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.RequestType>()">
-                    <option value="">เลือกประเภทการแจ้งซ่อม</option>
-                </select>
-                <span asp-validation-for="RequestType" class="text-danger"></span>
-            </div>
+                    <h5 class="text-primary-emphasis mb-3">รายละเอียดการแจ้งซ่อม</h5>
+                    <div class="mb-3">
+                        <label asp-for="RequestType" class="form-label fw-semibold"></label>
+                        <select id="RequestType" asp-for="RequestType" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.RequestType>()">
+                            <option value="">เลือกประเภทการแจ้งซ่อม</option>
+                        </select>
+                        <span asp-validation-for="RequestType" class="text-danger"></span>
+                    </div>
 
-            <!-- Program Selection (Hidden by default) -->
-            <div id="program-selection" class="mb-3" style="display:none;">
-                <label asp-for="Program" class="form-label"></label>
-                <select id="Program" asp-for="Program" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.ProgramName>()">
-                    <option value="">เลือกโปรแกรม</option>
-                </select>
-                <span asp-validation-for="Program" class="text-danger"></span>
-            </div>
+                    <div id="program-selection" class="mb-3" style="display:none;">
+                        <label asp-for="Program" class="form-label fw-semibold"></label>
+                        <select id="Program" asp-for="Program" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.ProgramName>()">
+                            <option value="">เลือกโปรแกรม</option>
+                        </select>
+                        <span asp-validation-for="Program" class="text-danger"></span>
+                    </div>
 
-             <!-- SAP Problem Selection (Hidden by default) -->
-            <div id="sap-problem-selection" class="mb-3" style="display:none;">
-                <label asp-for="SAPProblem" class="form-label"></label>
-                <select id="SAPProblem" asp-for="SAPProblem" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.SAPProblemType>()">
-                     <option value="">เลือกประเภทปัญหา SAP</option>
-                </select>
-                <span asp-validation-for="SAPProblem" class="text-danger"></span>
-            </div>
+                    <div id="sap-problem-selection" class="mb-3" style="display:none;">
+                        <label asp-for="SAPProblem" class="form-label fw-semibold"></label>
+                        <select id="SAPProblem" asp-for="SAPProblem" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.SAPProblemType>()">
+                            <option value="">เลือกประเภทปัญหา SAP</option>
+                        </select>
+                        <span asp-validation-for="SAPProblem" class="text-danger"></span>
+                    </div>
 
-            <!-- Problem Description, Attachment, Urgency -->
-            <div class="mb-3">
-                <label asp-for="ProblemDescription" class="form-label"></label>
-                <textarea asp-for="ProblemDescription" class="form-control" rows="4"></textarea>
-                <span asp-validation-for="ProblemDescription" class="text-danger"></span>
-            </div>
-            <div class="row mb-3">
-                 <div class="col-md-6">
-                    <label asp-for="AttachmentPath" class="form-label">ไฟล์แนบปัจจุบัน</label>
-                    @if (!string.IsNullOrEmpty(Model.AttachmentPath))
+                    <div class="mb-3">
+                        <label asp-for="ProblemDescription" class="form-label fw-semibold"></label>
+                        <textarea asp-for="ProblemDescription" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="ProblemDescription" class="text-danger"></span>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">ไฟล์แนบ</label>
+                            @if (!string.IsNullOrEmpty(Model.AttachmentPath))
+                            {
+                                <div>
+                                    <a href="@Url.Content(Model.AttachmentPath)" target="_blank" class="btn btn-outline-info btn-sm">
+                                        <i class="fas fa-paperclip me-2"></i> ดูไฟล์แนบ
+                                    </a>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="form-control-static text-muted">ไม่มีไฟล์แนบ</p>
+                            }
+                             @if (!isReadOnly)
+                            {
+                                <label class="form-label mt-2">อัปโหลดไฟล์ใหม่ (ถ้ามี)</label>
+                                <input type="file" name="attachmentFile" class="form-control" />
+                            }
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Urgency" class="form-label fw-semibold"></label>
+                            <select asp-for="Urgency" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.UrgencyLevel>()">
+                                <option value="">เลือกระดับความเร่งด่วน</option>
+                            </select>
+                            <span asp-validation-for="Urgency" class="text-danger"></span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div class="mt-4 d-flex justify-content-end">
+                    @if (!isReadOnly)
                     {
-                        <a href="@Url.Content(Model.AttachmentPath)" target="_blank">ดูไฟล์แนบ</a>
+                        <button type="submit" class="btn btn-primary btn-lg me-2">บันทึกการแก้ไข</button>
+                    }
+                    @if (isReadOnly)
+                    {
+                         <a asp-controller="Approval" asp-action="Index" class="btn btn-secondary btn-lg">กลับหน้าอนุมัติ</a>
                     }
                     else
                     {
-                        <p class="form-control-static">ไม่มีไฟล์แนบ</p>
+                        <a asp-action="Index" class="btn btn-outline-secondary btn-lg">ยกเลิก</a>
                     }
-                    <label class="form-label mt-2">อัปโหลดไฟล์ใหม่ (ถ้ามี)</label>
-                    <input type="file" name="attachmentFile" class="form-control" />
                 </div>
-                <div class="col-md-6">
-                    <label asp-for="Urgency" class="form-label"></label>
-                    <select asp-for="Urgency" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.UrgencyLevel>()">
-                        <option value="">เลือกระดับความเร่งด่วน</option>
-                    </select>
-                    <span asp-validation-for="Urgency" class="text-danger"></span>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-primary">บันทึก</button>
-            <a asp-action="Index" class="btn btn-secondary">ยกเลิก</a>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 
@@ -112,18 +135,13 @@
                 const selectedRequestType = requestTypeSelect.options[requestTypeSelect.selectedIndex].text.trim();
                 const selectedProgram = programSelect.options[programSelect.selectedIndex].text.trim();
 
-                // Reset by hiding and disabling first
                 programSelectionDiv.style.display = 'none';
-                programSelect.disabled = true;
                 sapProblemSelectionDiv.style.display = 'none';
-                sapProblemSelect.disabled = true;
 
                 if (selectedRequestType === 'Software') {
                     programSelectionDiv.style.display = 'block';
-                    programSelect.disabled = false; // Enable when shown
                     if (selectedProgram === 'SAP') {
                         sapProblemSelectionDiv.style.display = 'block';
-                        sapProblemSelect.disabled = false; // Enable when shown
                     }
                 }
             }
@@ -131,7 +149,6 @@
             requestTypeSelect.addEventListener('change', toggleSections);
             programSelect.addEventListener('change', toggleSections);
 
-            // Initial check to set the correct form state based on model data
             toggleSections();
         });
     </script>

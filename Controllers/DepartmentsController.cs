@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using myapp.Data;
 using myapp.Models;
+using myapp.Models.ViewModels;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,7 +22,12 @@ namespace myapp.Controllers
         // GET: Departments
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Departments.OrderBy(d => d.Name).ToListAsync());
+            var viewModel = new DepartmentSectionViewModel
+            {
+                Departments = await _context.Departments.OrderBy(d => d.Name).ToListAsync(),
+                Sections = await _context.Sections.Include(s => s.Department).OrderBy(s => s.Name).ToListAsync()
+            };
+            return View(viewModel);
         }
 
         // POST: Departments/Create
@@ -35,8 +41,8 @@ namespace myapp.Controllers
                 {
                     department.CreatedAt = System.DateTime.UtcNow;
                     department.UpdatedAt = System.DateTime.UtcNow;
-                    department.CreatedBy = "system"; // Should be replaced with actual user
-                    department.UpdatedBy = "system"; // Should be replaced with actual user
+                    department.CreatedBy = User.Identity?.Name ?? "system";
+                    department.UpdatedBy = User.Identity?.Name ?? "system";
                     _context.Add(department);
                     await _context.SaveChangesAsync();
                 }
@@ -74,9 +80,15 @@ namespace myapp.Controllers
             {
                 try
                 {
-                    department.UpdatedAt = System.DateTime.UtcNow;
-                    department.UpdatedBy = "system"; // Should be replaced with actual user
-                    _context.Update(department);
+                    var departmentToUpdate = await _context.Departments.FindAsync(id);
+                    if(departmentToUpdate == null) return NotFound();
+
+                    departmentToUpdate.Name = department.Name;
+                    departmentToUpdate.Status = department.Status;
+                    departmentToUpdate.UpdatedAt = System.DateTime.UtcNow;
+                    departmentToUpdate.UpdatedBy = User.Identity?.Name ?? "system";
+
+                    _context.Update(departmentToUpdate);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

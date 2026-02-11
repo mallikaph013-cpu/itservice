@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using myapp.Data;
 
@@ -10,9 +11,11 @@ using myapp.Data;
 namespace myapp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260211011839_AddSection")]
+    partial class AddSection
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0-preview.3.24172.4");
@@ -97,9 +100,6 @@ namespace myapp.Migrations
 
                     b.Property<string>("Department")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Section")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
@@ -402,9 +402,6 @@ namespace myapp.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("DepartmentId")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -414,8 +411,6 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DepartmentId");
 
                     b.ToTable("Sections");
                 });
@@ -461,9 +456,6 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Division")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DocumentNo")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("EmployeeId")
@@ -773,17 +765,6 @@ namespace myapp.Migrations
                     b.Navigation("ParentMenu");
                 });
 
-            modelBuilder.Entity("myapp.Models.Section", b =>
-                {
-                    b.HasOne("myapp.Models.Department", "Department")
-                        .WithMany("Sections")
-                        .HasForeignKey("DepartmentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Department");
-                });
-
             modelBuilder.Entity("myapp.Models.SupportRequest", b =>
                 {
                     b.HasOne("myapp.Models.Approver", "CurrentApprover")
@@ -821,11 +802,6 @@ namespace myapp.Migrations
             modelBuilder.Entity("myapp.Models.ApprovalSequence", b =>
                 {
                     b.Navigation("Approvers");
-                });
-
-            modelBuilder.Entity("myapp.Models.Department", b =>
-                {
-                    b.Navigation("Sections");
                 });
 
             modelBuilder.Entity("myapp.Models.Menu", b =>

@@ -117,7 +117,16 @@
                                         @Html.DisplayFor(modelItem => item.Status)
                                     </span>
                                 </td>
-                                <td>@(item.CurrentApprover?.User?.FullName ?? "-")</td>
+                                <td>
+                                    @if (item.CurrentApprover != null && item.CurrentApprover.User != null)
+                                    {
+                                        @item.CurrentApprover.User.FullName
+                                    }
+                                    else
+                                    {
+                                        <text>-</text>
+                                    }
+                                </td>
                                 <td>@item.CreatedAt.ToLocalTime().ToString("g")</td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">

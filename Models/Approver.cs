@@ -10,9 +10,9 @@ namespace myapp.Models
         public ApprovalSequence? ApprovalSequence { get; set; }
 
         [Required]
-        public int UserId { get; set; } // Changed to int
-        [ForeignKey("UserId")] // Add this line
-        public User? User { get; set; }
+        public int UserId { get; set; } 
+        [ForeignKey("UserId")] 
+        public User User { get; set; } = null!;
 
         [Required]
         public int Order { get; set; }

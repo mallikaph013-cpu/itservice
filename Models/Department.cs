@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace myapp.Models
@@ -10,5 +11,7 @@ namespace myapp.Models
         
         [Display(Name = "สถานะ")]
         public string Status { get; set; } = "Active";
+
+        public virtual ICollection<Section> Sections { get; set; } = new List<Section>();
     }
 }

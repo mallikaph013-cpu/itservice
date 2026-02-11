@@ -24,8 +24,11 @@ namespace myapp.Models
         public string Password { get; set; } = string.Empty;
 
         [Required]
-        [Display(Name = "แผนก")]
+        [Display(Name = "ฝ่าย")]
         public string Department { get; set; } = string.Empty;
+
+        [Display(Name = "แผนก")]
+        public string? Section { get; set; }
 
         [Required]
         [Display(Name = "ตำแหน่ง")]

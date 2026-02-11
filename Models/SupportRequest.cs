@@ -5,6 +5,9 @@ namespace myapp.Models
 {
     public class SupportRequest : BaseEntity
     {
+        [Display(Name = "เลขที่เอกสาร")]
+        public string? DocumentNo { get; set; }
+
         [Required]
         [Display(Name = "รหัสพนักงาน")]
         public string EmployeeId { get; set; } = string.Empty;

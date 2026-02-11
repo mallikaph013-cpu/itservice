@@ -36,7 +36,7 @@ namespace myapp.Controllers
         // POST: ApprovalSequences/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Department,Status")] ApprovalSequence approvalSequence, int[] approverIds, int[] approverOrders)
+        public async Task<IActionResult> Create([Bind("Department,Section,Status")] ApprovalSequence approvalSequence, int[] approverIds, int[] approverOrders)
         {
             if (ModelState.IsValid)
             {
@@ -97,7 +97,7 @@ namespace myapp.Controllers
         // POST: ApprovalSequences/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Department,Status")] ApprovalSequence approvalSequence, int[] approverIds, int[] approverOrders)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Department,Section,Status")] ApprovalSequence approvalSequence, int[] approverIds, int[] approverOrders)
         {
             if (id != approvalSequence.Id)
             {
@@ -118,6 +118,7 @@ namespace myapp.Controllers
                     if (sequenceToUpdate == null) return NotFound();
 
                     sequenceToUpdate.Department = approvalSequence.Department;
+                    sequenceToUpdate.Section = approvalSequence.Section;
                     sequenceToUpdate.Status = approvalSequence.Status;
                     sequenceToUpdate.UpdatedAt = DateTime.UtcNow;
                     sequenceToUpdate.UpdatedBy = "system"; // Should be replaced with actual user
@@ -182,10 +183,29 @@ namespace myapp.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
+        public async Task<JsonResult> GetSections(string department)
+        {
+            var sections = await _context.Sections
+                                         .Where(s => s.Department.Name == department && s.Status == "Active")
+                                         .OrderBy(s => s.Name)
+                                         .Select(s => new { s.Id, s.Name })
+                                         .ToListAsync();
+            return Json(sections);
+        }
+
         // Helper method to populate ViewData
         private async Task PopulateViewData(ApprovalSequence? sequence)
         {
             ViewData["Departments"] = new SelectList(await _context.Departments.Where(d => d.Status == "Active").OrderBy(d=> d.Name).ToListAsync(), "Name", "Name", sequence?.Department);
+            if (sequence?.Department != null)
+            {
+                ViewData["Sections"] = new SelectList(await _context.Sections.Where(s => s.Department.Name == sequence.Department && s.Status == "Active").OrderBy(s => s.Name).ToListAsync(), "Name", "Name", sequence?.Section);
+            }
+            else
+            {
+                ViewData["Sections"] = new SelectList(new List<SelectListItem>(), "Name", "Name");
+            }
             
             var users = await _context.Users.Where(u => u.Role != "Admin").OrderBy(u => u.FirstName).ThenBy(u => u.LastName).ToListAsync();
             ViewData["Users"] = users.Select(u => new SelectListItem { Value = u.Id.ToString(), Text = u.FullName }).ToList();

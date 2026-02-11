@@ -39,7 +39,6 @@ namespace myapp.Controllers
 
             var viewModel = new ApprovalIndexViewModel();
             
-            // --- Reverted to Original Logic for Status Filter ---
             var statuses = Enum.GetValues(typeof(SupportRequestStatus)).Cast<SupportRequestStatus>();
             viewModel.StatusOptions = new SelectList(statuses, selectedStatus);
             viewModel.SelectedStatus = selectedStatus ?? SupportRequestStatus.Pending; // Default to Pending
@@ -91,65 +90,60 @@ namespace myapp.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Approve(int id)
-        {            
+        {
             var supportRequest = await _context.SupportRequests
                 .Include(r => r.CurrentApprover)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             if (supportRequest == null || string.IsNullOrEmpty(supportRequest.Department))
             {
-                return NotFound();
+                return Json(new { success = false, message = "ไม่พบรายการที่ต้องการ" });
             }
 
             var sequence = await _context.ApprovalSequences
                 .Include(s => s.Approvers.OrderBy(a => a.Order))
                 .FirstOrDefaultAsync(s => s.Department == supportRequest.Department);
 
-            if (sequence == null || !sequence.Approvers.Any())
+            var currentOrder = supportRequest.CurrentApprover?.Order ?? 0;
+            var nextApprover = sequence?.Approvers.FirstOrDefault(a => a.Order > currentOrder);
+
+            if (nextApprover == null)
             {
                 supportRequest.Status = SupportRequestStatus.Approved;
                 supportRequest.CurrentApproverId = null;
             }
             else
             {
-                var currentOrder = supportRequest.CurrentApprover?.Order ?? 0;
-                var nextApprover = sequence.Approvers.FirstOrDefault(a => a.Order > currentOrder);
-
-                if (nextApprover == null)
-                {
-                    supportRequest.Status = SupportRequestStatus.Approved;
-                    supportRequest.CurrentApproverId = null;
-                }
-                else
-                {
-                    supportRequest.CurrentApproverId = nextApprover.Id;
-                }
+                supportRequest.Status = SupportRequestStatus.InProgress;
+                supportRequest.CurrentApproverId = nextApprover.Id;
             }
 
             supportRequest.UpdatedAt = DateTime.UtcNow;
             supportRequest.UpdatedBy = User.FindFirstValue(ClaimTypes.Name);
             await _context.SaveChangesAsync();
-            
-            TempData["SuccessMessage"] = "รายการได้รับการอนุมัติเรียบร้อยแล้ว";
-            return RedirectToAction(nameof(Index));
+
+            return Json(new { success = true, newStatus = supportRequest.Status.ToString() });
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Reject(int id)
-        { 
+        {
             var supportRequest = await _context.SupportRequests.FindAsync(id);
-            if (supportRequest == null) return NotFound();
+            if (supportRequest == null)
+            {
+                return Json(new { success = false, message = "ไม่พบรายการที่ต้องการ" });
+            }
 
             supportRequest.Status = SupportRequestStatus.Rejected;
-            supportRequest.CurrentApproverId = null; // Clear the approver
+            supportRequest.CurrentApproverId = null; 
             supportRequest.UpdatedAt = DateTime.UtcNow;
             supportRequest.UpdatedBy = User.FindFirstValue(ClaimTypes.Name);
 
             await _context.SaveChangesAsync();
 
-            TempData["SuccessMessage"] = "รายการได้รับการปฏิเสธเรียบร้อยแล้ว";
-            return RedirectToAction(nameof(Index));
+            return Json(new { success = true, newStatus = supportRequest.Status.ToString() });
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using myapp.Data;
 
@@ -10,9 +11,11 @@ using myapp.Data;
 namespace myapp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260211013614_AddDepartmentSectionRelationship")]
+    partial class AddDepartmentSectionRelationship
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0-preview.3.24172.4");
@@ -97,9 +100,6 @@ namespace myapp.Migrations
 
                     b.Property<string>("Department")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Section")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Status")
@@ -461,9 +461,6 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Division")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DocumentNo")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("EmployeeId")

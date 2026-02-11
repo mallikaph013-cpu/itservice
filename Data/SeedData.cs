@@ -3,6 +3,7 @@ using myapp.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using BCrypt.Net;
+using System.Collections.Generic;
 
 namespace myapp.Data
 {
@@ -13,9 +14,9 @@ namespace myapp.Data
             // --- Seed Users ---
             var initialUsers = new[]
             {
-                new { EmployeeId = "admin", Password = "admin123", FirstName = "Admin", LastName = "User", Role = "Admin", Department = "IT", IsITStaff = false, IsDxStaff = true, CanApprove = true },
-                new { EmployeeId = "itsupport1", Password = "support123", FirstName = "IT", LastName = "Support 1", Role = "ITSupport", Department = "IT", IsITStaff = true, IsDxStaff = true, CanApprove = false },
-                new { EmployeeId = "006038", Password = "1234", FirstName = "Test", LastName = "User", Role = "User", Department = "IT", IsITStaff = false, IsDxStaff = false, CanApprove = true },
+                new { EmployeeId = "admin", Password = "admin123", FirstName = "Admin", LastName = "User", Role = "Admin", Department = "IT", Section = "Section A", IsITStaff = false, IsDxStaff = true, CanApprove = true },
+                new { EmployeeId = "itsupport1", Password = "support123", FirstName = "IT", LastName = "Support 1", Role = "ITSupport", Department = "IT", Section = "Section A", IsITStaff = true, IsDxStaff = true, CanApprove = false },
+                new { EmployeeId = "006038", Password = "1234", FirstName = "Test", LastName = "User", Role = "User", Department = "IT", Section = "Section B", IsITStaff = false, IsDxStaff = false, CanApprove = true },
             };
 
             foreach (var userData in initialUsers)
@@ -30,6 +31,7 @@ namespace myapp.Data
                         LastName = userData.LastName,
                         Role = userData.Role,
                         Department = userData.Department,
+                        Section = userData.Section,
                         IsITStaff = userData.IsITStaff,
                         IsDxStaff = userData.IsDxStaff,
                         CanApprove = userData.CanApprove
@@ -39,12 +41,23 @@ namespace myapp.Data
             await context.SaveChangesAsync(); // Save users to get their Ids
 
             // --- Seed Departments ---
-            var initialDepartments = new[] { "IT", "HR", "Finance" };
+            var initialDepartments = new[] { "IT", "HR", "Finance", "Production", "Engineering", "Sales", "Marketing", "Accounting", "Quality Assurance" };
             foreach (var deptName in initialDepartments)
             {
                 if (!await context.Departments.AnyAsync(d => d.Name == deptName))
                 {
                     context.Departments.Add(new Department { Name = deptName, Status = "Active" });
+                }
+            }
+            await context.SaveChangesAsync();
+
+            // --- Seed Sections ---
+            var initialSections = new[] { "Section A", "Section B", "Section C" };
+            foreach (var sectionName in initialSections)
+            {
+                if (!await context.Sections.AnyAsync(s => s.Name == sectionName))
+                {
+                    context.Sections.Add(new Section { Name = sectionName, Status = "Active" });
                 }
             }
             await context.SaveChangesAsync();

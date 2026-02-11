@@ -32,8 +32,7 @@ namespace myapp.Controllers
         public async Task<IActionResult> Index(string searchString)
         {
             var supportRequestsQuery = _context.SupportRequests
-                                                .Include(r => r.CurrentApprover)
-                                                .ThenInclude(a => a!.User)
+                                                .Include("CurrentApprover.User")
                                                 .AsQueryable();
 
             var isPrivilegedUser = User.IsInRole("Admin") || User.IsInRole("ITSupport");
@@ -69,8 +68,7 @@ namespace myapp.Controllers
             var statusToFilter = selectedStatus;
 
             var supportRequestsQuery = _context.SupportRequests
-                                                .Include(r => r.CurrentApprover)
-                                                .ThenInclude(a => a!.User)
+                                                .Include("CurrentApprover.User")
                                                 .Include(r => r.ResponsibleUser)
                                                 .AsQueryable();
 
@@ -237,11 +235,40 @@ namespace myapp.Controllers
                         supportRequest.AttachmentPath = "/uploads/" + uniqueFileName; 
                     }
 
+                    // --- DocumentNo Generation (Robust, No TimeZoneInfo) ---
+                    var utcNow = DateTime.UtcNow;
+                    var thaiTime = utcNow.AddHours(7); // Simple and reliable conversion to Thai time
+
+                    var year = thaiTime.ToString("yy");
+                    var month = thaiTime.Month;
+                    string monthCode;
+                    switch (month)
+                    {
+                        case 10: monthCode = "A"; break;
+                        case 11: monthCode = "B"; break;
+                        case 12: monthCode = "C"; break;
+                        default: monthCode = month.ToString(); break;
+                    }
+
+                    // Determine the start and end of the current month in UTC
+                    var startOfMonthThai = new DateTime(thaiTime.Year, thaiTime.Month, 1, 0, 0, 0, DateTimeKind.Unspecified);
+                    var startOfMonthUtc = startOfMonthThai.AddHours(-7);
+                    var endOfMonthUtc = startOfMonthUtc.AddMonths(1);
+
+                    var requestsInMonth = await _context.SupportRequests
+                        .CountAsync(r => r.CreatedAt >= startOfMonthUtc && r.CreatedAt < endOfMonthUtc);
+
+                    var runningNumber = requestsInMonth + 1;
+                    
+                    supportRequest.DocumentNo = $"SR-{year}{monthCode}-{runningNumber:D3}";
+                    // --- End of DocumentNo Generation ---
+
+
                     supportRequest.Status = SupportRequestStatus.Pending;
                     supportRequest.CurrentApproverId = null;
 
-                    supportRequest.CreatedAt = DateTime.UtcNow;
-                    supportRequest.UpdatedAt = DateTime.UtcNow;
+                    supportRequest.CreatedAt = utcNow;
+                    supportRequest.UpdatedAt = utcNow;
                     supportRequest.CreatedBy = User.Identity?.Name ?? "system";
                     supportRequest.UpdatedBy = User.Identity?.Name ?? "system";
 
@@ -320,16 +347,17 @@ namespace myapp.Controllers
                 return NotFound();
             }
 
-            var request = await _context.SupportRequests
-                .Include(r => r.CurrentApprover)
-                .ThenInclude(a => a!.User)
-                .FirstOrDefaultAsync(r => r.Id == id);
+            var supportRequest = await _context.SupportRequests
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (request == null)
+            if (supportRequest == null)
             {
                 return NotFound();
             }
-            return View(request);
+
+            ViewData["IsReadOnly"] = true;
+            return View("Edit", supportRequest);
         }
 
         public async Task<IActionResult> Edit(int? id)
@@ -428,7 +456,6 @@ namespace myapp.Controllers
             if (id == null) { return NotFound(); }
 
             var supportRequest = await _context.SupportRequests
-                .Include(s => s.CurrentApprover).ThenInclude(a => a!.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (supportRequest == null) { return NotFound(); }

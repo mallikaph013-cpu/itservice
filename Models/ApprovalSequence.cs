@@ -8,6 +8,9 @@ namespace myapp.Models
         [Display(Name = "ชื่อฝ่าย")]
         public string? Department { get; set; }
 
+        [Display(Name = "แผนก")]
+        public string? Section { get; set; }
+
         public List<Approver> Approvers { get; set; } = new List<Approver>();
 
         [Display(Name = "สถานะ")]

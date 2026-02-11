@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using myapp.Data;
 
@@ -10,9 +11,11 @@ using myapp.Data;
 namespace myapp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260211021946_AddSectionToApprovalSequence")]
+    partial class AddSectionToApprovalSequence
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0-preview.3.24172.4");
@@ -461,9 +464,6 @@ namespace myapp.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Division")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("DocumentNo")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("EmployeeId")
