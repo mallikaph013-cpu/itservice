@@ -32,7 +32,10 @@
             
             <div class="mb-3">
                 <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" type="password" placeholder="Leave blank to keep current password" />
+                <!-- Placeholder Input -->
+                <input type="text" id="PasswordPlaceholder" class="form-control" value="********" readonly style="cursor: pointer;" />
+                <!-- Real Password Input (hidden) -->
+                <input asp-for="Password" class="form-control" style="display: none;" autocomplete="new-password" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             
@@ -59,8 +62,8 @@
             </div>
 
             <div class="mb-3 form-check">
-                <input class="form-check-input" type="checkbox" id="it-staff-checkbox" />
-                <label class="form-check-label" for="it-staff-checkbox">
+                <input class="form-check-input" type="checkbox" asp-for="IsITStaff" />
+                <label class="form-check-label" asp-for="IsITStaff">
                     เป็นพนักงานฝ่าย IT (ตั้งค่าเริ่มต้น)
                 </label>
             </div>
@@ -97,23 +100,58 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const itStaffCheckbox = document.getElementById('it-staff-checkbox');
-            const departmentSelect = document.getElementById('Department');
-            const roleSelect = document.getElementById('Role');
+            // --- Robust Password Field Logic ---
+            const placeholder = document.getElementById('PasswordPlaceholder');
+            const realPassword = document.getElementById('Password');
 
-            if (itStaffCheckbox && departmentSelect && roleSelect) {
-                itStaffCheckbox.addEventListener('change', function () {
-                    if (this.checked) {
-                        // Set Department to 'IT' and Role to 'ITSupport'
-                        departmentSelect.value = 'IT';
-                        roleSelect.value = 'ITSupport';
-                    } else {
-                        // Reset to default when unchecked
-                        departmentSelect.value = ''; 
-                        roleSelect.value = 'User';
+            if (placeholder && realPassword) {
+                // When the placeholder is clicked, switch to the real password field
+                placeholder.addEventListener('click', function () {
+                    placeholder.style.display = 'none';
+                    realPassword.style.display = 'block';
+                    realPassword.focus();
+                });
+
+                // When the user leaves the real password field...
+                realPassword.addEventListener('blur', function () {
+                    // ...if it's empty, switch back to the placeholder
+                    if (realPassword.value === '') {
+                        realPassword.style.display = 'none';
+                        placeholder.style.display = 'block';
                     }
                 });
             }
+
+
+            // --- IT Staff Checkbox Logic (already working correctly) ---
+            const itStaffCheckbox = document.getElementById('IsITStaff');
+            const departmentSelect = document.getElementById('Department');
+            const roleSelect = document.getElementById('Role');
+
+            function syncUI() {
+                const isITSupport = departmentSelect.value === 'IT' && roleSelect.value === 'ITSupport';
+                if (itStaffCheckbox.checked !== isITSupport) {
+                    itStaffCheckbox.checked = isITSupport;
+                }
+            }
+
+            function setITDefaults() {
+                 if (itStaffCheckbox.checked) {
+                    departmentSelect.value = 'IT';
+                    roleSelect.value = 'ITSupport';
+                } else {
+                    if (roleSelect.value === 'ITSupport') {
+                       roleSelect.value = 'User'; 
+                    }
+                }
+            }
+            
+            if (itStaffCheckbox && departmentSelect && roleSelect) {
+                syncUI();
+                itStaffCheckbox.addEventListener('change', setITDefaults);
+                departmentSelect.addEventListener('change', syncUI);
+                roleSelect.addEventListener('change', syncUI);
+            }        
         });
     </script>
 }

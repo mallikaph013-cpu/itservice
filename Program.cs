@@ -3,11 +3,27 @@ using Microsoft.EntityFrameworkCore;
 using myapp.Data;
 using myapp.Services;
 using myapp.Models;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Force the app to run on port 8902 to avoid all conflicts
 builder.WebHost.UseUrls("http://localhost:8902");
+
+// --- Add Culture Configuration --- 
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[]
+    {
+        new CultureInfo("en-GB") // Use British English for dd/MM/yyyy format
+    };
+
+    options.DefaultRequestCulture = new RequestCulture("en-GB");
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
+
 
 // Add services to the container.
 var mvcBuilder = builder.Services.AddControllersWithViews();
@@ -77,6 +93,9 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+// --- Use Culture Configuration ---
+app.UseRequestLocalization();
 
 app.UseStaticFiles();
 app.UseRouting();

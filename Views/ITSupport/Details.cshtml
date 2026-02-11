@@ -129,13 +129,14 @@
                         <tbody>
                             @foreach (var history in Model.ApprovalHistories)
                             {
+                                var bangkokTime = history.ApprovalDate.AddHours(7);
                                 <tr>
                                     <td>@history.ApproverName</td>
                                     <td>
                                         @if(history.Approved) { <span class="badge bg-success">Approved</span> }
                                         else { <span class="badge bg-danger">Rejected</span> }
                                     </td>
-                                    <td>@history.ApprovalDate.ToLocalTime().ToString("g")</td>
+                                     <td>@bangkokTime.ToString("dd/MM/yyyy HH:mm")</td>
                                 </tr>
                                 @if (!string.IsNullOrEmpty(history.Comments))
                                 {

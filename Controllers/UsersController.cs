@@ -71,6 +71,10 @@ namespace myapp.Controllers
             {
                 return NotFound();
             }
+            // We no longer send a dummy password to the view.
+            // The view will handle the display logic.
+            user.Password = ""; // Clear the hash before sending to view
+
             ViewBag.Departments = new SelectList(await _context.Departments.Where(d => d.Status == "Active").ToListAsync(), "Name", "Name", user.Department);
             ViewBag.Sections = new SelectList(await _context.Sections.Where(s => s.Status == "Active").ToListAsync(), "Name", "Name", user.Section);
             return View(user);
@@ -86,6 +90,8 @@ namespace myapp.Controllers
                 return NotFound();
             }
 
+            // If password field is empty, it means user does not want to change it.
+            // We remove it from model state to prevent validation error from the [Required] attribute.
             if (string.IsNullOrEmpty(user.Password))
             {
                 ModelState.Remove("Password");
@@ -117,11 +123,11 @@ namespace myapp.Controllers
                     userToUpdate.IsDxStaff = user.IsDxStaff;
                     userToUpdate.CanApprove = user.CanApprove;
 
+                    // Only hash and update password if a new one was provided.
                     if (!string.IsNullOrEmpty(user.Password))
                     {
                         userToUpdate.Password = BCrypt.Net.BCrypt.HashPassword(user.Password); 
                     }
-
 
                     _context.Update(userToUpdate);
                     await _context.SaveChangesAsync();
@@ -139,6 +145,7 @@ namespace myapp.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            
             ViewBag.Departments = new SelectList(await _context.Departments.Where(d => d.Status == "Active").ToListAsync(), "Name", "Name", user.Department);
             ViewBag.Sections = new SelectList(await _context.Sections.Where(s => s.Status == "Active").ToListAsync(), "Name", "Name", user.Section);
             return View(user);

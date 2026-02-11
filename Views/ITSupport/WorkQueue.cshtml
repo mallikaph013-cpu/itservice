@@ -53,13 +53,14 @@
             <tbody>
                 @foreach (var item in Model.SupportRequests)
                 {
+                    var bangkokTime = item.CreatedAt.AddHours(7);
                     <tr>
                         <td>@Html.DisplayFor(modelItem => item.RequesterName)</td>
                         <td>@Html.DisplayFor(modelItem => item.Department)</td>
                         <td>@Html.DisplayFor(modelItem => item.RequestType)</td>
                         <td>@Html.DisplayFor(modelItem => item.Urgency)</td>
                         <td>@Html.DisplayFor(modelItem => item.Status)</td>
-                        <td>@item.CreatedAt.ToLocalTime().ToString("g")</td>
+                        <td>@bangkokTime.ToString("dd/MM/yyyy HH:mm")</td>
                         <td>@(item.ResponsibleUser?.FullName ?? "-")</td>
                         <td>
                             <div class="d-flex justify-content-end gap-1">

@@ -105,6 +105,7 @@
                                 case SupportRequestStatus.Rejected:
                                     statusClass = "danger"; statusIcon = "fa-times-circle"; break;
                             }
+                            var bangkokTime = item.CreatedAt.AddHours(7);
 
                             <tr>
                                 <td>@Html.DisplayFor(modelItem => item.RequesterName)</td>
@@ -127,7 +128,7 @@
                                         <text>-</text>
                                     }
                                 </td>
-                                <td>@item.CreatedAt.ToLocalTime().ToString("g")</td>
+                                <td>@bangkokTime.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td class="text-center">
                                     <div class="btn-group" role="group">
                                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="รายละเอียด">
