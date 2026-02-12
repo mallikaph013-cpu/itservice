@@ -1,131 +1,153 @@
-@model myapp.Models.ReportViewModel
-@using myapp.Models
+@model myapp.ViewModels.ReportIndexViewModel
 
-@{
-    ViewData["Title"] = "รายงานสรุปการแจ้งซ่อม";
-
-    // Create a custom timezone for UTC+7 (Thailand) to ensure it works in any environment.
-    var thaiZone = TimeZoneInfo.CreateCustomTimeZone(
-        "SE Asia Standard Time", 
-        TimeSpan.FromHours(7), 
-        "(UTC+07:00) Bangkok, Hanoi, Jakarta", 
-        "SE Asia Standard Time"
-    );
+@{ 
+    ViewData["Title"] = "Support Request Reports";
 }
 
-@section Styles {
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
-    <style>
-        .card-header-flex {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .table th {
-            font-weight: 600; /* Make headers bolder */
-        }
-    </style>
-}
-
-<div class="card shadow-sm border-light">
-    <div class="card-header bg-white py-3 card-header-flex">
-        <h1 class="mb-0 h4" style="color: #E67E22;">@ViewData["Title"]</h1>
-        <a asp-controller="Report" asp-action="ExportToExcel" class="btn btn-success">
-            <i class="fas fa-file-excel me-1"></i> Export to Excel
-        </a>
+<div class="container-fluid py-4">
+    <!-- Summary Cards -->
+    <div class="row">
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Requests</p>
+                                <h5 class="font-weight-bolder">@Model.TotalRequests</h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                                <i class="ni ni-collection text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Pending</p>
+                                <h5 class="font-weight-bolder">@Model.PendingRequests</h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                                <i class="ni ni-time-alarm text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">In Progress</p>
+                                <h5 class="font-weight-bolder">@Model.InProgressRequests</h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
+                                <i class="ni ni-settings-gear-65 text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-sm-6">
+            <div class="card">
+                <div class="card-body p-3">
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="numbers">
+                                <p class="text-sm mb-0 text-uppercase font-weight-bold">Done</p>
+                                <h5 class="font-weight-bolder">@Model.DoneRequests</h5>
+                            </div>
+                        </div>
+                        <div class="col-4 text-end">
+                            <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                                <i class="ni ni-check-bold text-lg opacity-10" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th class="py-3">ผู้ร้องขอ</th>
-                        <th class="py-3">แผนก</th>
-                        <th class="py-3">ประเภท</th>
-                        <th class="py-3">ผู้รับผิดชอบ</th>
-                        <th class="py-3">ความเร่งด่วน</th>
-                        <th class="py-3">สถานะ</th>
-                        <th class="py-3">วันที่แจ้ง</th>
-                        <th class="py-3">วันที่เสร็จสิ้น</th>
-                        <th class="py-3 text-end">ระยะเวลา</th>
-                        <th class="py-3 text-center">การดำเนินการ</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model == null || !Model.ReportItems.Any())
-                    {
-                        <tr>
-                            <td colspan="10" class="text-center text-muted py-5">
-                                <h4>ไม่พบข้อมูล</h4>
-                                <p>ยังไม่มีรายการแจ้งซ่อมในระบบ</p>
-                            </td>
-                        </tr>
-                    }
-                    else
-                    {
-                        @foreach (var item in Model.ReportItems)
-                        {
-                            var statusClass = "secondary";
-                            var statusIcon = "fa-circle-notch";
-                            switch (item.Request.Status)
-                            {
-                                case SupportRequestStatus.Pending:
-                                    statusClass = "warning text-dark"; statusIcon = "fa-clock"; break;
-                                case SupportRequestStatus.InProgress:
-                                    statusClass = "info text-dark"; statusIcon = "fa-sync-alt"; break;
-                                case SupportRequestStatus.Approved:
-                                    statusClass = "primary"; statusIcon = "fa-thumbs-up"; break;
-                                case SupportRequestStatus.Done:
-                                    statusClass = "success"; statusIcon = "fa-check-circle"; break;
-                                case SupportRequestStatus.Rejected:
-                                    statusClass = "danger"; statusIcon = "fa-times-circle"; break;
-                            }
-                            
-                            var createdDateLocal = TimeZoneInfo.ConvertTimeFromUtc(item.Request.CreatedAt, thaiZone);
-                            var updatedDateLocal = TimeZoneInfo.ConvertTimeFromUtc(item.Request.UpdatedAt, thaiZone);
-
-                            string resolutionTimeDisplay = "-";
-                            if(item.Request.Status == SupportRequestStatus.Done)
-                            {
-                                TimeSpan duration = item.Request.UpdatedAt - item.Request.CreatedAt;
-                                var parts = new List<string>();
-                                if (duration.Days > 0) parts.Add($"{duration.Days} วัน");
-                                if (duration.Hours > 0) parts.Add($"{duration.Hours} ชั่วโมง");
-                                if (duration.Minutes > 0) parts.Add($"{duration.Minutes} นาที");
-                                
-                                resolutionTimeDisplay = parts.Any() ? string.Join(" ", parts) : "< 1 นาที";
-                            }
-
-                            <tr>
-                                <td>@Html.DisplayFor(modelItem => item.Request.RequesterName)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Request.Department)</td>
-                                <td>@Html.DisplayFor(modelItem => item.Request.RequestType)</td>
-                                <td>@(item.Request.ResponsibleUser?.FullName ?? "-")</td>
-                                <td>@Html.DisplayFor(modelItem => item.Request.Urgency)</td>
-                                <td>
-                                    <span class="badge bg-@statusClass rounded-pill px-2 py-1 d-inline-flex align-items-center">
-                                        <i class="fas @statusIcon me-1"></i>
-                                        @Html.DisplayFor(modelItem => item.Request.Status)
-                                    </span>
-                                </td>
-                                <td>@createdDateLocal.ToString("dd/MM/yy HH:mm")</td>
-                                <td>
-                                    @(item.Request.Status == SupportRequestStatus.Done ? updatedDateLocal.ToString("dd/MM/yy HH:mm") : "-")
-                                </td>
-                                <td class="text-end">@resolutionTimeDisplay</td>
-                                <td class="text-center">
-                                    <a asp-controller="Report" asp-action="GeneratePdf" asp-route-id="@item.Request.Id" class="btn btn-sm btn-danger" title="พิมพ์ PDF">
-                                        <i class="fas fa-file-pdf"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    }
-                </tbody>
-            </table>
+    <!-- Filter and Table -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6>Support Requests</h6>
+                        <form asp-action="Index" method="get" class="d-flex align-items-center">
+                            <div class="form-group mb-0 me-2">
+                                <select asp-for="SelectedStatus" asp-items="Model.StatusOptions" class="form-control form-control-sm">
+                                    <option value="">All Statuses</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-sm btn-primary mb-0">Filter</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-body px-0 pt-0 pb-2">
+                    <div class="table-responsive p-0">
+                        <table class="table align-items-center mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Document No</th>
+                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Subject</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Requester</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Created At</th>
+                                    <th class="text-secondary opacity-7"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Requests)
+                                {
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex px-2 py-1">
+                                                <div class="d-flex flex-column justify-content-center">
+                                                    <h6 class="mb-0 text-sm">@item.DocumentNo</h6>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p class="text-xs font-weight-bold mb-0 text-truncate" style="max-width: 250px;">@item.ProblemDescription</p>
+                                        </td>
+                                        <td class="align-middle text-center text-sm">
+                                            <p class="text-xs font-weight-bold mb-0">@item.RequesterName</p>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge badge-sm @(item.Status == SupportRequestStatus.Done ? "bg-gradient-success" : (item.Status == SupportRequestStatus.InProgress ? "bg-gradient-warning" : (item.Status == SupportRequestStatus.Pending ? "bg-gradient-danger" : "bg-gradient-secondary")))">@item.Status</span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="text-secondary text-xs font-weight-bold">@item.CreatedAt.ToString("g")</span>
+                                        </td>
+                                        <td class="align-middle">
+                                            <a asp-action="GeneratePdf" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary mb-0" target="_blank">PDF</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

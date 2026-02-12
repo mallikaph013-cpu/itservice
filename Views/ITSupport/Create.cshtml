@@ -1,8 +1,23 @@
 @model myapp.Models.SupportRequest
+@using myapp.Models
 
-@{{
+@{
     ViewData["Title"] = "แจ้งซ่อม";
-}}
+
+    // Check for permissions and prepare the SAP problem list on the server-side
+    bool canManageSapAdvanced = User.IsInRole("Admin") || User.IsInRole("ITSupport") || (User.FindFirst("IsDxStaff")?.Value == "True");
+
+    IEnumerable<SelectListItem> sapProblemItems = Html.GetEnumSelectList<SAPProblemType>();
+    if (!canManageSapAdvanced)
+    {
+        var restrictedValues = new[]
+        {
+            ((int)SAPProblemType.NewRegistration).ToString(),
+            ((int)SAPProblemType.CreateBOM).ToString()
+        };
+        sapProblemItems = sapProblemItems.Where(item => !restrictedValues.Contains(item.Value));
+    }
+}
 
 <h1>IT Service Request</h1>
 
@@ -66,7 +81,7 @@
              <!-- SAP Problem Selection (Hidden by default) -->
             <div id="sap-problem-selection" class="mb-3" style="display:none;">
                 <label asp-for="SAPProblem" class="form-label"></label>
-                <select id="SAPProblem" asp-for="SAPProblem" class="form-select" asp-items="Html.GetEnumSelectList<myapp.Models.SAPProblemType>()">
+                <select id="SAPProblem" asp-for="SAPProblem" class="form-select" asp-items="@sapProblemItems">
                      <option value="" selected>เลือกประเภทปัญหา SAP</option>
                 </select>
                 <span asp-validation-for="SAPProblem" class="text-danger"></span>
@@ -224,7 +239,7 @@
 </style>
 
 @section Scripts {
-    @{{await Html.RenderPartialAsync("_ValidationScriptsPartial");}}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
         $(document).ready(function () {
             // --- Enum Values from C# ---
