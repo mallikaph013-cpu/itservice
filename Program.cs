@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using myapp.Data;
 using myapp.Services;
@@ -11,6 +12,10 @@ using System.IO;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Support hosting under an IIS virtual directory (e.g. /itservice)
+// Read from configuration `PATH_BASE` or the environment variable `ASPNETCORE_APPL_PATH`.
+var pathBase = builder.Configuration["PATH_BASE"] ?? Environment.GetEnvironmentVariable("ASPNETCORE_APPL_PATH");
 
 // Configure Kestrel to use dynamic ports
 //builder.WebHost.UseUrls("http://127.0.0.1:0", "https://127.0.0.1:0");
@@ -88,7 +93,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         // ต้องตั้งค่า SecurePolicy เป็น SameAsRequest หรือใส่เงื่อนไข
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
         options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.Name = "MyAppAuthCookie"; 
+        options.Cookie.Name = "MyAppAuthCookie";
+        // If the app is hosted under a virtual directory, ensure the cookie path matches.
+        if (!string.IsNullOrEmpty(pathBase))
+        {
+            options.Cookie.Path = pathBase;
+        }
     });
 
 builder.Services.AddAuthorization(options =>
