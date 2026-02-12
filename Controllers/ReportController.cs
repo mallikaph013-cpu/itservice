@@ -131,6 +131,7 @@ namespace myapp.Controllers
 
             var requests = await _context.SupportRequests
                 .Include(s => s.ResponsibleUser)
+                .AsNoTracking()
                 .OrderByDescending(s => s.CreatedAt)
                 .ToListAsync();
 
@@ -138,16 +139,25 @@ namespace myapp.Controllers
             {
                 var worksheet = workbook.Worksheets.Add("SupportRequests");
                 var currentRow = 1;
+
+                // Header
                 worksheet.Cell(currentRow, 1).Value = "ผู้แจ้ง";
                 worksheet.Cell(currentRow, 2).Value = "แผนก";
                 worksheet.Cell(currentRow, 3).Value = "ประเภท";
                 worksheet.Cell(currentRow, 4).Value = "ผู้รับผิดชอบ";
                 worksheet.Cell(currentRow, 5).Value = "ความเร่งด่วน";
                 worksheet.Cell(currentRow, 6).Value = "สถานะ";
-                worksheet.Cell(currentRow, 7).Value = "วันที่แจ้ง";
-                worksheet.Cell(currentRow, 8).Value = "วันที่เสร็จสิ้น";
+                worksheet.Cell(currentRow, 7).Value = "วันที่แจ้ง (UTC+7)";
+                worksheet.Cell(currentRow, 8).Value = "วันที่เสร็จสิ้น (UTC+7)";
                 worksheet.Cell(currentRow, 9).Value = "ระยะเวลา";
 
+                 // Style Header
+                var headerRange = worksheet.Range(currentRow, 1, currentRow, 9);
+                headerRange.Style.Font.Bold = true;
+                headerRange.Style.Fill.BackgroundColor = XLColor.LightGray;
+                headerRange.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+                // Body
                 foreach (var item in requests)
                 {
                     currentRow++;
@@ -157,8 +167,16 @@ namespace myapp.Controllers
                     worksheet.Cell(currentRow, 4).Value = item.ResponsibleUser?.FullName ?? "-";
                     worksheet.Cell(currentRow, 5).Value = item.Urgency.ToString();
                     worksheet.Cell(currentRow, 6).Value = item.Status.ToString();
-                    worksheet.Cell(currentRow, 7).Value = item.CreatedAt;
-                    worksheet.Cell(currentRow, 8).Value = item.Status == SupportRequestStatus.Done ? item.UpdatedAt.ToString("dd/MM/yy HH:mm") : "-";
+                    worksheet.Cell(currentRow, 7).Value = item.CreatedAt.AddHours(7); // Convert to BKK time
+                    
+                    if (item.Status == SupportRequestStatus.Done)
+                    {
+                        worksheet.Cell(currentRow, 8).Value = item.UpdatedAt.AddHours(7);
+                    }
+                    else
+                    {
+                        worksheet.Cell(currentRow, 8).Value = "-";
+                    }
                     
                     string resolutionTimeDisplay = "-";
                     if (item.Status == SupportRequestStatus.Done)
@@ -173,14 +191,20 @@ namespace myapp.Controllers
                     worksheet.Cell(currentRow, 9).Value = resolutionTimeDisplay;
                 }
 
+                // Formatting
+                worksheet.Column(7).Style.NumberFormat.Format = "dd/MM/yyyy HH:mm";
+                worksheet.Column(8).Style.NumberFormat.Format = "dd/MM/yyyy HH:mm";
+                worksheet.Columns().AdjustToContents();
+
                 using (var stream = new MemoryStream())
                 {
                     workbook.SaveAs(stream);
                     var content = stream.ToArray();
+                    var fileName = $"SupportRequests_Report_{DateTime.Now:yyyyMMdd_HHmm}.xlsx";
                     return File(
                         content,
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        "SupportRequestsReport.xlsx");
+                        fileName);
                 }
             }
         }

@@ -1,38 +1,57 @@
+
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using myapp.Data;
 using myapp.Services;
-using myapp.Models;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
+using QuestPDF.Infrastructure;
+using QuestPDF.Drawing;
+using System.IO;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Force the app to run on port 8902 to avoid all conflicts
-builder.WebHost.UseUrls("http://localhost:8902");
+// Configure services for forwarded headers
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+    // The following lines are important for proxy environments.
+    options.KnownProxies.Clear();
+    options.KnownNetworks.Clear();
+});
+
+// Configure QuestPDF License
+QuestPDF.Settings.License = LicenseType.Community;
+
+// --- Register Fonts for QuestPDF ---
+var fontDirectory = Path.Combine(builder.Environment.ContentRootPath, "wwwroot", "fonts");
+Action<string> RegisterFontIfExists = (fileName) =>
+{
+    var fontPath = Path.Combine(fontDirectory, fileName);
+    if (File.Exists(fontPath))
+    {
+        using var stream = File.OpenRead(fontPath);
+        FontManager.RegisterFont(stream);
+    }
+};
+RegisterFontIfExists("Sarabun-Regular.ttf");
+RegisterFontIfExists("Sarabun-Bold.ttf");
+RegisterFontIfExists("Sarabun-Italic.ttf");
+RegisterFontIfExists("Sarabun-BoldItalic.ttf");
+// --- End Font Registration ---
 
 // --- Add Culture Configuration --- 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-    var supportedCultures = new[]
-    {
-        new CultureInfo("en-GB") // Use British English for dd/MM/yyyy format
-    };
-
+    var supportedCultures = new[] { new CultureInfo("en-GB") };
     options.DefaultRequestCulture = new RequestCulture("en-GB");
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
 });
 
-
 // Add services to the container.
-var mvcBuilder = builder.Services.AddControllersWithViews();
-
-if (builder.Environment.IsDevelopment())
-{
-    mvcBuilder.AddRazorRuntimeCompilation();
-}
-
+builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ActivityLogService>();
 builder.Services.AddScoped<NavigationService>();
@@ -47,7 +66,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
-        options.AccessDeniedPath = "/Account/AccessDenied"; // Also specify the access denied path
+        options.AccessDeniedPath = "/Account/AccessDenied";
         options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
         options.SlidingExpiration = true;
     });
@@ -55,13 +74,11 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("IsITSupport", policy => policy.RequireRole("ITSupport"));
-
     options.AddPolicy("CanAccessWorkQueue", policy =>
         policy.RequireAssertion(context =>
             context.User.IsInRole("Admin") ||
             context.User.IsInRole("ITSupport") ||
             context.User.HasClaim(c => c.Type == "IsDxStaff" && c.Value == "True")));
-
     options.AddPolicy("IsApprover", policy =>
         policy.RequireClaim("CanApprove", "True"));
 });
@@ -75,8 +92,6 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
-        // This will apply pending migrations and create the database if it doesn't exist.
-        // It ensures data is preserved between application restarts.
         context.Database.Migrate();
         await SeedData.Initialize(context);
     }
@@ -88,23 +103,22 @@ using (var scope = app.Services.CreateScope())
 }
 
 // Configure the HTTP request pipeline.
+app.UseForwardedHeaders(); // This must be one of the first middleware.
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-// --- Use Culture Configuration ---
 app.UseRequestLocalization();
-
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Set the default route to the Login page.
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Account}/{action=Login}/{id?}");
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

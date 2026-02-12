@@ -472,7 +472,6 @@
 /home/user/itservice/obj/Debug/net9.0/myapp.RazorAssemblyInfo.cs
 /home/user/itservice/obj/Debug/net9.0/myapp.sourcelink.json
 /home/user/itservice/obj/Debug/net9.0/scopedcss/bundle/myapp.styles.css
-/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-khy4lop6wu.gz
 /home/user/itservice/obj/Debug/net9.0/compressed/pa7u3kzeoc-jw9z2yafxp.gz
 /home/user/itservice/obj/Debug/net9.0/compressed/rj5ip4k8mp-q9egs9rlws.gz
 /home/user/itservice/obj/Debug/net9.0/compressed/srsdvfsejk-angeebt5ch.gz
@@ -539,3 +538,5 @@
 /home/user/itservice/obj/Debug/net9.0/myapp.pdb
 /home/user/itservice/obj/Debug/net9.0/myapp.genruntimeconfig.cache
 /home/user/itservice/obj/Debug/net9.0/ref/myapp.dll
+/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-pprxme7a4m.gz
+/home/user/itservice/obj/Debug/net9.0/compressed/3qmybscvz2-lv0tp55kxx.gz

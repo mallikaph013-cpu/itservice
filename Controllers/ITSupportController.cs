@@ -44,7 +44,7 @@ namespace myapp.Controllers
         public async Task<IActionResult> Index(string searchString)
         {
             var supportRequestsQuery = _context.SupportRequests
-                                                .Include("CurrentApprover.User")
+                                                .Include(s => s.CurrentApprover.User)
                                                 .AsQueryable();
 
             var isPrivilegedUser = User.IsInRole("Admin") || User.IsInRole("ITSupport");

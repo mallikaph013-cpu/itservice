@@ -9,6 +9,10 @@
       "PackagePath": "staticwebassets/css/custom.css"
     },
     {
+      "Id": "/home/user/itservice/wwwroot/css/fonts.css",
+      "PackagePath": "staticwebassets/css/fonts.css"
+    },
+    {
       "Id": "/home/user/itservice/wwwroot/css/login.css",
       "PackagePath": "staticwebassets/css/login.css"
     },
@@ -19,6 +23,26 @@
     {
       "Id": "/home/user/itservice/wwwroot/favicon.png",
       "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "/home/user/itservice/wwwroot/fonts/.gitkeep",
+      "PackagePath": "staticwebassets/fonts/.gitkeep"
+    },
+    {
+      "Id": "/home/user/itservice/wwwroot/fonts/Sarabun-Bold.ttf",
+      "PackagePath": "staticwebassets/fonts/Sarabun-Bold.ttf"
+    },
+    {
+      "Id": "/home/user/itservice/wwwroot/fonts/Sarabun-BoldItalic.ttf",
+      "PackagePath": "staticwebassets/fonts/Sarabun-BoldItalic.ttf"
+    },
+    {
+      "Id": "/home/user/itservice/wwwroot/fonts/Sarabun-Italic.ttf",
+      "PackagePath": "staticwebassets/fonts/Sarabun-Italic.ttf"
+    },
+    {
+      "Id": "/home/user/itservice/wwwroot/fonts/Sarabun-Regular.ttf",
+      "PackagePath": "staticwebassets/fonts/Sarabun-Regular.ttf"
     },
     {
       "Id": "/home/user/itservice/wwwroot/images/Banner ASI.png",

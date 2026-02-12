@@ -20,6 +20,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
         .table th {
             font-weight: 600; /* Make headers bolder */
@@ -30,6 +32,9 @@
 <div class="card shadow-sm border-light">
     <div class="card-header bg-white py-3 card-header-flex">
         <h1 class="mb-0 h4" style="color: #E67E22;">@ViewData["Title"]</h1>
+        <a asp-controller="Report" asp-action="ExportToExcel" class="btn btn-success">
+            <i class="fas fa-file-excel me-1"></i> Export to Excel
+        </a>
     </div>
 
     <div class="card-body">
@@ -37,7 +42,7 @@
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th class="py-3">ผู้แจ้ง</th>
+                        <th class="py-3">ผู้ร้องขอ</th>
                         <th class="py-3">แผนก</th>
                         <th class="py-3">ประเภท</th>
                         <th class="py-3">ผู้รับผิดชอบ</th>
@@ -46,13 +51,14 @@
                         <th class="py-3">วันที่แจ้ง</th>
                         <th class="py-3">วันที่เสร็จสิ้น</th>
                         <th class="py-3 text-end">ระยะเวลา</th>
+                        <th class="py-3 text-center">การดำเนินการ</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (Model == null || !Model.ReportItems.Any())
                     {
                         <tr>
-                            <td colspan="9" class="text-center text-muted py-5">
+                            <td colspan="10" class="text-center text-muted py-5">
                                 <h4>ไม่พบข้อมูล</h4>
                                 <p>ยังไม่มีรายการแจ้งซ่อมในระบบ</p>
                             </td>
@@ -110,6 +116,11 @@
                                     @(item.Request.Status == SupportRequestStatus.Done ? updatedDateLocal.ToString("dd/MM/yy HH:mm") : "-")
                                 </td>
                                 <td class="text-end">@resolutionTimeDisplay</td>
+                                <td class="text-center">
+                                    <a asp-controller="Report" asp-action="GeneratePdf" asp-route-id="@item.Request.Id" class="btn btn-sm btn-danger" title="พิมพ์ PDF">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </a>
+                                </td>
                             </tr>
                         }
                     }

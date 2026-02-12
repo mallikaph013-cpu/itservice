@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace myapp.Controllers
 {
-    [Authorize]
     public class HomeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -17,7 +16,7 @@ namespace myapp.Controllers
             _context = context;
         }
 
-        [AllowAnonymous]
+        [Authorize]
         public async Task<IActionResult> Index()
         {
             // Corrected to filter for "Published" status instead of "Active"
@@ -29,6 +28,7 @@ namespace myapp.Controllers
             return View(publishedNews);
         }
 
+        [Authorize]
         public IActionResult Privacy()
         {
             return View();

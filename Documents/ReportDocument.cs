@@ -1,4 +1,3 @@
-
 using myapp.Models;
 using QuestPDF.Fluent;
 using QuestPDF.Infrastructure;
@@ -21,6 +20,9 @@ namespace myapp.Documents
         {
             container.Page(page =>
             {
+                // Set the default font for the entire document
+                page.DefaultTextStyle(x => x.FontFamily("Sarabun").FontSize(14));
+
                 page.Header().Text("Support Requests Report");
 
                 page.Content().Column(column =>

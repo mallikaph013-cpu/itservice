@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "9OSVMFQjUiDf+fKrRguWQNBoAZBuVryCPL8Btu1Gijw=",
+  "Hash": "TMZyI6rLsJbLNhMR+AP3aRbaQQIADY5vRKjaZ8XvSrU=",
   "Source": "myapp",
   "BasePath": "_content/myapp",
   "Mode": "Default",
@@ -17,12 +17,12 @@
   ],
   "Assets": [
     {
-      "Identity": "/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-khy4lop6wu.gz",
+      "Identity": "/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-pprxme7a4m.gz",
       "SourceId": "myapp",
       "SourceType": "Discovered",
       "ContentRoot": "/home/user/itservice/obj/Debug/net9.0/compressed/",
       "BasePath": "_content/myapp",
-      "RelativePath": "app#[.{fingerprint=khy4lop6wu}]?.css.gz",
+      "RelativePath": "app#[.{fingerprint=pprxme7a4m}]?.css.gz",
       "AssetKind": "All",
       "AssetMode": "All",
       "AssetRole": "Alternative",
@@ -31,8 +31,8 @@
       "RelatedAsset": "/home/user/itservice/wwwroot/app.css",
       "AssetTraitName": "Content-Encoding",
       "AssetTraitValue": "gzip",
-      "Fingerprint": "94agr1gil9",
-      "Integrity": "x0m7XltSotGk6iXETVjXRvmV/XgPLqs1tq85ADpHL3E=",
+      "Fingerprint": "jkwn8513kx",
+      "Integrity": "Xe+Kvid9SjLPxoX1i8YU0v6PR/vbS4e6swb0bYrPV+0=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "/home/user/itservice/wwwroot/app.css"
@@ -141,6 +141,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "/home/user/itservice/wwwroot/lib/bootstrap/dist/css/bootstrap-grid.min.css.map"
+    },
+    {
+      "Identity": "/home/user/itservice/obj/Debug/net9.0/compressed/3qmybscvz2-lv0tp55kxx.gz",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/user/itservice/obj/Debug/net9.0/compressed/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "css/fonts#[.{fingerprint=lv0tp55kxx}]?.css.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "/home/user/itservice/wwwroot/css/fonts.css",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "gltzekl0vh",
+      "Integrity": "bJH7OeF1OF638e2vZhKRrr3WtYNAhbFZBMtMf0zOMaw=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "/home/user/itservice/wwwroot/css/fonts.css"
     },
     {
       "Identity": "/home/user/itservice/obj/Debug/net9.0/compressed/40mh9o3j05-iovd86k7lj.gz",
@@ -1123,8 +1144,8 @@
       "RelatedAsset": "",
       "AssetTraitName": "",
       "AssetTraitValue": "",
-      "Fingerprint": "khy4lop6wu",
-      "Integrity": "aNPcLFwdCCGS2v1guSR64Htd4Ly5uclT7taAptnMPbs=",
+      "Fingerprint": "pprxme7a4m",
+      "Integrity": "czfLu/9pI7rm4hAn5Msjw3S5K9dcvWN2v5oo9vRDY8U=",
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/app.css"
@@ -1149,6 +1170,27 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/css/custom.css"
+    },
+    {
+      "Identity": "/home/user/itservice/wwwroot/css/fonts.css",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/user/itservice/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "css/fonts#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "lv0tp55kxx",
+      "Integrity": "sea3Jjqwjqk5tY9OXhwvrunQFkw6Fy/HzgxC9JAPkqA=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/css/fonts.css"
     },
     {
       "Identity": "/home/user/itservice/wwwroot/css/login.css",
@@ -1212,6 +1254,111 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot/favicon.png"
+    },
+    {
+      "Identity": "/home/user/itservice/wwwroot/fonts/.gitkeep",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/user/itservice/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "fonts/#[.{fingerprint}]?.gitkeep",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "5ipweew5fc",
+      "Integrity": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/fonts/.gitkeep"
+    },
+    {
+      "Identity": "/home/user/itservice/wwwroot/fonts/Sarabun-Bold.ttf",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/user/itservice/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "fonts/Sarabun-Bold#[.{fingerprint}]?.ttf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "pd8nu1741y",
+      "Integrity": "04MIyifQZ7mht5AGM3wfmmbCmqAW2WqdiNOAHaf6g7k=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/fonts/Sarabun-Bold.ttf"
+    },
+    {
+      "Identity": "/home/user/itservice/wwwroot/fonts/Sarabun-BoldItalic.ttf",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/user/itservice/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "fonts/Sarabun-BoldItalic#[.{fingerprint}]?.ttf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "a5asneytu2",
+      "Integrity": "XvG5MPmjr+1eyDN0tWF8rTqJ2RqPxeNy3AKMKqKVD40=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/fonts/Sarabun-BoldItalic.ttf"
+    },
+    {
+      "Identity": "/home/user/itservice/wwwroot/fonts/Sarabun-Italic.ttf",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/user/itservice/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "fonts/Sarabun-Italic#[.{fingerprint}]?.ttf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ncecmzt7g8",
+      "Integrity": "WVqWjpeouBeaa94tdNT5GxFHXc+2zycAN9dtjtcRYOo=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/fonts/Sarabun-Italic.ttf"
+    },
+    {
+      "Identity": "/home/user/itservice/wwwroot/fonts/Sarabun-Regular.ttf",
+      "SourceId": "myapp",
+      "SourceType": "Discovered",
+      "ContentRoot": "/home/user/itservice/wwwroot/",
+      "BasePath": "_content/myapp",
+      "RelativePath": "fonts/Sarabun-Regular#[.{fingerprint}]?.ttf",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "ecam1dkmm4",
+      "Integrity": "Im1PNo+8BFeZDd7yaSZ5ut/SwaTonlrE1DwQundDsvE=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot/fonts/Sarabun-Regular.ttf"
     },
     {
       "Identity": "/home/user/itservice/wwwroot/images/Banner ASI.png",
@@ -2351,12 +2498,12 @@
   "Endpoints": [
     {
       "Route": "app.css",
-      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-khy4lop6wu.gz",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-pprxme7a4m.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000636132316"
+          "Quality": "0.000645577792"
         }
       ],
       "ResponseHeaders": [
@@ -2366,15 +2513,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1571"
+          "Value": "1548"
         },
         {
           "Name": "ETag",
-          "Value": "\"x0m7XltSotGk6iXETVjXRvmV/XgPLqs1tq85ADpHL3E=\""
+          "Value": "\"Xe+Kvid9SjLPxoX1i8YU0v6PR/vbS4e6swb0bYrPV+0=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 15 Jan 2026 04:01:38 GMT"
+          "Value": "Wed, 11 Feb 2026 09:22:07 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2394,13 +2541,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"aNPcLFwdCCGS2v1guSR64Htd4Ly5uclT7taAptnMPbs=\""
+          "Value": "W/\"czfLu/9pI7rm4hAn5Msjw3S5K9dcvWN2v5oo9vRDY8U=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-aNPcLFwdCCGS2v1guSR64Htd4Ly5uclT7taAptnMPbs="
+          "Value": "sha256-czfLu/9pI7rm4hAn5Msjw3S5K9dcvWN2v5oo9vRDY8U="
         }
       ]
     },
@@ -2415,7 +2562,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2900"
+          "Value": "2817"
         },
         {
           "Name": "Content-Type",
@@ -2423,11 +2570,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"aNPcLFwdCCGS2v1guSR64Htd4Ly5uclT7taAptnMPbs=\""
+          "Value": "\"czfLu/9pI7rm4hAn5Msjw3S5K9dcvWN2v5oo9vRDY8U=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 15 Jan 2026 04:01:38 GMT"
+          "Value": "Wed, 11 Feb 2026 09:22:07 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2437,13 +2584,13 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-aNPcLFwdCCGS2v1guSR64Htd4Ly5uclT7taAptnMPbs="
+          "Value": "sha256-czfLu/9pI7rm4hAn5Msjw3S5K9dcvWN2v5oo9vRDY8U="
         }
       ]
     },
     {
       "Route": "app.css.gz",
-      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-khy4lop6wu.gz",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-pprxme7a4m.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -2452,7 +2599,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1571"
+          "Value": "1548"
         },
         {
           "Name": "Content-Type",
@@ -2460,11 +2607,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"x0m7XltSotGk6iXETVjXRvmV/XgPLqs1tq85ADpHL3E=\""
+          "Value": "\"Xe+Kvid9SjLPxoX1i8YU0v6PR/vbS4e6swb0bYrPV+0=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 15 Jan 2026 04:01:38 GMT"
+          "Value": "Wed, 11 Feb 2026 09:22:07 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2482,18 +2629,18 @@
       "EndpointProperties": [
         {
           "Name": "integrity",
-          "Value": "sha256-x0m7XltSotGk6iXETVjXRvmV/XgPLqs1tq85ADpHL3E="
+          "Value": "sha256-Xe+Kvid9SjLPxoX1i8YU0v6PR/vbS4e6swb0bYrPV+0="
         }
       ]
     },
     {
-      "Route": "app.khy4lop6wu.css",
-      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-khy4lop6wu.gz",
+      "Route": "app.pprxme7a4m.css",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-pprxme7a4m.gz",
       "Selectors": [
         {
           "Name": "Content-Encoding",
           "Value": "gzip",
-          "Quality": "0.000636132316"
+          "Quality": "0.000645577792"
         }
       ],
       "ResponseHeaders": [
@@ -2503,15 +2650,15 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1571"
+          "Value": "1548"
         },
         {
           "Name": "ETag",
-          "Value": "\"x0m7XltSotGk6iXETVjXRvmV/XgPLqs1tq85ADpHL3E=\""
+          "Value": "\"Xe+Kvid9SjLPxoX1i8YU0v6PR/vbS4e6swb0bYrPV+0=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 15 Jan 2026 04:01:38 GMT"
+          "Value": "Wed, 11 Feb 2026 09:22:07 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2531,13 +2678,13 @@
         },
         {
           "Name": "ETag",
-          "Value": "W/\"aNPcLFwdCCGS2v1guSR64Htd4Ly5uclT7taAptnMPbs=\""
+          "Value": "W/\"czfLu/9pI7rm4hAn5Msjw3S5K9dcvWN2v5oo9vRDY8U=\""
         }
       ],
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "khy4lop6wu"
+          "Value": "pprxme7a4m"
         },
         {
           "Name": "label",
@@ -2545,12 +2692,12 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-aNPcLFwdCCGS2v1guSR64Htd4Ly5uclT7taAptnMPbs="
+          "Value": "sha256-czfLu/9pI7rm4hAn5Msjw3S5K9dcvWN2v5oo9vRDY8U="
         }
       ]
     },
     {
-      "Route": "app.khy4lop6wu.css",
+      "Route": "app.pprxme7a4m.css",
       "AssetFile": "/home/user/itservice/wwwroot/app.css",
       "Selectors": [],
       "ResponseHeaders": [
@@ -2560,7 +2707,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "2900"
+          "Value": "2817"
         },
         {
           "Name": "Content-Type",
@@ -2568,11 +2715,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"aNPcLFwdCCGS2v1guSR64Htd4Ly5uclT7taAptnMPbs=\""
+          "Value": "\"czfLu/9pI7rm4hAn5Msjw3S5K9dcvWN2v5oo9vRDY8U=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 15 Jan 2026 04:01:38 GMT"
+          "Value": "Wed, 11 Feb 2026 09:22:07 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2582,7 +2729,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "khy4lop6wu"
+          "Value": "pprxme7a4m"
         },
         {
           "Name": "label",
@@ -2590,13 +2737,13 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-aNPcLFwdCCGS2v1guSR64Htd4Ly5uclT7taAptnMPbs="
+          "Value": "sha256-czfLu/9pI7rm4hAn5Msjw3S5K9dcvWN2v5oo9vRDY8U="
         }
       ]
     },
     {
-      "Route": "app.khy4lop6wu.css.gz",
-      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-khy4lop6wu.gz",
+      "Route": "app.pprxme7a4m.css.gz",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/0756g8enyh-pprxme7a4m.gz",
       "Selectors": [],
       "ResponseHeaders": [
         {
@@ -2605,7 +2752,7 @@
         },
         {
           "Name": "Content-Length",
-          "Value": "1571"
+          "Value": "1548"
         },
         {
           "Name": "Content-Type",
@@ -2613,11 +2760,11 @@
         },
         {
           "Name": "ETag",
-          "Value": "\"x0m7XltSotGk6iXETVjXRvmV/XgPLqs1tq85ADpHL3E=\""
+          "Value": "\"Xe+Kvid9SjLPxoX1i8YU0v6PR/vbS4e6swb0bYrPV+0=\""
         },
         {
           "Name": "Last-Modified",
-          "Value": "Thu, 15 Jan 2026 04:01:38 GMT"
+          "Value": "Wed, 11 Feb 2026 09:22:07 GMT"
         },
         {
           "Name": "Cache-Control",
@@ -2635,7 +2782,7 @@
       "EndpointProperties": [
         {
           "Name": "fingerprint",
-          "Value": "khy4lop6wu"
+          "Value": "pprxme7a4m"
         },
         {
           "Name": "label",
@@ -2643,7 +2790,7 @@
         },
         {
           "Name": "integrity",
-          "Value": "sha256-x0m7XltSotGk6iXETVjXRvmV/XgPLqs1tq85ADpHL3E="
+          "Value": "sha256-Xe+Kvid9SjLPxoX1i8YU0v6PR/vbS4e6swb0bYrPV+0="
         }
       ]
     },
@@ -2942,6 +3089,304 @@
         {
           "Name": "integrity",
           "Value": "sha256-+i840d0VWanfcGBewUTZdlqJNki3QyqwbajMtm6tNk4="
+        }
+      ]
+    },
+    {
+      "Route": "css/fonts.css",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/3qmybscvz2-lv0tp55kxx.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.005813953488"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "171"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bJH7OeF1OF638e2vZhKRrr3WtYNAhbFZBMtMf0zOMaw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:20:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"sea3Jjqwjqk5tY9OXhwvrunQFkw6Fy/HzgxC9JAPkqA=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-sea3Jjqwjqk5tY9OXhwvrunQFkw6Fy/HzgxC9JAPkqA="
+        }
+      ]
+    },
+    {
+      "Route": "css/fonts.css",
+      "AssetFile": "/home/user/itservice/wwwroot/css/fonts.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "627"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sea3Jjqwjqk5tY9OXhwvrunQFkw6Fy/HzgxC9JAPkqA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:20:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-sea3Jjqwjqk5tY9OXhwvrunQFkw6Fy/HzgxC9JAPkqA="
+        }
+      ]
+    },
+    {
+      "Route": "css/fonts.css.gz",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/3qmybscvz2-lv0tp55kxx.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "171"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bJH7OeF1OF638e2vZhKRrr3WtYNAhbFZBMtMf0zOMaw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:20:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-bJH7OeF1OF638e2vZhKRrr3WtYNAhbFZBMtMf0zOMaw="
+        }
+      ]
+    },
+    {
+      "Route": "css/fonts.lv0tp55kxx.css",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/3qmybscvz2-lv0tp55kxx.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.005813953488"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "171"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bJH7OeF1OF638e2vZhKRrr3WtYNAhbFZBMtMf0zOMaw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:20:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"sea3Jjqwjqk5tY9OXhwvrunQFkw6Fy/HzgxC9JAPkqA=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "lv0tp55kxx"
+        },
+        {
+          "Name": "label",
+          "Value": "css/fonts.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-sea3Jjqwjqk5tY9OXhwvrunQFkw6Fy/HzgxC9JAPkqA="
+        }
+      ]
+    },
+    {
+      "Route": "css/fonts.lv0tp55kxx.css",
+      "AssetFile": "/home/user/itservice/wwwroot/css/fonts.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "627"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"sea3Jjqwjqk5tY9OXhwvrunQFkw6Fy/HzgxC9JAPkqA=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:20:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "lv0tp55kxx"
+        },
+        {
+          "Name": "label",
+          "Value": "css/fonts.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-sea3Jjqwjqk5tY9OXhwvrunQFkw6Fy/HzgxC9JAPkqA="
+        }
+      ]
+    },
+    {
+      "Route": "css/fonts.lv0tp55kxx.css.gz",
+      "AssetFile": "/home/user/itservice/obj/Debug/net9.0/compressed/3qmybscvz2-lv0tp55kxx.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "171"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"bJH7OeF1OF638e2vZhKRrr3WtYNAhbFZBMtMf0zOMaw=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:20:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "lv0tp55kxx"
+        },
+        {
+          "Name": "label",
+          "Value": "css/fonts.css.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-bJH7OeF1OF638e2vZhKRrr3WtYNAhbFZBMtMf0zOMaw="
         }
       ]
     },
@@ -3620,6 +4065,416 @@
         {
           "Name": "integrity",
           "Value": "sha256-4mWsDy3aHl36ZbGt8zByK7Pvd4kRUoNgTYzRnwmPHwg="
+        }
+      ]
+    },
+    {
+      "Route": "fonts/.5ipweew5fc.gitkeep",
+      "AssetFile": "/home/user/itservice/wwwroot/fonts/.gitkeep",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "0"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 08:53:42 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "5ipweew5fc"
+        },
+        {
+          "Name": "label",
+          "Value": "fonts/.gitkeep"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="
+        }
+      ]
+    },
+    {
+      "Route": "fonts/.gitkeep",
+      "AssetFile": "/home/user/itservice/wwwroot/fonts/.gitkeep",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "0"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/octet-stream"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 08:53:42 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="
+        }
+      ]
+    },
+    {
+      "Route": "fonts/Sarabun-Bold.pd8nu1741y.ttf",
+      "AssetFile": "/home/user/itservice/wwwroot/fonts/Sarabun-Bold.ttf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "89804"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/x-font-ttf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"04MIyifQZ7mht5AGM3wfmmbCmqAW2WqdiNOAHaf6g7k=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:19:34 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "pd8nu1741y"
+        },
+        {
+          "Name": "label",
+          "Value": "fonts/Sarabun-Bold.ttf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-04MIyifQZ7mht5AGM3wfmmbCmqAW2WqdiNOAHaf6g7k="
+        }
+      ]
+    },
+    {
+      "Route": "fonts/Sarabun-Bold.ttf",
+      "AssetFile": "/home/user/itservice/wwwroot/fonts/Sarabun-Bold.ttf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "89804"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/x-font-ttf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"04MIyifQZ7mht5AGM3wfmmbCmqAW2WqdiNOAHaf6g7k=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:19:34 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-04MIyifQZ7mht5AGM3wfmmbCmqAW2WqdiNOAHaf6g7k="
+        }
+      ]
+    },
+    {
+      "Route": "fonts/Sarabun-BoldItalic.a5asneytu2.ttf",
+      "AssetFile": "/home/user/itservice/wwwroot/fonts/Sarabun-BoldItalic.ttf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "92948"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/x-font-ttf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"XvG5MPmjr+1eyDN0tWF8rTqJ2RqPxeNy3AKMKqKVD40=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:20:06 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "a5asneytu2"
+        },
+        {
+          "Name": "label",
+          "Value": "fonts/Sarabun-BoldItalic.ttf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-XvG5MPmjr+1eyDN0tWF8rTqJ2RqPxeNy3AKMKqKVD40="
+        }
+      ]
+    },
+    {
+      "Route": "fonts/Sarabun-BoldItalic.ttf",
+      "AssetFile": "/home/user/itservice/wwwroot/fonts/Sarabun-BoldItalic.ttf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "92948"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/x-font-ttf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"XvG5MPmjr+1eyDN0tWF8rTqJ2RqPxeNy3AKMKqKVD40=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:20:06 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-XvG5MPmjr+1eyDN0tWF8rTqJ2RqPxeNy3AKMKqKVD40="
+        }
+      ]
+    },
+    {
+      "Route": "fonts/Sarabun-Italic.ncecmzt7g8.ttf",
+      "AssetFile": "/home/user/itservice/wwwroot/fonts/Sarabun-Italic.ttf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "93248"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/x-font-ttf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"WVqWjpeouBeaa94tdNT5GxFHXc+2zycAN9dtjtcRYOo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:19:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ncecmzt7g8"
+        },
+        {
+          "Name": "label",
+          "Value": "fonts/Sarabun-Italic.ttf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-WVqWjpeouBeaa94tdNT5GxFHXc+2zycAN9dtjtcRYOo="
+        }
+      ]
+    },
+    {
+      "Route": "fonts/Sarabun-Italic.ttf",
+      "AssetFile": "/home/user/itservice/wwwroot/fonts/Sarabun-Italic.ttf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "93248"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/x-font-ttf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"WVqWjpeouBeaa94tdNT5GxFHXc+2zycAN9dtjtcRYOo=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:19:50 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-WVqWjpeouBeaa94tdNT5GxFHXc+2zycAN9dtjtcRYOo="
+        }
+      ]
+    },
+    {
+      "Route": "fonts/Sarabun-Regular.ecam1dkmm4.ttf",
+      "AssetFile": "/home/user/itservice/wwwroot/fonts/Sarabun-Regular.ttf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "90220"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/x-font-ttf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Im1PNo+8BFeZDd7yaSZ5ut/SwaTonlrE1DwQundDsvE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:19:02 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "ecam1dkmm4"
+        },
+        {
+          "Name": "label",
+          "Value": "fonts/Sarabun-Regular.ttf"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-Im1PNo+8BFeZDd7yaSZ5ut/SwaTonlrE1DwQundDsvE="
+        }
+      ]
+    },
+    {
+      "Route": "fonts/Sarabun-Regular.ttf",
+      "AssetFile": "/home/user/itservice/wwwroot/fonts/Sarabun-Regular.ttf",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "90220"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "application/x-font-ttf"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"Im1PNo+8BFeZDd7yaSZ5ut/SwaTonlrE1DwQundDsvE=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 11 Feb 2026 09:19:02 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-Im1PNo+8BFeZDd7yaSZ5ut/SwaTonlrE1DwQundDsvE="
         }
       ]
     },
