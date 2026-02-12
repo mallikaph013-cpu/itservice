@@ -1,10 +1,12 @@
-using myapp.Models;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using myapp.Models;
+using QuestPDF.Drawing;
+using QuestPDF.Fluent;
+using QuestPDF.Helpers;
+using QuestPDF.Infrastructure;
 
 namespace myapp.Documents
 {
@@ -12,7 +14,6 @@ namespace myapp.Documents
     {
         private readonly SupportRequest _request;
         private readonly List<Approver> _approvalSteps;
-        private readonly TimeZoneInfo _thaiZone = TimeZoneInfo.CreateCustomTimeZone("SE Asia Standard Time", TimeSpan.FromHours(7), "(UTC+07:00) Bangkok, Hanoi, Jakarta", "SE Asia Standard Time");
 
         public SupportRequestDocument(SupportRequest request, List<Approver> approvalSteps)
         {
@@ -27,182 +28,189 @@ namespace myapp.Documents
             container
                 .Page(page =>
                 {
-                    page.Margin(30);
-                    page.DefaultTextStyle(x => x.FontFamily("Sarabun").FontSize(12));
-
+                    page.Margin(40);
+                    page.DefaultTextStyle(x => x.FontFamily("Sarabun").FontSize(10));
                     page.Header().Element(ComposeHeader);
                     page.Content().Element(ComposeContent);
-                    page.Footer().AlignCenter().Text(x =>
-                    {
-                        x.Span("Page ");
-                        x.CurrentPageNumber();
-                    });
+                    page.Footer().Element(ComposeFooter);
                 });
         }
 
         void ComposeHeader(IContainer container)
         {
-            container.Column(column => 
+            container.Column(column =>
             {
                 column.Item().Row(row =>
                 {
-                    row.RelativeItem().Column(innerColumn =>
+                    row.RelativeItem().Column(col =>
                     {
-                        innerColumn.Item().Text("IT Service Request").Bold().FontSize(22);
-                        innerColumn.Item().Text($"No: {_request.DocumentNo ?? _request.Id.ToString("D6")}").SemiBold();
-                        innerColumn.Item().Text($"Date: {TimeZoneInfo.ConvertTimeFromUtc(_request.CreatedAt, _thaiZone):dd/MM/yyyy HH:mm}");
+                        col.Item().Text("ใบแจ้งซ่อม/บริการฝ่ายเทคโนโลยีสารสนเทศ").Bold().FontSize(16);
+                        col.Item().Text($"Service Request #{_request.DocumentNo}").SemiBold().FontSize(12);
                     });
                 });
 
-                column.Item().PaddingTop(10).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                column.Item().PaddingTop(5).LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
             });
         }
 
         void ComposeContent(IContainer container)
         {
-            container.PaddingTop(15).Column(column =>
+            container.PaddingVertical(20).Column(column =>
             {
                 column.Spacing(20);
-                column.Item().Element(ComposeRequesterDetails);
-                column.Item().Element(ComposeRequestInfo);
-                column.Item().Element(ComposeDescription);
-                column.Item().Element(ComposeApprovalHistory);
+                column.Item().Element(ComposeRequesterInfo);
+                column.Item().Element(ComposeRequestDetails);
+                column.Item().Element(ComposeApprovalSignatures);
             });
         }
 
-        void ComposeRequesterDetails(IContainer container)
+        void ComposeCard(IContainer container, string title, Action<IContainer> content)
         {
-            container.Border(1).BorderColor(Colors.Grey.Lighten2).Padding(10).Column(column =>
-            {
-                column.Spacing(5);
-                column.Item().Text("Requester Details").Bold().FontSize(14);
-                column.Item().Text(text => { text.Span("Name: ").SemiBold(); text.Span(_request.RequesterName ?? "-"); });
-                column.Item().Text(text => { text.Span("Department: ").SemiBold(); text.Span(_request.Department ?? "-"); });
-                column.Item().Text(text => { text.Span("Employee ID: ").SemiBold(); text.Span(_request.EmployeeId ?? "-"); });
-            });
-        }
-
-        void ComposeRequestInfo(IContainer container)
-        {
-            container.Border(1).BorderColor(Colors.Grey.Lighten2).Padding(10).Column(column =>
-            {
-                column.Item().Text("Request Information").Bold().FontSize(14);
-                column.Item().PaddingTop(5).Grid(grid =>
+            container
+                .Border(1, Colors.Grey.Lighten2)
+                .Background(Colors.Grey.Lighten5)
+                .Padding(10)
+                .Column(column =>
                 {
-                    grid.Columns(2);
-                    grid.Item().Text(text => { text.Span("Request Type: ").SemiBold(); text.Span(_request.RequestType.ToString()); });
-                    grid.Item().Text(text => { text.Span("Urgency: ").SemiBold(); text.Span(_request.Urgency.ToString()); });
-                    grid.Item().Text(text => { text.Span("Status: ").SemiBold(); text.Span(_request.Status.ToString()); });
-                    grid.Item().Text(text => { text.Span("Handler: ").SemiBold(); text.Span(_request.ResponsibleUser?.FullName ?? "Unassigned"); });
+                    column.Item().PaddingBottom(5).Text(title).SemiBold().FontSize(12);
+                    column.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten3);
+                    column.Item().PaddingTop(10).Element(content);
+                });
+        }
+
+        void ComposeRequesterInfo(IContainer container)
+        {
+            ComposeCard(container, "ข้อมูลผู้แจ้ง", card =>
+            {
+                card.Row(row =>
+                {
+                    row.RelativeItem(2).Column(col =>
+                    {
+                        col.Item().Text(text => { text.Span("ผู้แจ้ง: ").SemiBold(); text.Span(_request.RequesterName); });
+                        col.Item().Text(text => { text.Span("แผนก: ").SemiBold(); text.Span(_request.Department); });
+                    });
+                    row.RelativeItem(3).Column(col =>
+                    {
+                        col.Item().Text(text => { text.Span("ประเภทคำขอ: ").SemiBold(); text.Span(_request.RequestType.ToString()); });
+                        if (_request.RequestType == RequestType.Software)
+                        {
+                            col.Item().Text(text => { text.Span("โปรแกรม: ").SemiBold(); text.Span(_request.Program.ToString()); });
+                        }
+                    });
                 });
             });
         }
 
-        void ComposeDescription(IContainer container)
+        void ComposeRequestDetails(IContainer container)
         {
-            container.Border(1).BorderColor(Colors.Grey.Lighten2).Padding(10).Column(column =>
+            ComposeCard(container, "รายละเอียดคำขอ", card =>
             {
-                column.Item().Text("Details").Bold().FontSize(14);
-                column.Item().PaddingTop(5).Column(col =>
+                card.Column(column =>
                 {
-                    if (_request.Program == ProgramName.SAP)
+                    column.Spacing(5);
+                    column.Item().Text(text => { text.Span("ปัญหาที่พบ: ").SemiBold(); text.Span(_request.ProblemDescription); });
+                    column.Item().Text(text => { text.Span("ความเร่งด่วน: ").SemiBold(); text.Span(_request.Urgency.ToString()); });
+
+                    if (_request.RequestType == RequestType.Software && _request.Program == ProgramName.SAP)
                     {
-                        col.Item().Element(ComposeSAPDetails);
+                        column.Item().Text(text => { text.Span("ประเภทปัญหา SAP: ").SemiBold(); text.Span(_request.SAPProblem.Value.ToString()); });
                     }
-                    else
+
+                    if (!string.IsNullOrEmpty(_request.AttachmentPath))
                     {
-                        col.Item().Text(_request.ProblemDescription ?? "No description provided.");
+                         column.Item().Text(text => { text.Span("ไฟล์แนบ: ").SemiBold(); text.Span(_request.AttachmentPath); });
                     }
                 });
             });
         }
 
-        void ComposeSAPDetails(IContainer container)
+        void ComposeApprovalSignatures(IContainer container)
         {
-            container.Grid(grid =>
+            container.PaddingTop(20).Column(col =>
             {
-                grid.VerticalSpacing(5);
-                grid.Columns(12);
+                col.Item().PaddingBottom(5).Text("ลายมือชื่อผู้เกี่ยวข้อง").Bold().FontSize(14);
 
-                void AddDetail(string label, string? value, int labelCols = 3, int valueCols = 9)
+                col.Item().Table(table =>
                 {
-                    if (!string.IsNullOrWhiteSpace(value))
+                    // 1. Create a list of all participants
+                    var participants = new List<(string Title, string? Name, string? Role, DateTime? Date)>();
+
+                    // 1a. Add Requester
+                    participants.Add(("ผู้ร้องขอ", _request.RequesterName, "ผู้ร้องขอ", _request.CreatedAt));
+
+                    // 1b. Add All Approvers
+                    var orderedSteps = _approvalSteps.OrderBy(a => a.Order).ToList();
+                    foreach (var step in orderedSteps)
                     {
-                        grid.Item(labelCols).Text(label).SemiBold();
-                        grid.Item(valueCols).Text(value);
+                        var history = _request.ApprovalHistories?.FirstOrDefault(h => h.ApproverName == step.User.FullName);
+                        participants.Add((step.User?.Role ?? "ผู้อนุมัติ", step.User?.FullName, step.User?.Role, history?.ApprovalDate));
                     }
-                }
 
-                AddDetail("Problem Type:", _request.SAPProblem?.ToString(), 4, 8);
-                
-                grid.Item(12).PaddingTop(5).Text("Material Types:").Bold();
-                grid.Item(3).Text($"FG: {(_request.IsFG ? "Yes" : "No")}");
-                grid.Item(3).Text($"SM: {(_request.IsSM ? "Yes" : "No")}");
-                grid.Item(3).Text($"RM: {(_request.IsRM ? "Yes" : "No")}");
-                grid.Item(3).Text($"Tooling: {(_request.IsTooling ? "Yes" : "No")}");
+                    // 1c. Add IT Support (only if the request is Done and IT is assigned)
+                    if (_request.Status == SupportRequestStatus.Done && _request.ResponsibleUser != null)
+                    {
+                        var itUser = _request.ResponsibleUser;
+                        participants.Add(("ผู้รับผิดชอบ (IT)", itUser.FullName, "IT Support", _request.UpdatedAt));
+                    }
 
-                grid.Item(12).PaddingVertical(5).BorderBottom(1).BorderColor(Colors.Grey.Lighten2);
+                    // 2. Define table structure (e.g., 4 columns)
+                    const int maxColumns = 4;
+                    table.ColumnsDefinition(columnsDef =>
+                    {
+                        for (int i = 0; i < maxColumns; i++)
+                            columnsDef.RelativeColumn();
+                    });
 
-                AddDetail("ICS Code:", _request.ICSCode, 4, 8);
-                AddDetail("English Desc:", _request.EnglishMatDescription, 4, 8);
-                AddDetail("Material Group:", _request.MaterialGroup, 4, 8);
-                AddDetail("Division:", _request.Division, 4, 8);
-                AddDetail("Profit Center:", _request.ProfitCenter, 4, 8);
-                AddDetail("Distr. Channel:", _request.DistributionChannel, 4, 8);
+                    // 3. Populate table with all participants
+                    foreach (var p in participants)
+                    {
+                        table.Cell().Element(c => SignatureBlock(c, p.Title, p.Name, p.Role, p.Date));
+                    }
 
-                if (!string.IsNullOrWhiteSpace(_request.ProblemDescription))
-                {
-                    grid.Item(12).PaddingTop(10);
-                    AddDetail("Additional Details:", _request.ProblemDescription, 12, 12);
-                }
+                    // 4. Add empty cells to fill the last row and maintain the grid structure
+                    var remainingCells = participants.Count % maxColumns;
+                    if (remainingCells != 0)
+                    {
+                        for (int i = 0; i < maxColumns - remainingCells; i++)
+                        {
+                            table.Cell().Border(1, Colors.Grey.Lighten2);
+                        }
+                    }
+                });
             });
         }
 
-        void ComposeApprovalHistory(IContainer container)
+
+        void SignatureBlock(IContainer container, string title, string? name, string? role, DateTime? date)
+        {
+            container
+                .Border(1, Colors.Grey.Lighten1)
+                .Padding(5)
+                .Column(column =>
+                {
+                    column.Spacing(5);
+                    column.Item().Text(title).SemiBold().AlignCenter();
+                    column.Item().Height(40); // Signature space
+                    column.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                    column.Item().Text(name ?? "-").AlignCenter().Bold();
+                    column.Item().Text(role ?? "-").AlignCenter();
+                    column.Item().Text(date?.ToLocalTime().ToString("dd/MM/yyyy") ?? "").AlignCenter();
+                });
+        }
+
+        void ComposeFooter(IContainer container)
         {
             container.Column(column =>
             {
-                column.Item().Text("Approval Signatures").Bold().FontSize(14);
-                column.Item().PaddingTop(20).Row(row =>
+                column.Item().LineHorizontal(1).LineColor(Colors.Grey.Lighten2);
+                column.Item().PaddingTop(5).AlignCenter().Text(text =>
                 {
-                    row.Spacing(15);
-
-                    // --- 1. Requester ---
-                    row.RelativeItem().Column(col =>
-                    {
-                        col.Spacing(2);
-                        col.Item().AlignCenter().Text(_request.RequesterName ?? "N/A").Bold();
-                        col.Item().AlignCenter().Text("ผู้ร้องขอ");
-                        col.Item().PaddingTop(5).AlignCenter().Text(TimeZoneInfo.ConvertTimeFromUtc(_request.CreatedAt, _thaiZone).ToString("dd/MM/yy"));
-                    });
-
-                    // --- 2. Approvers ---
-                    var orderedSteps = _approvalSteps.OrderBy(a => a.Order);
-
-                    foreach (var step in orderedSteps)
-                    {
-                        var history = _request.ApprovalHistories?.FirstOrDefault(h => h.ApproverName == step.User.EmployeeId);
-
-                        row.RelativeItem().Column(col =>
-                        {
-                            col.Spacing(2);
-                            col.Item().AlignCenter().Text(step.User.FullName ?? "(Pending)").Bold();
-                            col.Item().AlignCenter().Text(step.User.Role ?? "N/A");
-                            
-                            var approvalDate = (history != null && history.Approved)
-                                ? TimeZoneInfo.ConvertTimeFromUtc(history.ApprovalDate, _thaiZone).ToString("dd/MM/yy")
-                                : "-";
-
-                            col.Item().PaddingTop(5).AlignCenter().Text(approvalDate);
-                        });
-                    }
+                    text.Span("Page ");
+                    text.CurrentPageNumber();
+                    text.Span(" of ");
+                    text.TotalPages();
                 });
             });
-        }
-        
-        public byte[] GeneratePdf()
-        {
-            return Document.Create(container => Compose(container)).GeneratePdf();
         }
     }
 }

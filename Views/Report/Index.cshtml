@@ -1,4 +1,5 @@
 @model myapp.ViewModels.ReportIndexViewModel
+@using myapp.Models
 
 @{ 
     ViewData["Title"] = "Support Request Reports";
@@ -133,7 +134,7 @@
                                             <p class="text-xs font-weight-bold mb-0">@item.RequesterName</p>
                                         </td>
                                         <td class="align-middle text-center">
-                                            <span class="badge badge-sm @(item.Status == SupportRequestStatus.Done ? "bg-gradient-success" : (item.Status == SupportRequestStatus.InProgress ? "bg-gradient-warning" : (item.Status == SupportRequestStatus.Pending ? "bg-gradient-danger" : "bg-gradient-secondary")))">@item.Status</span>
+                                            @item.Status.ToString()
                                         </td>
                                         <td class="align-middle text-center">
                                             <span class="text-secondary text-xs font-weight-bold">@item.CreatedAt.ToString("g")</span>
