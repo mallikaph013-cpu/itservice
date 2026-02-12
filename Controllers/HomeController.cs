@@ -1,34 +1,27 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using myapp.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace myapp.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public HomeController(ApplicationDbContext context)
+        public IActionResult Index()
         {
-            _context = context;
-        }
-
-        [Authorize]
-        public async Task<IActionResult> Index()
-        {
-            // Corrected to filter for "Published" status instead of "Active"
-            var publishedNews = await _context.News
-                                             .Where(n => n.Status == "Published")
-                                             .OrderByDescending(n => n.PublishedDate)
-                                             .ToListAsync();
+            if (User.IsInRole("Admin") || User.IsInRole("ITSupport"))
+            {
+                return RedirectToAction("Index", "ITSupport");
+            }
+            else if (User.IsInRole("User"))
+            {
+                return RedirectToAction("Create", "ITSupport");
+            }
             
-            return View(publishedNews);
+            // If user has no specific role, redirect to a generic page or show an error
+            return RedirectToAction("AccessDenied", "Account");
         }
 
-        [Authorize]
         public IActionResult Privacy()
         {
             return View();
