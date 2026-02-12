@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Localization;
 using QuestPDF.Infrastructure;
 using QuestPDF.Drawing;
 using System.IO;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,8 +58,21 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ActivityLogService>();
 builder.Services.AddScoped<NavigationService>();
 
+var provider = builder.Configuration.GetValue("DatabaseProvider", "SQLite");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    if (provider == "SQLServer")
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("SQLServer"),
+            x => x.MigrationsAssembly(typeof(Program).Assembly.GetName().Name));
+    }
+    else
+    {
+        options.UseSqlite(builder.Configuration.GetConnectionString("SQLite"),
+            x => x.MigrationsAssembly(typeof(Program).Assembly.GetName().Name));
+    }
+});
 
 // 3. [แก้ไข] ปรับปรุง Cookie Authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

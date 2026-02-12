@@ -1,0 +1,174 @@
+@model myapp.Models.ViewModels.DepartmentSectionViewModel
+
+@{
+    ViewData["Title"] = "จัดการข้อมูลฝ่ายและแผนก";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@* -- Manage Departments -- *@
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-building me-1"></i>
+        ข้อมูลฝ่าย (Department)
+    </div>
+    <div class="card-body">
+        <form asp-controller="Departments" asp-action="Create" method="post">
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                    <label for="DepartmentName" class="form-label">ชื่อฝ่าย</label>
+                    <input type="text" name="Name" id="DepartmentName" class="form-control" placeholder="ระบุชื่อฝ่ายใหม่" required />
+                </div>
+                <div class="col-md-5">
+                    <label for="DepartmentStatus" class="form-label">สถานะ</label>
+                    <select name="Status" id="DepartmentStatus" class="form-select">
+                        <option value="Active" selected>Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">เพิ่ม</button>
+                </div>
+            </div>
+        </form>
+        <hr/>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>ชื่อฝ่าย</th>
+                        <th>สถานะ</th>
+                        <th>สร้างเมื่อ</th>
+                        <th>แก้ไขเมื่อ</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+            @foreach (var item in Model.Departments)
+            {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>
+                            @if (item.Status == "Active")
+                            {
+                                <span class="badge bg-success">@item.Status</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">@item.Status</span>
+                            }
+                        </td>
+                        <td>
+                            <small>@item.CreatedAt.ToString("g")<br/>โดย: @(string.IsNullOrEmpty(item.CreatedBy) ? "-" : item.CreatedBy)</small>
+                        </td>
+                        <td>
+                            <small>@item.UpdatedAt.ToString("g")<br/>โดย: @(string.IsNullOrEmpty(item.UpdatedBy) ? "-" : item.UpdatedBy)</small>
+                        </td>
+                        <td class="text-end">
+                            <a asp-controller="Departments" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">แก้ไข</a>
+                            <form asp-controller="Departments" asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('คุณต้องการลบข้อมูลนี้ใช่หรือไม่?');">
+                                <input type="hidden" name="id" value="@item.Id" />
+                                <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
+                            </form>
+                        </td>
+                    </tr>
+            }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@* -- Manage Sections -- *@
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-sitemap me-1"></i>
+        ข้อมูลแผนก (Section)
+    </div>
+    <div class="card-body">
+        <form asp-controller="Sections" asp-action="Create" method="post">
+             <div class="row g-3 align-items-end">
+                <div class="col-md-4">
+                    <label for="SectionName" class="form-label">ชื่อแผนก</label>
+                    <input type="text" name="Name" id="SectionName" class="form-control" placeholder="ระบุชื่อแผนกใหม่" required />
+                </div>
+                <div class="col-md-4">
+                    <label for="DepartmentId" class="form-label">สังกัดฝ่าย</label>
+                    <select name="DepartmentId" id="DepartmentId" class="form-select" required>
+                        <option value="">-- เลือกฝ่าย --</option>
+                        @foreach (var dept in Model.Departments.Where(d => d.Status == "Active"))
+                        {
+                            <option value="@dept.Id">@dept.Name</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label for="SectionStatus" class="form-label">สถานะ</label>
+                    <select name="Status" id="SectionStatus" class="form-select">
+                        <option value="Active" selected>Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">เพิ่ม</button>
+                </div>
+            </div>
+        </form>
+        <hr/>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>ชื่อแผนก</th>
+                        <th>สังกัดฝ่าย</th>
+                        <th>สถานะ</th>
+                        <th>สร้างเมื่อ</th>
+                        <th>แก้ไขเมื่อ</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (Model.Sections != null && Model.Sections.Any())
+                {
+                    foreach (var item in Model.Sections)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.Department?.Name</td>
+                            <td>
+                                @if (item.Status == "Active")
+                                {
+                                    <span class="badge bg-success">@item.Status</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@item.Status</span>
+                                }
+                            </td>
+                            <td>
+                                <small>@item.CreatedAt.ToString("g")<br/>โดย: @(item.CreatedBy == 0 ? "-" : item.CreatedBy.ToString())</small>
+                            </td>
+                            <td>
+                                <small>@item.UpdatedAt.ToString("g")<br/>โดย: @(item.UpdatedBy == 0 ? "-" : item.UpdatedBy.ToString())</small>
+                            </td>
+                            <td class="text-end">
+                                <a asp-controller="Sections" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning btn-sm">แก้ไข</a>
+                                <form asp-controller="Sections" asp-action="Delete" method="post" class="d-inline" onsubmit="return confirm('คุณต้องการลบข้อมูลนี้ใช่หรือไม่?');">
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center">ยังไม่มีข้อมูลแผนก</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

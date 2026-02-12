@@ -16,8 +16,20 @@ namespace myapp.Data
                 .Build();
 
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            var connectionString = configuration.GetConnectionString("DefaultConnection");
-            builder.UseSqlite(connectionString);
+            var provider = configuration.GetValue("DatabaseProvider", "SQLite");
+
+            if (provider == "SQLServer")
+            {
+                var connectionString = configuration.GetConnectionString("SQLServer");
+                builder.UseSqlServer(connectionString, 
+                    x => x.MigrationsAssembly("myapp"));
+            }
+            else
+            {
+                var connectionString = configuration.GetConnectionString("SQLite");
+                builder.UseSqlite(connectionString, 
+                    x => x.MigrationsAssembly("myapp"));
+            }
 
             // Create a mock HttpContextAccessor for design time
             var httpContextAccessor = new HttpContextAccessor();

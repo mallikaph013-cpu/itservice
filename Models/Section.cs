@@ -20,5 +20,10 @@ namespace myapp.Models
 
         [ForeignKey("DepartmentId")]
         public virtual Department? Department { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public int CreatedBy { get; set; }
+        public DateTime UpdatedAt { get; set; } = DateTime.Now;
+        public int UpdatedBy { get; set; }
     }
 }

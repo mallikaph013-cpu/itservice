@@ -40,6 +40,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWN0aXZpdHlMb2cvSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/user/itservice/Views/Admin/DepartmentSection.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQWRtaW4vRGVwYXJ0bWVudFNlY3Rpb24uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/user/itservice/Views/Approval/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvQXBwcm92YWwvSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
