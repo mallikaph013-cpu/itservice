@@ -36,7 +36,7 @@ namespace myapp.Controllers
         // POST: ApprovalSequences/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Department,Section,Status")] ApprovalSequence approvalSequence, int[] approverIds, int[] approverOrders)
+        public async Task<IActionResult> Create([Bind("Department,Section,Status,RequestType")] ApprovalSequence approvalSequence, int[] approverIds, int[] approverOrders)
         {
             if (ModelState.IsValid)
             {
@@ -97,7 +97,7 @@ namespace myapp.Controllers
         // POST: ApprovalSequences/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Department,Section,Status")] ApprovalSequence approvalSequence, int[] approverIds, int[] approverOrders)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Department,Section,Status,RequestType")] ApprovalSequence approvalSequence, int[] approverIds, int[] approverOrders)
         {
             if (id != approvalSequence.Id)
             {
@@ -120,6 +120,7 @@ namespace myapp.Controllers
                     sequenceToUpdate.Department = approvalSequence.Department;
                     sequenceToUpdate.Section = approvalSequence.Section;
                     sequenceToUpdate.Status = approvalSequence.Status;
+                    sequenceToUpdate.RequestType = approvalSequence.RequestType;
                     sequenceToUpdate.UpdatedAt = DateTime.UtcNow;
                     sequenceToUpdate.UpdatedBy = "system"; // Should be replaced with actual user
 
@@ -209,6 +210,9 @@ namespace myapp.Controllers
             
             var users = await _context.Users.Where(u => u.Role != "Admin").OrderBy(u => u.FirstName).ThenBy(u => u.LastName).ToListAsync();
             ViewData["Users"] = users.Select(u => new SelectListItem { Value = u.Id.ToString(), Text = u.FullName }).ToList();
+
+            ViewData["RequestTypes"] = new SelectList(Enum.GetValues(typeof(RequestType)), sequence?.RequestType);
+
         }
     }
 }

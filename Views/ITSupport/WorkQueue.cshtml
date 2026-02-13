@@ -78,6 +78,13 @@
                                         <button type="submit" class="btn btn-sm btn-primary">มอบหมาย</button>
                                     </form>
                                 }
+                                @if (item.ResponsibleUserId != null)
+                                {
+                                    <form asp-controller="ITSupport" asp-action="CancelAssignment" method="post" class="cancel-form">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="button" class="btn btn-sm btn-warning cancel-btn">ยกเลิก</button>
+                                    </form>
+                                }
                                 <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">รายละเอียด</a>
                             </div>
                         </td>
@@ -94,41 +101,166 @@ else
     </div>
 }
 
+<!-- Confirmation Modals -->
+<div class="modal fade" id="assignConfirmationModal" tabindex="-1" aria-labelledby="assignConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="assignConfirmationModalLabel">ยืนยันการมอบหมาย</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="assignConfirmationBody">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ไม่</button>
+        <button type="button" class="btn btn-primary" id="confirmAssignBtn">ใช่, มอบหมาย</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="cancelConfirmationModal" tabindex="-1" aria-labelledby="cancelConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cancelConfirmationModalLabel">ยืนยันการยกเลิก</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        คุณต้องการยกเลิกการมอบหมายงานนี้ใช่หรือไม่?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ไม่</button>
+        <button type="button" class="btn btn-danger" id="confirmCancelBtn">ใช่, ยกเลิกการมอบหมาย</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Info Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" id="infoModalHeader">
+        <h5 class="modal-title" id="infoModalLabel"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="infoModalBody">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">ตกลง</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 @section Scripts {
     <script>
-    $(function() { 
-        $('.assign-form').on('submit', function(event) {
-            event.preventDefault(); 
+    $(function() {
+        let formToSubmit = null;
+        let isSuccessOperation = false;
 
-            var form = $(this);
-            var userId = form.find('select[name="userId"]').val();
-            var button = form.find('button[type="submit"]');
+        // --- Modal & AJAX Logic ---
+        function showInfoModal(title, message, isSuccess) {
+            isSuccessOperation = isSuccess;
+            $('#infoModalLabel').text(title);
+            $('#infoModalBody').text(message);
+            
+            var modalHeader = $('#infoModalHeader');
+            modalHeader.removeClass('bg-success bg-danger text-white');
+            var modalCloseButton = modalHeader.find('.btn-close');
 
-            if (!userId) {
-                alert('กรุณาเลือกผู้รับผิดชอบ');
-                return;
+            if (isSuccess) {
+                modalHeader.addClass('bg-success text-white');
+                modalCloseButton.addClass('btn-close-white');
+            } else {
+                modalHeader.addClass('bg-danger text-white');
+                modalCloseButton.addClass('btn-close-white');
             }
 
-            button.prop('disabled', true).text('กำลังบันทึก...');
+            $('#infoModal').modal('show');
+        }
+
+        function submitForm(form) {
+            var button = form.find('button[type="submit"], button.cancel-btn');
+            var originalButtonText = button.text();
+            var actionType = form.hasClass('assign-form') ? 'assign' : 'cancel';
+            var loadingText = actionType === 'assign' ? 'กำลังบันทึก...' : 'กำลังยกเลิก...';
+
+            button.prop('disabled', true).text(loadingText);
 
             $.ajax({
                 type: 'POST',
                 url: form.attr('action'),
                 data: form.serialize(),
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
                 success: function(response) {
                     if (response.success) {
-                        alert('มอบหมายงานสำเร็จแล้ว');
-                        window.location.reload(); 
+                        let successMessage = actionType === 'assign' ? 'มอบหมายงานสำเร็จแล้ว' : 'ยกเลิกการมอบหมายสำเร็จแล้ว';
+                        showInfoModal('สำเร็จ', successMessage, true);
                     } else {
-                        alert('เกิดข้อผิดพลาด: ' + (response.message || 'ไม่สามารถมอบหมายงานได้'));
-                        button.prop('disabled', false).text('มอบหมาย');
+                        let errorMessage = response.message || (actionType === 'assign' ? 'ไม่สามารถมอบหมายงานได้' : 'ไม่สามารถยกเลิกการมอบหมายได้');
+                        showInfoModal('เกิดข้อผิดพลาด', errorMessage, false);
+                        button.prop('disabled', false).text(originalButtonText);
                     }
                 },
                 error: function() {
-                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
-                    button.prop('disabled', false).text('มอบหมาย');
+                    showInfoModal('เกิดข้อผิดพลาด', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์', false);
+                    button.prop('disabled', false).text(originalButtonText);
                 }
             });
+        }
+
+        // --- Assign Logic ---
+        $('.assign-form').on('submit', function(event) {
+            event.preventDefault();
+            formToSubmit = $(this);
+            var userId = formToSubmit.find('select[name="userId"]').val();
+            if (!userId) {
+                showInfoModal('ข้อมูลไม่ครบถ้วน', 'กรุณาเลือกผู้รับผิดชอบ', false);
+                return;
+            }
+            var selectedUserName = formToSubmit.find('select[name="userId"] option:selected').text();
+            $('#assignConfirmationBody').text(`คุณต้องการมอบหมายงานนี้ให้ ${selectedUserName} ใช่หรือไม่?`);
+            $('#assignConfirmationModal').modal('show');
+        });
+
+        $('#confirmAssignBtn').on('click', function() {
+            if (formToSubmit) {
+                $('#assignConfirmationModal').modal('hide');
+                submitForm(formToSubmit);
+            }
+        });
+
+        $('#assignConfirmationModal').on('hidden.bs.modal', function () {
+             formToSubmit = null;
+        });
+
+        // --- Cancel Logic ---
+        $('.cancel-btn').on('click', function(event) {
+            event.preventDefault();
+            formToSubmit = $(this).closest('form');
+            $('#cancelConfirmationModal').modal('show');
+        });
+
+        $('#confirmCancelBtn').on('click', function() {
+            if (formToSubmit) {
+                $('#cancelConfirmationModal').modal('hide');
+                submitForm(formToSubmit);
+            }
+        });
+
+        $('#cancelConfirmationModal').on('hidden.bs.modal', function () {
+            formToSubmit = null;
+        });
+
+        // --- Info Modal Logic ---
+        $('#infoModal').on('hidden.bs.modal', function () {
+            if (isSuccessOperation) {
+                window.location.reload();
+            }
         });
     });
     </script>

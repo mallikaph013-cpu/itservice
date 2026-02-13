@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using myapp.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
+using System.Collections.Generic;
 
 namespace myapp.Controllers
 {
@@ -65,6 +66,7 @@ namespace myapp.Controllers
             var supportRequest = await _context.SupportRequests
                 .Include(s => s.ResponsibleUser)
                 .Include(s => s.ApprovalHistories)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (supportRequest == null)
@@ -72,23 +74,16 @@ namespace myapp.Controllers
                 return NotFound();
             }
 
-            var approvalSteps = new System.Collections.Generic.List<Approver>();
-            if (!string.IsNullOrEmpty(supportRequest.Department))
-            {
-                var sequence = await _context.ApprovalSequences
-                                         .FirstOrDefaultAsync(s => s.Department == supportRequest.Department);
+            var approverNames = supportRequest.ApprovalHistories
+                                              .Select(h => h.ApproverName)
+                                              .Distinct()
+                                              .ToList();
 
-                if (sequence != null)
-                {
-                    approvalSteps = await _context.Approvers
-                                                .Where(a => a.ApprovalSequenceId == sequence.Id)
-                                                .Include(a => a.User)
-                                                .OrderBy(a => a.Order)
-                                                .ToListAsync();
-                }
-            }
+            var approvers = await _context.Users
+                                          .Where(u => approverNames.Contains(u.FullName))
+                                          .ToListAsync();
 
-            var document = new SupportRequestDocument(supportRequest, approvalSteps);
+            var document = new SupportRequestDocument(supportRequest, approvers);
             var pdfData = document.GeneratePdf();
 
             return File(pdfData, "application/pdf", $"SupportRequest-{supportRequest.Id}.pdf");

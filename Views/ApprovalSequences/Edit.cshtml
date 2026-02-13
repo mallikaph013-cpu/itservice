@@ -43,6 +43,13 @@
                             </select>
                             <span asp-validation-for="Status" class="text-danger"></span>
                         </div>
+                        <div class="col-md-4 mb-3">
+                            <label asp-for="RequestType" class="form-label"></label>
+                            <select asp-for="RequestType" class="form-select" asp-items="ViewBag.RequestTypes">
+                                <option value="">-- Select Request Type --</option>
+                            </select>
+                            <span asp-validation-for="RequestType" class="text-danger"></span>
+                        </div>
                     </div>
 
                     <h5>Approvers</h5>

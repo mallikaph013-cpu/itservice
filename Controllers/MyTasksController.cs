@@ -88,5 +88,74 @@ namespace myapp.Controllers
 
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reject(int id, string reason)
+        {
+            var supportRequest = await _context.SupportRequests.FindAsync(id);
+            if (supportRequest == null) return NotFound();
+
+            ModelState.Clear(); // Clear model state to avoid validation on other properties
+
+            supportRequest.Status = SupportRequestStatus.Rejected;
+            supportRequest.RevisionReason = reason; // Or a specific field for rejection reason
+            supportRequest.UpdatedAt = DateTime.UtcNow;
+            supportRequest.UpdatedBy = User.Identity.Name;
+
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "ปฏิเสธงานเรียบร้อยแล้ว";
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CompleteTask(int id)
+        {
+            var supportRequest = await _context.SupportRequests.FindAsync(id);
+            if (supportRequest == null) return NotFound();
+
+            ModelState.Clear();
+
+            supportRequest.Status = SupportRequestStatus.Done;
+            supportRequest.UpdatedAt = DateTime.UtcNow;
+            supportRequest.UpdatedBy = User.Identity.Name;
+
+            await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "ดำเนินการเสร็จสิ้นเรียบร้อยแล้ว";
+            return RedirectToAction(nameof(Index));
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ReturnForRevision(int id, string revisionReason)
+        {
+            var supportRequest = await _context.SupportRequests.FindAsync(id);
+            if (supportRequest == null)
+            {
+                return NotFound();
+            }
+
+            ModelState.Clear();
+
+            var employeeId = User.Identity?.Name;
+            var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.EmployeeId == employeeId);
+
+            if (currentUser == null || supportRequest.ResponsibleUserId != currentUser.Id)
+            {
+                return Forbid();
+            }
+
+            supportRequest.Status = SupportRequestStatus.RevisionNeeded;
+            supportRequest.RevisionReason = revisionReason;
+            supportRequest.UpdatedAt = DateTime.UtcNow;
+            supportRequest.UpdatedBy = User.Identity?.Name ?? "system";
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "ส่งกลับไปแก้ไขเรียบร้อยแล้ว";
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

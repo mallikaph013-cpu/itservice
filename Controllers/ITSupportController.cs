@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Hosting;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using myapp.Data; 
-using Microsoft.EntityFrameworkCore; 
+using myapp.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using myapp.ViewModels;
 using System.Collections.Generic;
@@ -59,13 +59,13 @@ namespace myapp.Controllers
                 else
                 {
                     // If for some reason a logged-in user has no EmployeeId, return an empty list
-                    return View(new List<SupportRequest>()); 
+                    return View(new List<SupportRequest>());
                 }
             }
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                supportRequestsQuery = supportRequestsQuery.Where(s => 
+                supportRequestsQuery = supportRequestsQuery.Where(s =>
                     EF.Functions.Like(s.RequesterName, $"%{searchString}%") ||
                     EF.Functions.Like(s.ProblemDescription, $"%{searchString}%") ||
                     EF.Functions.Like(s.RequestType.ToString(), $"%{searchString}%"));
@@ -120,7 +120,7 @@ namespace myapp.Controllers
 
             if (!String.IsNullOrEmpty(searchString))
             {
-                 supportRequestsQuery = supportRequestsQuery.Where(s => 
+                 supportRequestsQuery = supportRequestsQuery.Where(s =>
                     EF.Functions.Like(s.RequesterName, $"%{searchString}%") ||
                     EF.Functions.Like(s.ProblemDescription, $"%{searchString}%") ||
                     EF.Functions.Like(s.RequestType.ToString(), $"%{searchString}%"));
@@ -137,7 +137,7 @@ namespace myapp.Controllers
                 StatusOptions = new SelectList(filterableStatuses, selectedStatus),
                 SelectedStatus = selectedStatus
             };
-            
+
             ViewData["CurrentFilter"] = searchString;
             return View(viewModel);
         }
@@ -169,6 +169,27 @@ namespace myapp.Controllers
             return Json(new { success = true });
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = "CanAccessWorkQueue")]
+        public async Task<IActionResult> CancelAssignment(int id)
+        {
+            var supportRequest = await _context.SupportRequests.FindAsync(id);
+            if (supportRequest == null)
+            {
+                return Json(new { success = false, message = "Support request not found." });
+            }
+
+            supportRequest.ResponsibleUserId = null;
+            supportRequest.Status = SupportRequestStatus.Approved; // Revert status to Approved
+            supportRequest.UpdatedAt = DateTime.UtcNow;
+            supportRequest.UpdatedBy = User.Identity?.Name ?? "system";
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
@@ -186,7 +207,7 @@ namespace myapp.Controllers
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (supportRequest == null) return NotFound();
-            
+
             return View(supportRequest); // Correctly returns the Details view
         }
 
@@ -194,7 +215,7 @@ namespace myapp.Controllers
         {
             var employeeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var currentUser = await _context.Users.FirstOrDefaultAsync(u => u.EmployeeId == employeeId);
-            
+
             var supportRequest = new SupportRequest();
             if (currentUser != null)
             {
@@ -202,7 +223,7 @@ namespace myapp.Controllers
                 supportRequest.RequesterName = currentUser.FullName;
                 supportRequest.Department = currentUser.Department;
             }
-            
+
             return View(supportRequest);
         }
 
@@ -218,14 +239,29 @@ namespace myapp.Controllers
 
             if (!isSoftwareRequest) ModelState.Remove(nameof(SupportRequest.Program));
             if (!isSapProgram) ModelState.Remove(nameof(SupportRequest.SAPProblem));
-            if (!isSapRegistration) RemoveSapRegistrationFields(ModelState);
+            if (!isSapRegistration) RemoveAllSapRegistrationFields(ModelState);
             if (!isBomCreation) {
                 ModelState.Remove(nameof(SupportRequest.BomComponents));
+                ModelState.Remove(nameof(SupportRequest.ModelName));
                 foreach (var key in ModelState.Keys.Where(k => k.StartsWith("BomComponents[")).ToList()) ModelState.Remove(key);
             }
 
             if (ModelState.IsValid)
             {
+                var approvalSequence = await _context.ApprovalSequences
+                    .Include(s => s.Approvers)
+                    .FirstOrDefaultAsync(s => s.Department == supportRequest.Department && s.RequestType == supportRequest.RequestType);
+
+                if (approvalSequence == null || !approvalSequence.Approvers.Any())
+                {
+                    TempData["ErrorMessage"] = "ไม่พบสายอนุมัติสำหรับแผนกและประเภทการแจ้งซ่อมนี้";
+                    return View(supportRequest); // Return to the form with an error message
+                }
+
+                var firstApprover = approvalSequence.Approvers.OrderBy(a => a.Order).First();
+                supportRequest.CurrentApproverId = firstApprover.Id;
+
+
                 if (attachmentFile != null && attachmentFile.Length > 0)
                 {
                     supportRequest.AttachmentPath = await SaveAttachment(attachmentFile);
@@ -259,12 +295,12 @@ namespace myapp.Controllers
             {
                 return Forbid();
             }
-            
+
             var supportRequest = await _context.SupportRequests.FindAsync(id);
             if (supportRequest == null) return NotFound();
 
-            // Additional check: Only allow editing for 'Pending' status
-            if (supportRequest.Status != SupportRequestStatus.Pending) {
+            // Allow editing for 'Pending' or 'RevisionNeeded' status
+            if (supportRequest.Status != SupportRequestStatus.Pending && supportRequest.Status != SupportRequestStatus.RevisionNeeded) {
                 TempData["ErrorMessage"] = "ไม่สามารถแก้ไขรายการที่อนุมัติไปแล้วได้";
                 return RedirectToAction(nameof(Details), new { id = id.Value });
             }
@@ -278,36 +314,144 @@ namespace myapp.Controllers
         {
             if (id != supportRequest.Id) return NotFound();
 
-            // Authorization Check
             if (!await IsAuthorized(id)) return Forbid();
 
-            var requestToUpdate = await _context.SupportRequests.FindAsync(id);
+            var requestToUpdate = await _context.SupportRequests.Include(r => r.BomComponents).FirstOrDefaultAsync(r => r.Id == id);
+
             if (requestToUpdate == null) return NotFound();
-            
-            // Ensure non-editable fields are not updated from the POSTed model
-            // ... conditional validation logic ...
+
+            bool isSoftwareRequest = supportRequest.RequestType == RequestType.Software;
+            bool isSapProgram = isSoftwareRequest && supportRequest.Program == ProgramName.SAP;
+            bool isSapRegistration = isSapProgram && supportRequest.SAPProblem == SAPProblemType.NewRegistration;
+            bool isBomCreation = isSapProgram && supportRequest.SAPProblem == SAPProblemType.CreateBOM;
+
+            if (!isSoftwareRequest) ModelState.Remove("Program");
+            if (!isSapProgram) ModelState.Remove("SAPProblem");
+
+            if (!isSapRegistration)
+            {
+                RemoveAllSapRegistrationFields(ModelState);
+            }
+
+            if (!isBomCreation)
+            {
+                ModelState.Remove("ModelName");
+                foreach (var key in ModelState.Keys.Where(k => k.StartsWith("BomComponents")).ToList())
+                {
+                    ModelState.Remove(key);
+                }
+            }
 
             if (ModelState.IsValid)
             {
-                if (attachmentFile != null && attachmentFile.Length > 0)
+                try
                 {
-                    requestToUpdate.AttachmentPath = await SaveAttachment(attachmentFile);
+                    requestToUpdate.RequesterName = supportRequest.RequesterName;
+                    requestToUpdate.Department = supportRequest.Department;
+                    requestToUpdate.RequestType = supportRequest.RequestType;
+                    requestToUpdate.ProblemDescription = supportRequest.ProblemDescription;
+                    requestToUpdate.Urgency = supportRequest.Urgency;
+                    requestToUpdate.Program = isSoftwareRequest ? supportRequest.Program : null;
+                    requestToUpdate.SAPProblem = isSapProgram ? supportRequest.SAPProblem : null;
+
+                    if (isSapRegistration)
+                    {
+                        requestToUpdate.IsFG = supportRequest.IsFG;
+                        requestToUpdate.IsSM = supportRequest.IsSM;
+                        requestToUpdate.IsRM = supportRequest.IsRM;
+                        requestToUpdate.IsTooling = supportRequest.IsTooling;
+                        requestToUpdate.ICSCode = supportRequest.ICSCode;
+                        requestToUpdate.EnglishMatDescription = supportRequest.EnglishMatDescription;
+                        requestToUpdate.MaterialGroup = supportRequest.MaterialGroup;
+                        requestToUpdate.Division = supportRequest.Division;
+                        requestToUpdate.ProfitCenter = supportRequest.ProfitCenter;
+                        requestToUpdate.DistributionChannel = supportRequest.DistributionChannel;
+                        requestToUpdate.BOICode = supportRequest.BOICode;
+                        requestToUpdate.MRPController = supportRequest.MRPController;
+                        requestToUpdate.StorageLoc = supportRequest.StorageLoc;
+                        requestToUpdate.StorageLocBP = supportRequest.StorageLocBP;
+                        requestToUpdate.StorageLocB1 = supportRequest.StorageLocB1;
+                        requestToUpdate.ProductionSupervisor = supportRequest.ProductionSupervisor;
+                        requestToUpdate.CostingLotSize = supportRequest.CostingLotSize;
+                        requestToUpdate.ValClass = supportRequest.ValClass;
+                        requestToUpdate.Plant = supportRequest.Plant;
+                        requestToUpdate.BaseUnit = supportRequest.BaseUnit;
+                        requestToUpdate.MakerMfrPartNumber = supportRequest.MakerMfrPartNumber;
+                        requestToUpdate.Price = supportRequest.Price;
+                        requestToUpdate.PerPrice = supportRequest.PerPrice;
+                        requestToUpdate.BOIDescription = supportRequest.BOIDescription;
+                        requestToUpdate.PurchasingGroup = supportRequest.PurchasingGroup;
+                        requestToUpdate.CommCodeTariffCode = supportRequest.CommCodeTariffCode;
+                        requestToUpdate.TariffCodePercentage = supportRequest.TariffCodePercentage;
+                        requestToUpdate.PriceControl = supportRequest.PriceControl;
+                        requestToUpdate.SupplierCode = supportRequest.SupplierCode;
+                    }
+
+                    if (isBomCreation)
+                    {
+                        requestToUpdate.ModelName = supportRequest.ModelName;
+                        requestToUpdate.BomComponents.Clear();
+                        if(supportRequest.BomComponents != null)
+                        {
+                            foreach(var comp in supportRequest.BomComponents)
+                            {
+                                requestToUpdate.BomComponents.Add(comp);
+                            }
+                        }
+                    } else {
+                         requestToUpdate.BomComponents.Clear();
+                         requestToUpdate.ModelName = null;
+                    }
+
+                    if (attachmentFile != null && attachmentFile.Length > 0)
+                    {
+                        requestToUpdate.AttachmentPath = await SaveAttachment(attachmentFile);
+                    }
+
+                    var approvalSequence = await _context.ApprovalSequences
+                        .Include(s => s.Approvers)
+                        .FirstOrDefaultAsync(s => s.Department == requestToUpdate.Department && s.RequestType == requestToUpdate.RequestType);
+
+                    if (approvalSequence == null || !approvalSequence.Approvers.Any())
+                    {
+                        TempData["ErrorMessage"] = "ไม่พบสายอนุมัติสำหรับแผนกและประเภทการแจ้งซ่อมนี้";
+                        return View(supportRequest);
+                    }
+
+                    var firstApproverInSequence = approvalSequence.Approvers.OrderBy(a => a.Order).First();
+
+                    requestToUpdate.Status = SupportRequestStatus.Pending;
+                    requestToUpdate.CurrentApproverId = firstApproverInSequence.Id;
+                    requestToUpdate.RevisionReason = null;
+
+                    var oldHistory = await _context.ApprovalHistories.Where(h => h.SupportRequestId == requestToUpdate.Id).ToListAsync();
+                    _context.ApprovalHistories.RemoveRange(oldHistory);
+
+                    requestToUpdate.UpdatedAt = DateTime.UtcNow;
+                    requestToUpdate.UpdatedBy = User.Identity?.Name ?? "system";
+
+                    await _context.SaveChangesAsync();
+                    TempData["SuccessMessage"] = "แก้ไขและส่งรายการแจ้งซ่อมเพื่ออนุมัติอีกครั้งเรียบร้อยแล้ว";
+                    return RedirectToAction(nameof(Index));
                 }
-
-                requestToUpdate.RequesterName = supportRequest.RequesterName;
-                requestToUpdate.Department = supportRequest.Department;
-                requestToUpdate.RequestType = supportRequest.RequestType;
-                requestToUpdate.ProblemDescription = supportRequest.ProblemDescription;
-                requestToUpdate.Urgency = supportRequest.Urgency;
-                // Copy other editable fields...
-
-                requestToUpdate.UpdatedAt = DateTime.UtcNow;
-                requestToUpdate.UpdatedBy = User.Identity?.Name ?? "system";
-
-                await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = "แก้ไขรายการแจ้งซ่อมสำเร็จแล้ว";
-                return RedirectToAction(nameof(Index));
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.SupportRequests.Any(e => e.Id == supportRequest.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
+
+            // If we fall through to here, the model state is invalid. 
+            // Let's add the errors to TempData to make them visible on the returned view.
+            var errorMessages = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+            TempData["ErrorMessage"] = "กรุณาแก้ไขข้อผิดพลาดต่อไปนี้: " + string.Join(" ", errorMessages);
+
             return View(supportRequest);
         }
 
@@ -372,22 +516,35 @@ namespace myapp.Controllers
             var year = thaiTime.ToString("yy");
             var month = thaiTime.Month;
             string monthCode = month switch { 10 => "A", 11 => "B", 12 => "C", _ => month.ToString() };
-            
+
             var startOfMonthThai = new DateTime(thaiTime.Year, thaiTime.Month, 1, 0, 0, 0, DateTimeKind.Unspecified);
             var startOfMonthUtc = startOfMonthThai.AddHours(-7);
             var endOfMonthUtc = startOfMonthUtc.AddMonths(1);
 
             var requestsInMonth = await _context.SupportRequests.CountAsync(r => r.CreatedAt >= startOfMonthUtc && r.CreatedAt < endOfMonthUtc);
             var runningNumber = requestsInMonth + 1;
-            
+
             return $"SR-{year}{monthCode}-{runningNumber:D3}";
         }
 
-        private void RemoveSapRegistrationFields(ModelStateDictionary modelState)
+        private void RemoveAllSapRegistrationFields(ModelStateDictionary modelState)
         {
-            // This helper method remains the same
-            var fields = new[] { nameof(SupportRequest.IsFG), nameof(SupportRequest.IsSM), /* ... all other SAP fields ... */ };
-            foreach (var field in fields) modelState.Remove(field);
+            var fields = new[] { 
+                nameof(SupportRequest.IsFG), nameof(SupportRequest.IsSM), nameof(SupportRequest.IsRM), 
+                nameof(SupportRequest.IsTooling), nameof(SupportRequest.ICSCode), nameof(SupportRequest.EnglishMatDescription),
+                nameof(SupportRequest.MaterialGroup), nameof(SupportRequest.Division), nameof(SupportRequest.ProfitCenter),
+                nameof(SupportRequest.DistributionChannel), nameof(SupportRequest.BOICode), nameof(SupportRequest.MRPController),
+                nameof(SupportRequest.StorageLoc), nameof(SupportRequest.StorageLocBP), nameof(SupportRequest.StorageLocB1),
+                nameof(SupportRequest.ProductionSupervisor), nameof(SupportRequest.CostingLotSize), nameof(SupportRequest.ValClass),
+                nameof(SupportRequest.Plant), nameof(SupportRequest.BaseUnit), nameof(SupportRequest.MakerMfrPartNumber),
+                nameof(SupportRequest.Price), nameof(SupportRequest.PerPrice), nameof(SupportRequest.BOIDescription),
+                nameof(SupportRequest.PurchasingGroup), nameof(SupportRequest.CommCodeTariffCode), 
+                nameof(SupportRequest.TariffCodePercentage), nameof(SupportRequest.PriceControl), nameof(SupportRequest.SupplierCode)
+            }; 
+            foreach (var field in fields) 
+            {
+                modelState.Remove(field);
+            }
         }
     }
 }

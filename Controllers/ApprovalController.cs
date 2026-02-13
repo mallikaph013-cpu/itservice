@@ -63,8 +63,7 @@ namespace myapp.Controllers
                         (
                             (r.CurrentApproverId != null && userApproverIds.Contains(r.CurrentApproverId.Value)) ||
                             (r.CurrentApproverId == null && firstApprovalDepts.Contains(r.Department))
-                        )
-                    )
+                        ))
                     .OrderByDescending(r => r.CreatedAt)
                     .ToListAsync();
             }
@@ -88,55 +87,89 @@ namespace myapp.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Approve(int id)
+[ValidateAntiForgeryToken]
+public async Task<IActionResult> Approve(int id)
+{
+    var employeeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    if (string.IsNullOrEmpty(employeeId))
+    {
+        return Json(new { success = false, message = "User claim not found." });
+    }
+
+    var currentUser = await _context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.EmployeeId == employeeId);
+    if (currentUser == null)
+    {
+        return Json(new { success = false, message = "User not found." });
+    }
+
+    var supportRequest = await _context.SupportRequests
+        .Include(r => r.CurrentApprover) // Keep include for potential logging or other uses
+        .FirstOrDefaultAsync(r => r.Id == id);
+
+    if (supportRequest == null || string.IsNullOrEmpty(supportRequest.Department))
+    {
+        return Json(new { success = false, message = "ไม่พบรายการที่ต้องการ" });
+    }
+
+    var sequence = await _context.ApprovalSequences
+        .Include(s => s.Approvers.OrderBy(a => a.Order))
+        .FirstOrDefaultAsync(s => s.Department == supportRequest.Department);
+
+    if (sequence == null)
+    {
+        return Json(new { success = false, message = "ไม่พบสายอนุมัติสำหรับแผนกนี้" });
+    }
+
+    // Determine the acting user's order in the sequence.
+    var actingApprover = sequence.Approvers.FirstOrDefault(a => a.UserId == currentUser.Id);
+
+    // If the user is not a designated approver for this department, they can't approve.
+    if (actingApprover == null)
+    {
+        return Json(new { success = false, message = "คุณไม่มีสิทธิ์อนุมัติรายการนี้" });
+    }
+    
+    // Check if it's the user's turn to approve.
+    // It's their turn if the request is unassigned and they are the first approver,
+    // OR if the request is assigned to them.
+    bool isFirstApproverAction = supportRequest.CurrentApproverId == null && actingApprover.Order == 1;
+    bool isAssignedApproverAction = supportRequest.CurrentApproverId == actingApprover.Id;
+
+    if (!isFirstApproverAction && !isAssignedApproverAction)
+    {
+        return Json(new { success = false, message = "ไม่ใช่ตาของคุณในการอนุมัติรายการนี้" });
+    }
+
+    var currentOrder = actingApprover.Order;
+    var nextApprover = sequence.Approvers.FirstOrDefault(a => a.Order > currentOrder);
+
+    if (nextApprover == null)
+    {
+        // Final approval step
+        bool isITRequest = supportRequest.Department == "IT";
+        if (isITRequest)
         {
-            var supportRequest = await _context.SupportRequests
-                .Include(r => r.CurrentApprover)
-                .FirstOrDefaultAsync(r => r.Id == id);
-
-            if (supportRequest == null || string.IsNullOrEmpty(supportRequest.Department))
-            {
-                return Json(new { success = false, message = "ไม่พบรายการที่ต้องการ" });
-            }
-
-            var sequence = await _context.ApprovalSequences
-                .Include(s => s.Approvers.OrderBy(a => a.Order))
-                .FirstOrDefaultAsync(s => s.Department == supportRequest.Department);
-
-            var currentOrder = supportRequest.CurrentApprover?.Order ?? 0;
-            var nextApprover = sequence?.Approvers.FirstOrDefault(a => a.Order > currentOrder);
-
-            if (nextApprover == null)
-            {
-                // Final approval step
-                bool isITRequest = supportRequest.Department == "IT";
-                if (isITRequest)
-                {
-                    // For IT requests, final approval means the job is accepted and in progress.
-                    supportRequest.Status = SupportRequestStatus.InProgress;
-                }
-                else
-                {
-                    // For non-IT requests, final approval means the request is fully approved.
-                    supportRequest.Status = SupportRequestStatus.Approved;
-                }
-                supportRequest.CurrentApproverId = null;
-            }
-            else
-            {
-                // Intermediate approval step, pass to the next approver.
-                // Status remains Pending so it appears in the next approver's queue.
-                supportRequest.Status = SupportRequestStatus.Pending;
-                supportRequest.CurrentApproverId = nextApprover.Id;
-            }
-
-            supportRequest.UpdatedAt = DateTime.UtcNow;
-            supportRequest.UpdatedBy = User.FindFirstValue(ClaimTypes.Name);
-            await _context.SaveChangesAsync();
-
-            return Json(new { success = true, newStatus = supportRequest.Status.ToString() });
+            supportRequest.Status = SupportRequestStatus.InProgress;
         }
+        else
+        {
+            supportRequest.Status = SupportRequestStatus.Approved;
+        }
+        supportRequest.CurrentApproverId = null;
+    }
+    else
+    {
+        // Intermediate approval step, pass to the next approver.
+        supportRequest.Status = SupportRequestStatus.Pending;
+        supportRequest.CurrentApproverId = nextApprover.Id;
+    }
+
+    supportRequest.UpdatedAt = DateTime.UtcNow;
+    supportRequest.UpdatedBy = User.FindFirstValue(ClaimTypes.Name);
+    await _context.SaveChangesAsync();
+
+    return Json(new { success = true, newStatus = supportRequest.Status.ToString() });
+}
 
 
         [HttpPost]

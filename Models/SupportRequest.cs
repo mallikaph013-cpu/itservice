@@ -115,6 +115,9 @@ namespace myapp.Models
         [Display(Name = "สถานะ")]
         public SupportRequestStatus Status { get; set; } = SupportRequestStatus.Pending;
 
+        [Display(Name = "เหตุผลในการตีกลับ")]
+        public string? RevisionReason { get; set; }
+
         public List<ApprovalHistory> ApprovalHistories { get; set; } = new List<ApprovalHistory>();
 
         [Display(Name = "ผู้อนุมัติปัจจุบัน")]

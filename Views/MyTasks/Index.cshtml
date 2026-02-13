@@ -11,6 +11,7 @@
             SupportRequestStatus.InProgress => ("bg-info text-dark", "กำลังดำเนินการ"),
             SupportRequestStatus.Done => ("bg-success", "เสร็จสิ้น"),
             SupportRequestStatus.Rejected => ("bg-danger", "ถูกปฏิเสธ"),
+            SupportRequestStatus.RevisionNeeded => ("bg-primary", "รอการแก้ไข"),
             _ => ("bg-light text-dark", status.ToString())
         };
     }
@@ -62,7 +63,7 @@
                         <th>ผู้แจ้ง</th>
                         <th>สถานะ</th>
                         <th>อัปเดตล่าสุด</th>
-                        <th style="width: 350px;">ดำเนินการ</th>
+                        <th style="width: 450px;">ดำเนินการ</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -96,6 +97,10 @@
                                             </select>
                                             <button type="submit" class="btn btn-sm btn-primary">อัปเดต</button>
                                         </form>
+
+                                        <button type="button" class="btn btn-sm btn-outline-danger return-btn" data-id="@item.Id">
+                                            <i class="bi bi-arrow-return-left me-1"></i> ตีกลับ
+                                        </button>
                                     }
                                 </div>
                             </td>
@@ -115,6 +120,31 @@
     }
 </div>
 
+<!-- Return for Revision Modal -->
+<div class="modal fade" id="revisionModal" tabindex="-1" aria-labelledby="revisionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="revisionModalLabel">ส่งกลับเพื่อแก้ไข</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="revisionForm" asp-controller="MyTasks" asp-action="ReturnForRevision" method="post">
+                <div class="modal-body">
+                    <input type="hidden" id="revisionRequestId" name="id" />
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label for="revisionReason" class="form-label">เหตุผลในการส่งกลับ</label>
+                        <textarea class="form-control" id="revisionReason" name="revisionReason" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="submit" class="btn btn-primary">ส่งกลับ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section Styles {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
@@ -142,4 +172,16 @@
             margin-bottom: 0;
         }
     </style>
+}
+
+@section Scripts {
+    <script>
+        $(function() {
+            $('.return-btn').on('click', function() {
+                var requestId = $(this).data('id');
+                $('#revisionRequestId').val(requestId);
+                $('#revisionModal').modal('show');
+            });
+        });
+    </script>
 }

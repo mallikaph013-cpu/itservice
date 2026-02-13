@@ -13,12 +13,12 @@ namespace myapp.Documents
     public class SupportRequestDocument : IDocument
     {
         private readonly SupportRequest _request;
-        private readonly List<Approver> _approvalSteps;
+        private readonly List<User> _approvers;
 
-        public SupportRequestDocument(SupportRequest request, List<Approver> approvalSteps)
+        public SupportRequestDocument(SupportRequest request, List<User> approvers)
         {
             _request = request;
-            _approvalSteps = approvalSteps;
+            _approvers = approvers;
         }
 
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
@@ -132,28 +132,28 @@ namespace myapp.Documents
 
                 col.Item().Table(table =>
                 {
-                    // 1. Create a list of all participants
                     var participants = new List<(string Title, string? Name, string? Role, DateTime? Date)>();
 
-                    // 1a. Add Requester
+                    // 1. Requester
                     participants.Add(("ผู้ร้องขอ", _request.RequesterName, "ผู้ร้องขอ", _request.CreatedAt));
 
-                    // 1b. Add All Approvers
-                    var orderedSteps = _approvalSteps.OrderBy(a => a.Order).ToList();
-                    foreach (var step in orderedSteps)
+                    // 2. Approvers from History
+                    var approvalHistories = _request.ApprovalHistories.OrderBy(h => h.ApprovalDate);
+                    foreach (var history in approvalHistories)
                     {
-                        var history = _request.ApprovalHistories?.FirstOrDefault(h => h.ApproverName == step.User.FullName);
-                        participants.Add((step.User?.Role ?? "ผู้อนุมัติ", step.User?.FullName, step.User?.Role, history?.ApprovalDate));
+                        var approver = _approvers.FirstOrDefault(u => u.FullName == history.ApproverName);
+                        if (approver != null)
+                        {
+                            participants.Add((approver.Role ?? "DM", approver.FullName, approver.Role, history.ApprovalDate));
+                        }
+                    }
+                    
+                    // 3. IT Responsible User (If assigned)
+                    if (_request.ResponsibleUser != null)
+                    {
+                        participants.Add(("ผู้รับผิดชอบ (IT)", _request.ResponsibleUser.FullName, "IT Support", _request.UpdatedAt));
                     }
 
-                    // 1c. Add IT Support (only if the request is Done and IT is assigned)
-                    if (_request.Status == SupportRequestStatus.Done && _request.ResponsibleUser != null)
-                    {
-                        var itUser = _request.ResponsibleUser;
-                        participants.Add(("ผู้รับผิดชอบ (IT)", itUser.FullName, "IT Support", _request.UpdatedAt));
-                    }
-
-                    // 2. Define table structure (e.g., 4 columns)
                     const int maxColumns = 4;
                     table.ColumnsDefinition(columnsDef =>
                     {
@@ -161,19 +161,18 @@ namespace myapp.Documents
                             columnsDef.RelativeColumn();
                     });
 
-                    // 3. Populate table with all participants
                     foreach (var p in participants)
                     {
                         table.Cell().Element(c => SignatureBlock(c, p.Title, p.Name, p.Role, p.Date));
                     }
 
-                    // 4. Add empty cells to fill the last row and maintain the grid structure
-                    var remainingCells = participants.Count % maxColumns;
-                    if (remainingCells != 0)
+                    // Fill remaining cells in the last row
+                    var remainingCells = maxColumns - (participants.Count % maxColumns);
+                    if (remainingCells > 0 && remainingCells < maxColumns)
                     {
-                        for (int i = 0; i < maxColumns - remainingCells; i++)
+                        for (int i = 0; i < remainingCells; i++)
                         {
-                            table.Cell().Border(1, Colors.Grey.Lighten2);
+                            table.Cell().Border(1, Colors.Grey.Lighten2); // Render an empty, bordered cell
                         }
                     }
                 });

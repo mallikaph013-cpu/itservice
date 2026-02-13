@@ -49,6 +49,8 @@ namespace myapp.Models
         [Display(Name = "ไม่อนุมัติ")]
         Rejected,
         [Display(Name = "ปิดโดยผู้ใช้")]
-        Closed
+        Closed,
+        [Display(Name = "รอการแก้ไข")]
+        RevisionNeeded
     }
 }

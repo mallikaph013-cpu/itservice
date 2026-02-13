@@ -106,6 +106,8 @@
                                     statusClass = "danger"; statusIcon = "fa-times-circle"; break;
                                 case SupportRequestStatus.Closed:
                                     statusClass = "dark"; statusIcon = "fa-archive"; break;
+                                case SupportRequestStatus.RevisionNeeded:
+                                    statusClass = "primary"; statusIcon = "fa-edit"; break;
                             }
                             var bangkokTime = item.CreatedAt.AddHours(7);
 
@@ -136,11 +138,14 @@
                                         <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="รายละเอียด">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        @if (item.Status == SupportRequestStatus.Pending)
+                                        @if (item.Status == SupportRequestStatus.Pending || item.Status == SupportRequestStatus.RevisionNeeded)
                                         {
                                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-secondary" data-bs-toggle="tooltip" title="แก้ไข">
                                                 <i class="fas fa-pencil-alt"></i>
                                             </a>
+                                        }
+                                        @if (item.Status == SupportRequestStatus.Pending)
+                                        {
                                             <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" data-bs-toggle="tooltip" title="ลบ">
                                                 <i class="fas fa-trash-alt"></i>
                                             </a>

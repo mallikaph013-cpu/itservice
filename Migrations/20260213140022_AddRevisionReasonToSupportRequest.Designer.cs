@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using myapp.Data;
 
@@ -10,9 +11,11 @@ using myapp.Data;
 namespace myapp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260213140022_AddRevisionReasonToSupportRequest")]
+    partial class AddRevisionReasonToSupportRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.0-preview.3.24172.4");
@@ -80,7 +83,7 @@ namespace myapp.Migrations
 
                     b.HasIndex("SupportRequestId");
 
-                    b.ToTable("ApprovalHistories");
+                    b.ToTable("ApprovalHistory");
                 });
 
             modelBuilder.Entity("myapp.Models.ApprovalSequence", b =>
@@ -98,9 +101,6 @@ namespace myapp.Migrations
                     b.Property<string>("Department")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("RequestType")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Section")
                         .HasColumnType("TEXT");

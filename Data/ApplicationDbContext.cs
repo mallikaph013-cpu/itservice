@@ -29,6 +29,7 @@ namespace myapp.Data
         public DbSet<Menu> Menus { get; set; } = default!;
         public DbSet<UserMenuPermission> UserMenuPermissions { get; set; } = default!;
         public DbSet<WorkItem> WorkItems { get; set; } = default!;
+        public DbSet<ApprovalHistory> ApprovalHistories { get; set; } = default!;
 
         public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
