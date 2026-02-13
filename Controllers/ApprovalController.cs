@@ -109,12 +109,25 @@ namespace myapp.Controllers
 
             if (nextApprover == null)
             {
-                supportRequest.Status = SupportRequestStatus.Approved;
+                // Final approval step
+                bool isITRequest = supportRequest.Department == "IT";
+                if (isITRequest)
+                {
+                    // For IT requests, final approval means the job is accepted and in progress.
+                    supportRequest.Status = SupportRequestStatus.InProgress;
+                }
+                else
+                {
+                    // For non-IT requests, final approval means the request is fully approved.
+                    supportRequest.Status = SupportRequestStatus.Approved;
+                }
                 supportRequest.CurrentApproverId = null;
             }
             else
             {
-                supportRequest.Status = SupportRequestStatus.InProgress;
+                // Intermediate approval step, pass to the next approver.
+                // Status remains Pending so it appears in the next approver's queue.
+                supportRequest.Status = SupportRequestStatus.Pending;
                 supportRequest.CurrentApproverId = nextApprover.Id;
             }
 

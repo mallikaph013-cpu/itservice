@@ -47,6 +47,8 @@ namespace myapp.Models
         [Display(Name = "ปิดงาน")]
         Done,
         [Display(Name = "ไม่อนุมัติ")]
-        Rejected
+        Rejected,
+        [Display(Name = "ปิดโดยผู้ใช้")]
+        Closed
     }
 }

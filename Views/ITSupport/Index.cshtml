@@ -104,6 +104,8 @@
                                     statusClass = "success"; statusIcon = "fa-check-circle"; break;
                                 case SupportRequestStatus.Rejected:
                                     statusClass = "danger"; statusIcon = "fa-times-circle"; break;
+                                case SupportRequestStatus.Closed:
+                                    statusClass = "dark"; statusIcon = "fa-archive"; break;
                             }
                             var bangkokTime = item.CreatedAt.AddHours(7);
 
@@ -143,6 +145,12 @@
                                                 <i class="fas fa-trash-alt"></i>
                                             </a>
                                         }
+                                        @if (item.Status == SupportRequestStatus.Done)
+                                        {
+                                            <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#confirmCloseModal" data-id="@item.Id">
+                                                <i class="fas fa-check-double me-1"></i> ยืนยันปิดงาน
+                                            </button>
+                                        }
                                     </div>
                                 </td>
                             </tr>
@@ -154,6 +162,31 @@
     </div>
 </div>
 
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmCloseModal" tabindex="-1" aria-labelledby="confirmCloseModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmCloseModalLabel">ยืนยันการปิดงาน</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                คุณแน่ใจหรือไม่ว่าต้องการยืนยันการปิดงานนี้?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                <form id="closeRequestForm" asp-controller="ITSupport" asp-action="CloseRequest" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" id="requestIdToClose" value="" />
+                    <button type="submit" class="btn btn-primary">ยืนยัน</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -161,6 +194,14 @@
             var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             })
+
+            var confirmCloseModal = document.getElementById('confirmCloseModal');
+            confirmCloseModal.addEventListener('show.bs.modal', function (event) {
+                var button = event.relatedTarget;
+                var requestId = button.getAttribute('data-id');
+                var hiddenInput = confirmCloseModal.querySelector('#requestIdToClose');
+                hiddenInput.value = requestId;
+            });
         });
     </script>
 }

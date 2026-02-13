@@ -37,6 +37,7 @@ namespace myapp.Migrations
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     Department = table.Column<string>(type: "TEXT", nullable: false),
+                    Section = table.Column<string>(type: "TEXT", nullable: true),
                     Status = table.Column<string>(type: "TEXT", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<string>(type: "TEXT", nullable: true),
@@ -121,6 +122,7 @@ namespace myapp.Migrations
                     LastName = table.Column<string>(type: "TEXT", nullable: false),
                     Password = table.Column<string>(type: "TEXT", nullable: false),
                     Department = table.Column<string>(type: "TEXT", nullable: false),
+                    Section = table.Column<string>(type: "TEXT", nullable: true),
                     Role = table.Column<string>(type: "TEXT", nullable: false),
                     IsITStaff = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsDxStaff = table.Column<bool>(type: "INTEGER", nullable: false),
@@ -148,6 +150,31 @@ namespace myapp.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_WorkItems", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Sections",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Status = table.Column<string>(type: "TEXT", nullable: false),
+                    DepartmentId = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<int>(type: "INTEGER", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    UpdatedBy = table.Column<int>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Sections", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Sections_Departments_DepartmentId",
+                        column: x => x.DepartmentId,
+                        principalTable: "Departments",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -221,6 +248,7 @@ namespace myapp.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    DocumentNo = table.Column<string>(type: "TEXT", nullable: true),
                     EmployeeId = table.Column<string>(type: "TEXT", nullable: false),
                     RequesterName = table.Column<string>(type: "TEXT", nullable: false),
                     Department = table.Column<string>(type: "TEXT", nullable: false),
@@ -231,32 +259,32 @@ namespace myapp.Migrations
                     IsSM = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsRM = table.Column<bool>(type: "INTEGER", nullable: false),
                     IsTooling = table.Column<bool>(type: "INTEGER", nullable: false),
-                    ICSCode = table.Column<string>(type: "TEXT", nullable: false),
-                    EnglishMatDescription = table.Column<string>(type: "TEXT", nullable: false),
-                    MaterialGroup = table.Column<string>(type: "TEXT", nullable: false),
-                    Division = table.Column<string>(type: "TEXT", nullable: false),
-                    ProfitCenter = table.Column<string>(type: "TEXT", nullable: false),
-                    DistributionChannel = table.Column<string>(type: "TEXT", nullable: false),
-                    BOICode = table.Column<string>(type: "TEXT", nullable: false),
-                    MRPController = table.Column<string>(type: "TEXT", nullable: false),
-                    StorageLoc = table.Column<string>(type: "TEXT", nullable: false),
-                    StorageLocBP = table.Column<string>(type: "TEXT", nullable: false),
-                    StorageLocB1 = table.Column<string>(type: "TEXT", nullable: false),
-                    ProductionSupervisor = table.Column<string>(type: "TEXT", nullable: false),
-                    CostingLotSize = table.Column<string>(type: "TEXT", nullable: false),
-                    ValClass = table.Column<string>(type: "TEXT", nullable: false),
-                    Plant = table.Column<string>(type: "TEXT", nullable: false),
-                    BaseUnit = table.Column<string>(type: "TEXT", nullable: false),
-                    MakerMfrPartNumber = table.Column<string>(type: "TEXT", nullable: false),
+                    ICSCode = table.Column<string>(type: "TEXT", nullable: true),
+                    EnglishMatDescription = table.Column<string>(type: "TEXT", nullable: true),
+                    MaterialGroup = table.Column<string>(type: "TEXT", nullable: true),
+                    Division = table.Column<string>(type: "TEXT", nullable: true),
+                    ProfitCenter = table.Column<string>(type: "TEXT", nullable: true),
+                    DistributionChannel = table.Column<string>(type: "TEXT", nullable: true),
+                    BOICode = table.Column<string>(type: "TEXT", nullable: true),
+                    MRPController = table.Column<string>(type: "TEXT", nullable: true),
+                    StorageLoc = table.Column<string>(type: "TEXT", nullable: true),
+                    StorageLocBP = table.Column<string>(type: "TEXT", nullable: true),
+                    StorageLocB1 = table.Column<string>(type: "TEXT", nullable: true),
+                    ProductionSupervisor = table.Column<string>(type: "TEXT", nullable: true),
+                    CostingLotSize = table.Column<string>(type: "TEXT", nullable: true),
+                    ValClass = table.Column<string>(type: "TEXT", nullable: true),
+                    Plant = table.Column<string>(type: "TEXT", nullable: true),
+                    BaseUnit = table.Column<string>(type: "TEXT", nullable: true),
+                    MakerMfrPartNumber = table.Column<string>(type: "TEXT", nullable: true),
                     Price = table.Column<decimal>(type: "decimal(18, 2)", nullable: true),
                     PerPrice = table.Column<int>(type: "INTEGER", nullable: true),
-                    BOIDescription = table.Column<string>(type: "TEXT", nullable: false),
-                    PurchasingGroup = table.Column<string>(type: "TEXT", nullable: false),
-                    CommCodeTariffCode = table.Column<string>(type: "TEXT", nullable: false),
-                    TariffCodePercentage = table.Column<string>(type: "TEXT", nullable: false),
-                    PriceControl = table.Column<string>(type: "TEXT", nullable: false),
-                    SupplierCode = table.Column<string>(type: "TEXT", nullable: false),
-                    ModelName = table.Column<string>(type: "TEXT", nullable: false),
+                    BOIDescription = table.Column<string>(type: "TEXT", nullable: true),
+                    PurchasingGroup = table.Column<string>(type: "TEXT", nullable: true),
+                    CommCodeTariffCode = table.Column<string>(type: "TEXT", nullable: true),
+                    TariffCodePercentage = table.Column<string>(type: "TEXT", nullable: true),
+                    PriceControl = table.Column<string>(type: "TEXT", nullable: true),
+                    SupplierCode = table.Column<string>(type: "TEXT", nullable: true),
+                    ModelName = table.Column<string>(type: "TEXT", nullable: true),
                     ProblemDescription = table.Column<string>(type: "TEXT", nullable: false),
                     AttachmentPath = table.Column<string>(type: "TEXT", nullable: true),
                     Urgency = table.Column<int>(type: "INTEGER", nullable: false),
@@ -360,8 +388,8 @@ namespace myapp.Migrations
 
             migrationBuilder.InsertData(
                 table: "Users",
-                columns: new[] { "Id", "CanApprove", "Department", "EmployeeId", "FirstName", "IsDxStaff", "IsITStaff", "LastName", "Password", "Role" },
-                values: new object[] { 1, true, "IT", "admin", "แอดมิน", false, false, "ระบบ", "$2a$11$LhM27vKLaaDHqW9SJo3qoeswGqWwNQKADa6Z8CYfCg5NCk8UAFiHq", "Admin" });
+                columns: new[] { "Id", "CanApprove", "Department", "EmployeeId", "FirstName", "IsDxStaff", "IsITStaff", "LastName", "Password", "Role", "Section" },
+                values: new object[] { 1, true, "IT", "admin", "แอดมิน", false, false, "ระบบ", "$2a$11$LhM27vKLaaDHqW9SJo3qoeswGqWwNQKADa6Z8CYfCg5NCk8UAFiHq", "Admin", null });
 
             migrationBuilder.InsertData(
                 table: "Menus",
@@ -400,6 +428,11 @@ namespace myapp.Migrations
                 column: "ParentMenuId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Sections_DepartmentId",
+                table: "Sections",
+                column: "DepartmentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_SupportRequests_CurrentApproverId",
                 table: "SupportRequests",
                 column: "CurrentApproverId");
@@ -434,10 +467,10 @@ namespace myapp.Migrations
                 name: "BomComponent");
 
             migrationBuilder.DropTable(
-                name: "Departments");
+                name: "News");
 
             migrationBuilder.DropTable(
-                name: "News");
+                name: "Sections");
 
             migrationBuilder.DropTable(
                 name: "UserMenuPermissions");
@@ -447,6 +480,9 @@ namespace myapp.Migrations
 
             migrationBuilder.DropTable(
                 name: "SupportRequests");
+
+            migrationBuilder.DropTable(
+                name: "Departments");
 
             migrationBuilder.DropTable(
                 name: "Menus");

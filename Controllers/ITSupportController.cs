@@ -45,6 +45,7 @@ namespace myapp.Controllers
         {
             var supportRequestsQuery = _context.SupportRequests
                                                 .Include(s => s.CurrentApprover.User)
+                                                .Include(s => s.ResponsibleUser) // Eager load the responsible user
                                                 .AsQueryable();
 
             var isPrivilegedUser = User.IsInRole("Admin") || User.IsInRole("ITSupport");
@@ -74,6 +75,35 @@ namespace myapp.Controllers
             ViewData["CurrentFilter"] = searchString;
             return View(supportRequests);
         }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CloseRequest(int id)
+        {
+            var employeeId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var requestToClose = await _context.SupportRequests.FirstOrDefaultAsync(r => r.Id == id && r.EmployeeId == employeeId);
+
+            if (requestToClose == null)
+            {
+                return NotFound();
+            }
+
+            if (requestToClose.Status != SupportRequestStatus.Done)
+            {
+                TempData["ErrorMessage"] = "ไม่สามารถปิดงานที่ยังไม่เสร็จสิ้นได้";
+                return RedirectToAction(nameof(Index));
+            }
+
+            requestToClose.Status = SupportRequestStatus.Closed;
+            requestToClose.UpdatedAt = DateTime.UtcNow;
+            requestToClose.UpdatedBy = User.Identity?.Name ?? "system";
+
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "ปิดงานเรียบร้อยแล้ว";
+            return RedirectToAction(nameof(Index));
+        }
+
 
         [Authorize(Policy = "CanAccessWorkQueue")]
         public async Task<IActionResult> WorkQueue(string searchString, SupportRequestStatus? selectedStatus)
@@ -110,6 +140,33 @@ namespace myapp.Controllers
             
             ViewData["CurrentFilter"] = searchString;
             return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Policy = "CanAccessWorkQueue")]
+        public async Task<IActionResult> AssignResponsibleUser([FromForm] int supportRequestId, [FromForm] int userId)
+        {
+            var supportRequest = await _context.SupportRequests.FindAsync(supportRequestId);
+            if (supportRequest == null)
+            {
+                return Json(new { success = false, message = "Support request not found." });
+            }
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "User not found." });
+            }
+
+            supportRequest.ResponsibleUserId = userId;
+            supportRequest.Status = SupportRequestStatus.InProgress; // Update status to InProgress
+            supportRequest.UpdatedAt = DateTime.UtcNow;
+            supportRequest.UpdatedBy = User.Identity?.Name ?? "system";
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
         }
 
         public async Task<IActionResult> Details(int? id)

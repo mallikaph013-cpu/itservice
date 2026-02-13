@@ -66,7 +66,7 @@
                             <div class="d-flex justify-content-end gap-1">
                                 @if (item.Status == SupportRequestStatus.Approved && Model.AssignableUsers != null)
                                 {
-                                    <form asp-controller="ITSupport" asp-action="AssignResponsibleUser" method="post" class="d-flex gap-1">
+                                    <form asp-controller="ITSupport" asp-action="AssignResponsibleUser" method="post" class="d-flex gap-1 assign-form">
                                         <input type="hidden" name="supportRequestId" value="@item.Id" />
                                         <select name="userId" class="form-select form-select-sm" style="width: 150px;">
                                             <option value="">-- มอบหมายให้ --</option>
@@ -92,4 +92,44 @@ else
     <div class="text-center mt-4">
         <p>ไม่พบรายการตามที่ค้นหา</p>
     </div>
+}
+
+@section Scripts {
+    <script>
+    $(function() { 
+        $('.assign-form').on('submit', function(event) {
+            event.preventDefault(); 
+
+            var form = $(this);
+            var userId = form.find('select[name="userId"]').val();
+            var button = form.find('button[type="submit"]');
+
+            if (!userId) {
+                alert('กรุณาเลือกผู้รับผิดชอบ');
+                return;
+            }
+
+            button.prop('disabled', true).text('กำลังบันทึก...');
+
+            $.ajax({
+                type: 'POST',
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function(response) {
+                    if (response.success) {
+                        alert('มอบหมายงานสำเร็จแล้ว');
+                        window.location.reload(); 
+                    } else {
+                        alert('เกิดข้อผิดพลาด: ' + (response.message || 'ไม่สามารถมอบหมายงานได้'));
+                        button.prop('disabled', false).text('มอบหมาย');
+                    }
+                },
+                error: function() {
+                    alert('เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์');
+                    button.prop('disabled', false).text('มอบหมาย');
+                }
+            });
+        });
+    });
+    </script>
 }
